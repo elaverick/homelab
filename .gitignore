@@ -1,1 +1,22 @@
-ldap/files/certs
+# Ansible
+*.retry
+
+# Secrets
+*.secret
+*.secrets
+secrets/
+vault-password-file
+
+# Certificates / private keys
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Editors
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

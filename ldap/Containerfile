@@ -32,5 +32,18 @@ EXPOSE 389
 # LDAPS (for later)
 EXPOSE 636
 
+# Container configuration
+ENV LDAP_DOMAIN=""
+ENV LDAP_ORGANISATION=""
+ENV LDAP_ADMIN_PASSWORD_FILE="/run/secrets/ldap_admin_password"
+
+# Container startup script
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Initialise slapd if necessary, then start it
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+
 # Run slapd in the foreground
 CMD ["/usr/sbin/slapd", "-h", "ldap:/// ldaps:/// ldapi:///", "-d", "0"]

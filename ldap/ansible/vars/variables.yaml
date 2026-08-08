@@ -1,0 +1,38 @@
+---
+# LDAP connection
+
+ldap_host: "mimir."
+ldap_port: 389
+
+ldap_uri: "ldap://{{ ldap_host }}:{{ ldap_port }}"
+
+# LDAP directory
+
+domain: "laverick"
+tld: "local"
+
+ldap_base_dn: "dc={{ domain }},dc={{ tld }}"
+ldap_admin_dn: "cn=admin,{{ ldap_base_dn }}"
+
+# User/group configuration
+
+uidNumber: 10000
+
+ldapGroups:
+  - name: users
+    gidNumber: 10000
+
+  - name: admins
+    gidNumber: 10001
+
+ldapUsers:
+  - uid: elaverick
+    firstname: Edward
+    surname: Laverick
+    gidNumber: 10000
+
+  - uid: tlaverick
+    firstname: Tom
+    surname: Laverick
+    gidNumber: 10000
+
