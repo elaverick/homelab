@@ -1,4 +1,5 @@
 # Containerfile
+
 FROM debian:bookworm
 
 LABEL org.opencontainers.image.source="https://github.com/elaverick/homelab"
@@ -18,10 +19,17 @@ RUN apt-get update && \
         ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
+# slapd is configured automatically when the Debian package is installed.
+# Remove that build-time configuration so the LDAP instance is created
+# at runtime using the supplied environment variables and secret.
+RUN rm -rf \
+    /etc/ldap/slapd.d/* \
+    /var/lib/ldap/*
+
 # Create persistent data directories
 RUN mkdir -p \
-        /var/lib/ldap \
-        /etc/ldap/slapd.d
+    /var/lib/ldap \
+    /etc/ldap/slapd.d
 
 # Declare the persistent volumes
 VOLUME ["/var/lib/ldap", "/etc/ldap/slapd.d"]
