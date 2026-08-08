@@ -1,6 +1,8 @@
 # Containerfile
 FROM debian:bookworm
 
+LABEL org.opencontainers.image.source="https://github.com/elaverick/homelab"
+
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install packages required by slapd and Ansible
