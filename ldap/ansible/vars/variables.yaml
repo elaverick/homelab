@@ -2,7 +2,7 @@
 # LDAP connection
 
 ldap_host: "mimir."
-ldap_port: 389
+ldap_port: 1389
 
 ldap_uri: "ldap://{{ ldap_host }}:{{ ldap_port }}"
 

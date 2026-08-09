@@ -8,6 +8,19 @@
     - ./vars/variables.yaml
     - ./vars/vault.yaml
 
+  vars_prompt:
+    - name: elaverick_password
+      prompt: "Enter password for LDAP user elaverick"
+      private: yes
+      confirm: true
+      encrypt: "sha512_crypt"
+    - name: tlaverick_password
+      prompt: "Enter password for LDAP user tlaverick"
+      private: yes
+      confirm: true
+      encrypt: "sha512_crypt"
+
+
   tasks:
 
     - name: Check LDAP server is reachable
@@ -50,6 +63,14 @@
         state: present
       loop: "{{ ldapGroups }}"
 
+    - name: Verify prompted password hashes differ
+      ansible.builtin.assert:
+        that:
+          - elaverick_password != tlaverick_password
+        fail_msg: "ERROR: The two password hashes are identical!"
+        success_msg: "Password hashes are different."
+      no_log: true
+
     - name: Create Users
       community.general.ldap_entry:
         dn: "uid={{ item.uid }},ou=People,{{ ldap_base_dn }}"
@@ -64,7 +85,7 @@
           cn: "{{ item.firstname }} {{ item.surname }}"
           uidNumber: "{{ (uidNumber | int) + index }}"
           gidNumber: "{{ item.gidNumber | int }}"
-          userPassword: "{CRYPT}x"
+          userPassword: "{CRYPT}{{ lookup('vars', item.uid + '_password') }}"
           gecos: "{{ item.firstname }} {{ item.surname }}"
           loginShell: "/bin/bash"
           homeDirectory: "/home/{{ item.uid }}"
