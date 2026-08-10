@@ -8,9 +8,6 @@ ldap_uri: "ldap://{{ ldap_host }}:{{ ldap_port }}"
 
 # LDAP directory
 
-domain: "laverick"
-tld: "local"
-
 ldap_base_dn: "dc={{ domain }},dc={{ tld }}"
 ldap_admin_dn: "cn=admin,{{ ldap_base_dn }}"
 

@@ -1,0 +1,21 @@
+---
+
+# Root CA
+
+rootCAPath: "/etc/ssl/rootca"
+
+# Certificate subject
+
+country: "GB"
+
+# Root CA certificate lifetime
+
+rootCA_validity_days: 3650
+
+# Intermediate CA
+
+intermediateCA_common_name: "Homelab Intermediate CA"
+intermediateCA_validity_days: 1825
+
+# Ansible-generated certificate output
+certsPath: "../../../certs"

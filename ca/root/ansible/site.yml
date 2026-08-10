@@ -1,0 +1,172 @@
+---
+
+- name: Setup Root Certification Authority
+  hosts: rootca
+  become: yes
+
+  vars_files:
+    - ../../../shared/variables.yaml
+    - ./vars/variables.yaml
+    - ./vars/vault.yaml
+
+  tasks:
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Upgrade all packages
+      ansible.builtin.apt:
+        upgrade: dist
+        state: latest
+
+    - name: Ensure Root CA output directory exists
+      ansible.builtin.file:
+        path: "{{ rootCAPath }}"
+        state: directory
+        mode: '0700'
+
+    - name: Verify kernel CRNG is initialised
+      ansible.builtin.shell:
+        cmd: |
+          test "$(cat /proc/sys/kernel/random/crng_init)" -ge 2
+      changed_when: false
+
+    # -------------------------------------------------------------------------
+    # Root CA
+    # -------------------------------------------------------------------------
+
+    - name: Generate Root CA private key
+      community.crypto.openssl_privatekey:
+        path: "{{ rootCAPath }}/rootCA.key"
+        size: 4096
+        type: RSA
+        mode: '0600'
+
+    - name: Generate Root CA CSR
+      community.crypto.openssl_csr:
+        path: "{{ rootCAPath }}/rootCA.csr"
+        privatekey_path: "{{ rootCAPath }}/rootCA.key"
+        common_name: "{{ domain + '.' + tld }}"
+        country_name: "{{ country }}"
+        organization_name: "{{ domain }}"
+        organizational_unit_name: "Security"
+        email_address: "{{ emailAddress }}"
+        basic_constraints:
+          - "CA:TRUE"
+        basic_constraints_critical: true
+        key_usage:
+          - keyCertSign
+          - cRLSign
+        key_usage_critical: true
+        mode: '0644'
+
+    - name: Generate self-signed Root CA certificate
+      community.crypto.x509_certificate:
+        path: "{{ rootCAPath }}/rootCA.crt"
+        privatekey_path: "{{ rootCAPath }}/rootCA.key"
+        provider: selfsigned
+        selfsigned_not_after: "+{{ rootCA_validity_days }}d"
+        selfsigned_not_before: "+0s"
+        csr_path: "{{ rootCAPath }}/rootCA.csr"
+        mode: '0644'
+
+    # -------------------------------------------------------------------------
+    # Trust the Root CA on the Root CA host
+    # -------------------------------------------------------------------------
+
+    - name: Install Root CA certificate into trusted store
+      ansible.builtin.copy:
+        src: "{{ rootCAPath }}/rootCA.crt"
+        dest: "/usr/local/share/ca-certificates/{{ domain }}_root_ca.crt"
+        remote_src: yes
+        mode: '0644'
+
+    - name: Update trusted certificates
+      ansible.builtin.command:
+        cmd: update-ca-certificates
+      changed_when: false
+
+    # -------------------------------------------------------------------------
+    # Intermediate CA
+    # -------------------------------------------------------------------------
+
+    - name: Generate Intermediate CA private key
+      community.crypto.openssl_privatekey:
+        path: "{{ rootCAPath }}/intermediateCA.key"
+        size: 4096
+        type: RSA
+        mode: '0600'
+
+    - name: Generate Intermediate CA CSR
+      community.crypto.openssl_csr:
+        path: "{{ rootCAPath }}/intermediateCA.csr"
+        privatekey_path: "{{ rootCAPath }}/intermediateCA.key"
+        common_name: "{{ intermediateCA_common_name }}"
+        country_name: "{{ country }}"
+        organization_name: "{{ domain }}"
+        organizational_unit_name: "Security"
+        email_address: "{{ emailAddress }}"
+        basic_constraints:
+          - "CA:TRUE"
+          - "pathlen:0"
+        basic_constraints_critical: true
+        key_usage:
+          - keyCertSign
+          - cRLSign
+        key_usage_critical: true
+        mode: '0644'
+
+    - name: Sign Intermediate CA certificate with Root CA
+      community.crypto.x509_certificate:
+        path: "{{ rootCAPath }}/intermediateCA.crt"
+        csr_path: "{{ rootCAPath }}/intermediateCA.csr"
+        ownca_privatekey_path: "{{ rootCAPath }}/rootCA.key"
+        ownca_path: "{{ rootCAPath }}/rootCA.crt"
+        provider: ownca
+        ownca_not_after: "+{{ intermediateCA_validity_days }}d"
+        ownca_not_before: "+0s"
+        mode: '0644'
+
+    # -------------------------------------------------------------------------
+    # Verify the Intermediate CA certificate
+    # -------------------------------------------------------------------------
+
+    - name: Verify Intermediate CA certificate
+      ansible.builtin.command:
+        cmd: >
+          openssl x509
+          -in "{{ rootCAPath }}/intermediateCA.crt"
+          -noout
+          -text
+      register: intermediate_ca_cert
+      changed_when: false
+
+    - name: Verify Intermediate CA has path length constraint
+      ansible.builtin.assert:
+        that:
+          - "'CA:TRUE, pathlen:0' in intermediate_ca_cert.stdout"
+        fail_msg: "Intermediate CA certificate does not have pathlen:0"
+        success_msg: "Intermediate CA correctly constrained to pathlen:0"
+
+    # -------------------------------------------------------------------------
+    # Export certificates/keys
+    # -------------------------------------------------------------------------
+
+    - name: Fetch Root CA public certificate to local machine
+      ansible.builtin.fetch:
+        src: "{{ rootCAPath }}/rootCA.crt"
+        dest: "{{ certsPath }}/certs/rootCA.crt"
+        flat: yes
+
+    - name: Fetch Intermediate CA certificate to local machine
+      ansible.builtin.fetch:
+        src: "{{ rootCAPath }}/intermediateCA.crt"
+        dest: "{{ certsPath }}/certs/intermediateCA.crt"
+        flat: yes
+
+    - name: Fetch Intermediate CA private key to local machine
+      ansible.builtin.fetch:
+        src: "{{ rootCAPath }}/intermediateCA.key"
+        dest: "{{ certsPath }}/certs/intermediateCA.key"
+        flat: yes

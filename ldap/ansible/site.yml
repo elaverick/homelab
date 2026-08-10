@@ -5,6 +5,7 @@
   gather_facts: false
 
   vars_files:
+    - ../../shared/variables.yaml
     - ./vars/variables.yaml
     - ./vars/vault.yaml
 
@@ -86,6 +87,7 @@
           uidNumber: "{{ (uidNumber | int) + index }}"
           gidNumber: "{{ item.gidNumber | int }}"
           userPassword: "{CRYPT}{{ lookup('vars', item.uid + '_password') }}"
+          pwdReset: "TRUE"
           gecos: "{{ item.firstname }} {{ item.surname }}"
           loginShell: "/bin/bash"
           homeDirectory: "/home/{{ item.uid }}"
