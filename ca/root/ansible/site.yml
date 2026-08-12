@@ -27,9 +27,8 @@
         mode: '0700'
 
     - name: Verify kernel CRNG is initialised
-      ansible.builtin.shell:
-        cmd: |
-          test "$(cat /proc/sys/kernel/random/crng_init)" -ge 2
+      ansible.builtin.command:
+        cmd: python3 -c "import os; data = os.getrandom(32); assert len(data) == 32"
       changed_when: false
 
     # -------------------------------------------------------------------------
@@ -156,17 +155,17 @@
     - name: Fetch Root CA public certificate to local machine
       ansible.builtin.fetch:
         src: "{{ rootCAPath }}/rootCA.crt"
-        dest: "{{ certsPath }}/certs/rootCA.crt"
+        dest: "{{ certsPath }}/rootCA.crt"
         flat: yes
 
     - name: Fetch Intermediate CA certificate to local machine
       ansible.builtin.fetch:
         src: "{{ rootCAPath }}/intermediateCA.crt"
-        dest: "{{ certsPath }}/certs/intermediateCA.crt"
+        dest: "{{ certsPath }}/intermediateCA.crt"
         flat: yes
 
     - name: Fetch Intermediate CA private key to local machine
       ansible.builtin.fetch:
         src: "{{ rootCAPath }}/intermediateCA.key"
-        dest: "{{ certsPath }}/certs/intermediateCA.key"
+        dest: "{{ certsPath }}/intermediateCA.key"
         flat: yes

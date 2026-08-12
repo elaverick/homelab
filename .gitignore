@@ -12,6 +12,7 @@ vault-password-file
 *.pem
 *.p12
 *.pfx
+*.crt
 certs/
 
 # Editors
@@ -21,3 +22,6 @@ certs/
 # OS
 .DS_Store
 Thumbs.db
+
+# Ansible Inventory
+hosts
