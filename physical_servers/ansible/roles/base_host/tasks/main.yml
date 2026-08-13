@@ -1,0 +1,150 @@
+---
+- name: Verify supported operating system
+  ansible.builtin.assert:
+    that:
+      - ansible_facts.distribution == "Debian"
+      - ansible_facts.distribution_major_version == "13"
+    fail_msg: >-
+      This role supports Debian 13 only.
+      Detected {{ ansible_facts.distribution }}
+      {{ ansible_facts.distribution_version }}.
+
+- name: Install required host packages
+  ansible.builtin.apt:
+    name: "{{ base_host_packages }}"
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Ensure administration user exists
+  ansible.builtin.user:
+    name: "{{ admin_user }}"
+    state: present
+    groups:
+      - sudo
+    append: true
+
+- name: Install administration SSH key
+  ansible.posix.authorized_key:
+    user: "{{ admin_user }}"
+    key: "{{ admin_authorized_key }}"
+    state: present
+    exclusive: false
+
+- name: Ensure app-runner user exists
+  ansible.builtin.user:
+    name: "{{ podman_user }}"
+    shell: /bin/bash
+    create_home: true
+    state: present
+    password_lock: true
+
+- name: Configure app-runner subordinate UID range
+  ansible.builtin.lineinfile:
+    path: /etc/subuid
+    regexp: "^{{ podman_user }}:"
+    line: "{{ podman_user }}:{{ podman_subuid_start }}:{{ podman_subuid_count }}"
+    create: true
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Configure app-runner subordinate GID range
+  ansible.builtin.lineinfile:
+    path: /etc/subgid
+    regexp: "^{{ podman_user }}:"
+    line: "{{ podman_user }}:{{ podman_subgid_start }}:{{ podman_subgid_count }}"
+    create: true
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Enable systemd linger for app-runner
+  ansible.builtin.command:
+    cmd: "loginctl enable-linger {{ podman_user }}"
+  changed_when: false
+
+- name: Configure kernel hardening
+  ansible.builtin.template:
+    src: 99-server-hardening.conf.j2
+    dest: /etc/sysctl.d/99-server-hardening.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Apply sysctl configuration
+
+- name: Configure SSH hardening
+  ansible.builtin.template:
+    src: ssh-hardening.conf.j2
+    dest: /etc/ssh/sshd_config.d/homelab-hardening.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart SSH
+
+- name: Configure unattended-upgrades schedule
+  ansible.builtin.template:
+    src: 20auto-upgrades.j2
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Configure unattended-upgrades policy
+  ansible.builtin.template:
+    src: 50unattended-upgrades.j2
+    dest: /etc/apt/apt.conf.d/50unattended-upgrades
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Configure fail2ban SSH jail
+  ansible.builtin.template:
+    src: fail2ban-sshd.conf.j2
+    dest: /etc/fail2ban/jail.d/homelab-sshd.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart fail2ban
+
+- name: Set UFW default incoming policy
+  community.general.ufw:
+    direction: incoming
+    policy: deny
+
+- name: Set UFW default outgoing policy
+  community.general.ufw:
+    direction: outgoing
+    policy: allow
+
+- name: Allow SSH from trusted IPv4 network
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ homelab_ipv4_network }}"
+    to_port: "{{ ssh_port }}"
+    proto: tcp
+
+- name: Allow SSH from trusted IPv6 network
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ homelab_ipv6_network }}"
+    to_port: "{{ ssh_port }}"
+    proto: tcp
+
+- name: Allow LDAP from trusted IPv4 network
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ homelab_ipv4_network }}"
+    to_port: "{{ ldap_port }}"
+    proto: tcp
+
+- name: Allow LDAPS from trusted IPv4 network
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ homelab_ipv4_network }}"
+    to_port: "{{ ldaps_port }}"
+    proto: tcp
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled

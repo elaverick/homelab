@@ -1,0 +1,15 @@
+# Protect against link exploitation attacks
+fs.protected_hardlinks = 1
+fs.protected_symlinks = 1
+fs.protected_fifos = 2
+fs.protected_regular = 2
+
+# Restrict kernel pointer and dmesg access
+kernel.kptr_restrict = 2
+kernel.dmesg_restrict = 1
+
+# Disable core dumps for SUID binaries
+fs.suid_dumpable = 0
+
+# Network SYN flood defense
+net.ipv4.tcp_syncookies = 1

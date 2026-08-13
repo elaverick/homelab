@@ -1,0 +1,13 @@
+---
+base_host_packages:
+  - mdadm
+  - lvm2
+  - podman
+  - slirp4netns
+  - fuse-overlayfs
+  - dbus-user-session
+  - uidmap
+  - ufw
+  - fail2ban
+  - unattended-upgrades
+  - ldap-utils

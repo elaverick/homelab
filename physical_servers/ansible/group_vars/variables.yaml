@@ -1,0 +1,24 @@
+---
+# Trusted homelab network
+homelab_ipv4_network: "192.168.50.0/24"
+
+# Host services
+ssh_port: 22
+ldap_port: 1389
+ldaps_port: 1636
+
+# Podman service account
+podman_user: app-runner
+podman_subuid_start: 100000
+podman_subuid_count: 65536
+podman_subgid_start: 100000
+podman_subgid_count: 65536
+
+# Administration account
+admin_user: elaverick
+
+# SSH public key for the administration account
+admin_authorized_key: >-
+  ssh-ed25519
+  AAAAC3NzaC1lZDI1NTE5AAAAIDIq2Y4iuLioCuGWdLqOCPtdDKMF8xUCAnnvPQ1q+7YU
+  eddsa-key-20260807

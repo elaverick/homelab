@@ -95,12 +95,15 @@
         path: "{{ rootCAPath }}/intermediateCA.key"
         size: 4096
         type: RSA
+        cipher: auto
+        passphrase: "{{ intermediateCA_key_passphrase }}"
         mode: '0600'
 
     - name: Generate Intermediate CA CSR
       community.crypto.openssl_csr:
         path: "{{ rootCAPath }}/intermediateCA.csr"
         privatekey_path: "{{ rootCAPath }}/intermediateCA.key"
+        privatekey_passphrase: "{{ intermediateCA_key_passphrase }}"
         common_name: "{{ intermediateCA_common_name }}"
         country_name: "{{ country }}"
         organization_name: "{{ domain }}"

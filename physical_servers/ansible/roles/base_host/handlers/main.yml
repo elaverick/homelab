@@ -1,0 +1,25 @@
+---
+- name: Validate SSH configuration
+  ansible.builtin.command:
+    cmd: sshd -t
+  listen: Restart SSH
+  changed_when: false
+
+- name: Restart SSH daemon
+  ansible.builtin.systemd:
+    name: ssh
+    state: restarted
+  listen: Restart SSH
+
+- name: Apply sysctl configuration
+  ansible.builtin.command:
+    cmd: sysctl --system
+  listen: Apply sysctl configuration
+  changed_when: true
+
+- name: Restart fail2ban
+  ansible.builtin.systemd:
+    name: fail2ban
+    state: restarted
+    enabled: true
+  listen: Restart fail2ban
