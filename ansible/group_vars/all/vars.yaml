@@ -1,0 +1,82 @@
+---
+# Trusted homelab network
+homelab_ipv4_network: "192.168.50.0/24"
+
+# Host services
+ssh_port: 22
+ldap_port: 1389
+ldaps_port: 1636
+
+# Podman service account
+podman_user: app-runner
+podman_subuid_start: 100000
+podman_subuid_count: 65536
+podman_subgid_start: 100000
+podman_subgid_count: 65536
+
+# Administration account
+admin_user: elaverick
+
+# SSH public key for the administration account
+admin_authorized_key: >-
+  ssh-ed25519
+  AAAAC3NzaC1lZDI1NTE5AAAAIDIq2Y4iuLioCuGWdLqOCPtdDKMF8xUCAnnvPQ1q+7YU
+  eddsa-key-20260807
+
+# Domain configuration
+domain: "laverick"
+tld: "local"
+
+# LDAP Container configuration
+ldap_image: "ghcr.io/elaverick/homelab/ldap:1.3.0"
+ldap_container_name: "ldap-server"
+ldap_quadlet_filename: "ldap-server.container"
+
+ldap_secret_name: "ldap_admin_password"
+
+ldap_ports:
+  - "{{ ldap_port }}:389"
+  - "{{ ldaps_port }}:636"
+
+ldap_domain: "{{ domain }}.{{ tld }}"
+ldap_organisation: "Laverick Home Lab"
+
+
+# Persistent Podman volumes
+
+ldap_data_volume: "ldap-data"
+ldap_config_volume: "ldap-config"
+
+# LDAP connection
+
+ldap_host: "mimir."
+ldap_port: 1389
+
+ldap_uri: "ldap://{{ ldap_host }}:{{ ldap_port }}"
+
+# LDAP directory
+
+ldap_base_dn: "dc={{ domain }},dc={{ tld }}"
+ldap_admin_dn: "cn=admin,{{ ldap_base_dn }}"
+
+# User/group configuration
+
+uidNumber: 10000
+
+ldapGroups:
+  - name: users
+    gidNumber: 10000
+
+  - name: admins
+    gidNumber: 10001
+
+ldapUsers:
+  - uid: elaverick
+    firstname: Edward
+    surname: Laverick
+    gidNumber: 10000
+
+  - uid: tlaverick
+    firstname: Tom
+    surname: Laverick
+    gidNumber: 10000

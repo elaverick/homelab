@@ -1,8 +1,9 @@
 ---
 - name: Configure homelab base hosts
-  hosts: homelab_hosts
+  hosts: physical_servers
   become: true
   gather_facts: true
 
   roles:
     - base_host
+    - ldap

@@ -11,3 +11,4 @@ base_host_packages:
   - fail2ban
   - unattended-upgrades
   - ldap-utils
+  - acl

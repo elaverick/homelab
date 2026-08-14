@@ -19,3 +19,7 @@ intermediateCA_validity_days: 1825
 
 # Ansible-generated certificate output
 certsPath: "../../../certs"
+
+# Domain configuration
+domain: "laverick"
+tld: "local"

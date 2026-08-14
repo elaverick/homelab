@@ -16,21 +16,6 @@
     update_cache: true
     cache_valid_time: 3600
 
-- name: Ensure administration user exists
-  ansible.builtin.user:
-    name: "{{ admin_user }}"
-    state: present
-    groups:
-      - sudo
-    append: true
-
-- name: Install administration SSH key
-  ansible.posix.authorized_key:
-    user: "{{ admin_user }}"
-    key: "{{ admin_authorized_key }}"
-    state: present
-    exclusive: false
-
 - name: Ensure app-runner user exists
   ansible.builtin.user:
     name: "{{ podman_user }}"

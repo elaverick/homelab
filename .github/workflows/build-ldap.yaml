@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/ldap
+  IMAGE_NAME: ${{ github.repository }}/containers/ldap
 
 jobs:
   build:

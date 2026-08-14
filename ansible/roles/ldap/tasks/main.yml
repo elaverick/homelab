@@ -1,0 +1,70 @@
+---
+- name: Pull LDAP container image
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_image:
+    name: "{{ ldap_image }}"
+    state: present
+
+- name: Create LDAP admin password secret
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_secret:
+    name: "{{ ldap_secret_name }}"
+    data: "{{ ldap_password }}"
+    state: present
+  no_log: true
+
+- name: Create LDAP data volume
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_volume:
+    name: "{{ ldap_data_volume }}"
+    state: present
+
+- name: Create LDAP configuration volume
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_volume:
+    name: "{{ ldap_config_volume }}"
+    state: present
+
+- name: Create LDAP Quadlet
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container:
+    name: "{{ ldap_container_name }}"
+    image: "{{ ldap_image }}"
+    state: quadlet
+    quadlet_filename: "{{ ldap_quadlet_filename }}"
+    quadlet_file_mode: "0640"
+    publish: "{{ ldap_ports }}"
+    env:
+      LDAP_DOMAIN: "{{ ldap_domain }}"
+      LDAP_ORGANISATION: "{{ ldap_organisation }}"
+    secrets:
+      - "{{ ldap_secret_name }},type=mount,target=ldap_admin_password"
+    volumes:
+      - "{{ ldap_data_volume }}:/var/lib/ldap"
+      - "{{ ldap_config_volume }}:/etc/ldap/slapd.d"
+    quadlet_options:
+      - "AutoUpdate=registry"
+      - |
+        [Install]
+        WantedBy=default.target
+
+- name: Reload user systemd manager
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    scope: user
+
+- name: Enable and start LDAP container
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.systemd_service:
+    name: "{{ ldap_container_name }}.service"
+    enabled: true
+    state: started
+    scope: user

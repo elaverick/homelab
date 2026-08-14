@@ -1,0 +1,76 @@
+---
+- name: Check LDAP server is reachable
+  ansible.builtin.wait_for:
+    host: "{{ ldap_host }}"
+    port: "{{ ldap_port }}"
+    timeout: 10
+
+- name: Create People OU
+  community.general.ldap_entry:
+    dn: "ou=People,{{ ldap_base_dn }}"
+    objectClass:
+      - organizationalUnit
+    server_uri: "{{ ldap_uri }}"
+    bind_dn: "{{ ldap_admin_dn }}"
+    bind_pw: "{{ ldap_password }}"
+    state: present
+
+- name: Create Groups OU
+  community.general.ldap_entry:
+    dn: "ou=Groups,{{ ldap_base_dn }}"
+    objectClass:
+      - organizationalUnit
+    server_uri: "{{ ldap_uri }}"
+    bind_dn: "{{ ldap_admin_dn }}"
+    bind_pw: "{{ ldap_password }}"
+    state: present
+
+- name: Create Groups
+  community.general.ldap_entry:
+    dn: "cn={{ item.name }},ou=Groups,{{ ldap_base_dn }}"
+    objectClass:
+      - posixGroup
+    attributes:
+      cn: "{{ item.name }}"
+      gidNumber: "{{ item.gidNumber | int }}"
+    server_uri: "{{ ldap_uri }}"
+    bind_dn: "{{ ldap_admin_dn }}"
+    bind_pw: "{{ ldap_password }}"
+    state: present
+  loop: "{{ ldapGroups }}"
+
+- name: Verify prompted password hashes differ
+  ansible.builtin.assert:
+    that:
+      - elaverick_password != tlaverick_password
+    fail_msg: "ERROR: The two password hashes are identical!"
+    success_msg: "Password hashes are different."
+  no_log: true
+
+- name: Create Users
+  community.general.ldap_entry:
+    dn: "uid={{ item.uid }},ou=People,{{ ldap_base_dn }}"
+    objectClass:
+      - inetOrgPerson
+      - posixAccount
+      - shadowAccount
+    attributes:
+      uid: "{{ item.uid }}"
+      sn: "{{ item.surname }}"
+      givenName: "{{ item.firstname }}"
+      cn: "{{ item.firstname }} {{ item.surname }}"
+      uidNumber: "{{ (uidNumber | int) + index }}"
+      gidNumber: "{{ item.gidNumber | int }}"
+      userPassword: "{CRYPT}{{ lookup('vars', item.uid + '_password') }}"
+      pwdReset: "TRUE"
+      gecos: "{{ item.firstname }} {{ item.surname }}"
+      loginShell: "/bin/bash"
+      homeDirectory: "/home/{{ item.uid }}"
+    server_uri: "{{ ldap_uri }}"
+    bind_dn: "{{ ldap_admin_dn }}"
+    bind_pw: "{{ ldap_password }}"
+    state: present
+  loop: "{{ ldapUsers }}"
+  loop_control:
+    index_var: index
+  no_log: true
