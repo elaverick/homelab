@@ -12,3 +12,4 @@ base_host_packages:
   - unattended-upgrades
   - ldap-utils
   - acl
+  - python3-ldap

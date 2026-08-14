@@ -1,0 +1,13 @@
+---
+
+- name: Ensure Intermediate CA data volume exists
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_volume:
+    name: "{{ intermediate_ca_data_volume }}"
+    state: present
+  register: intermediate_ca_volume_info
+
+- name: Record Intermediate CA volume mount point
+  ansible.builtin.set_fact:
+    intermediate_ca_volume_mountpoint: "{{ intermediate_ca_volume_info.volume.Mountpoint }}"

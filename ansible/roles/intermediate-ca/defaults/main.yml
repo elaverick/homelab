@@ -1,0 +1,46 @@
+---
+
+# Container
+intermediate_ca_container_name: "intermediate-ca"
+intermediate_ca_image: "docker.io/smallstep/step-ca:0.30.2"
+
+# Podman persistent storage
+intermediate_ca_data_volume: "intermediate_ca_data"
+
+# step-ca
+intermediate_ca_address: ":9000"
+intermediate_ca_dns_name: "ca.{{ domain }}.{{ tld }}"
+
+# CA filesystem inside the Podman volume
+intermediate_ca_home: "/home/step"
+intermediate_ca_config_dir: "{{ intermediate_ca_home }}/config"
+intermediate_ca_certs_dir: "{{ intermediate_ca_home }}/certs"
+intermediate_ca_secrets_dir: "{{ intermediate_ca_home }}/secrets"
+intermediate_ca_db_path: "{{ intermediate_ca_home }}/db"
+
+# Database
+intermediate_ca_db_type: "badgerV2"
+intermediate_ca_db_file_loading_mode: "FileIO"
+
+# Certificates supplied by the offline Root CA
+intermediate_ca_source_certs_path: "{{ playbook_dir }}/../certs"
+
+intermediate_ca_root_certificate: "rootCA.crt"
+intermediate_ca_certificate: "intermediateCA.crt"
+intermediate_ca_private_key: "intermediateCA.key"
+
+# step-ca container user
+#
+# The official image runs as UID/GID 1000 ("step").
+intermediate_ca_uid: 1000
+intermediate_ca_gid: 1000
+
+# Host networking
+intermediate_ca_host_port: 9000
+intermediate_ca_container_port: 9000
+
+# Podman secret
+intermediate_ca_password_secret: "intermediate_ca_password"
+
+# Quadlet
+intermediate_ca_quadlet_filename: "intermediate-ca.container"

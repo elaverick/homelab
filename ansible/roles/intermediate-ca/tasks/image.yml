@@ -1,0 +1,8 @@
+---
+
+- name: Pull step-ca image
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_image:
+    name: "{{ intermediate_ca_image }}"
+    pull: true

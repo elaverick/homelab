@@ -1,0 +1,25 @@
+---
+
+- name: Pull step-ca image
+  ansible.builtin.import_tasks:
+    file: image.yml
+
+- name: Configure persistent storage
+  ansible.builtin.import_tasks:
+    file: storage.yml
+
+- name: Install CA certificates and private key
+  ansible.builtin.import_tasks:
+    file: certificates.yml
+
+- name: Configure CA secret
+  ansible.builtin.import_tasks:
+    file: secrets.yml
+
+- name: Configure step-ca
+  ansible.builtin.import_tasks:
+    file: configuration.yml
+
+- name: Configure step-ca service
+  ansible.builtin.import_tasks:
+    file: service.yml

@@ -1,0 +1,19 @@
+---
+ldap_image: "ghcr.io/elaverick/homelab/ldap:1.3.0"
+
+ldap_container_name: "ldap-server"
+
+ldap_domain: "laverick.local"
+ldap_organisation: "Laverick Home Lab"
+
+ldap_ports:
+  - "1389:389"
+  - "1636:636"
+
+ldap_secret_name: "ldap_admin_password"
+
+ldap_data_volume: "ldap_data"
+ldap_config_volume: "ldap_config"
+
+ldap_quadlet_dir: "{{ ansible_env.HOME }}/.config/containers/systemd"
+ldap_quadlet_filename: "ldap-server.container"

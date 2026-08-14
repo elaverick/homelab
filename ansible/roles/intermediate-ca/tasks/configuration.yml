@@ -1,0 +1,12 @@
+---
+
+- name: Install step-ca configuration
+  become: true
+  become_user: "{{ podman_user }}"
+  become_method: containers.podman.podman_unshare
+  ansible.builtin.template:
+    src: "ca.json.j2"
+    dest: "{{ intermediate_ca_volume_mountpoint }}/config/ca.json"
+    owner: "{{ intermediate_ca_uid }}"
+    group: "{{ intermediate_ca_gid }}"
+    mode: "0644"

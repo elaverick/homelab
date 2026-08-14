@@ -1,0 +1,22 @@
+{
+  "root": "{{ intermediate_ca_certs_dir }}/root_ca.crt",
+  "crt": "{{ intermediate_ca_certs_dir }}/intermediate_ca.crt",
+  "key": "{{ intermediate_ca_secrets_dir }}/intermediate_ca_key",
+  "address": "{{ intermediate_ca_address }}",
+  "dnsNames": [
+    "{{ intermediate_ca_dns_name }}"
+  ],
+  "db": {
+    "type": "{{ intermediate_ca_db_type }}",
+    "dataSource": "{{ intermediate_ca_db_path }}",
+    "badgerFileLoadingMode": "{{ intermediate_ca_db_file_loading_mode }}"
+  },
+  "authority": {
+    "provisioners": [
+      {
+        "type": "ACME",
+        "name": "ACME"
+      }
+    ]
+  }
+}

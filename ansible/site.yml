@@ -7,3 +7,5 @@
   roles:
     - base_host
     - ldap
+    - ldap-config
+    - intermediate-ca

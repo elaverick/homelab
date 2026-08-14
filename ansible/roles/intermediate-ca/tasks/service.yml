@@ -1,0 +1,42 @@
+---
+
+- name: Create Intermediate CA Quadlet
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container:
+    name: "{{ intermediate_ca_container_name }}"
+    image: "{{ intermediate_ca_image }}"
+    state: quadlet
+    quadlet_filename: "{{ intermediate_ca_quadlet_filename }}"
+    quadlet_file_mode: "0640"
+
+    publish:
+      - "{{ intermediate_ca_host_port }}:{{ intermediate_ca_container_port }}"
+
+    volumes:
+      - "{{ intermediate_ca_data_volume }}:{{ intermediate_ca_home }}"
+
+    secrets:
+      - "intermediate_ca_password,type=mount,target={{ intermediate_ca_secrets_dir }}/password"
+
+    quadlet_options:
+      - "AutoUpdate=registry"
+      - |
+        [Install]
+        WantedBy=default.target
+
+- name: Reload user systemd manager
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    scope: user
+
+- name: Enable and start Intermediate CA container
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.systemd_service:
+    name: "{{ intermediate_ca_container_name }}.service"
+    enabled: true
+    state: started
+    scope: user
