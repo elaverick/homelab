@@ -81,12 +81,11 @@ if [ -f "${PPOLICY_MARKER}" ]; then
 
 else
 
-    echo "Configuring ppolicy..."
+    echo "Checking for existing ppolicy overlay..."
 
     #
-    # Start a temporary slapd instance.
-    #
-    # cn=config is administered using SASL/EXTERNAL over LDAPI.
+    # Start a temporary slapd instance so that cn=config can be
+    # inspected and, if necessary, modified using SASL/EXTERNAL.
     #
 
     echo "Starting temporary slapd for ppolicy configuration..."
@@ -164,116 +163,150 @@ else
     echo "slapd is ready."
 
     #
-    # Load the ppolicy module.
+    # Migration check:
+    #
+    # Versions before the persistent marker was introduced may already
+    # have a fully configured ppolicy overlay. If so, we don't need to
+    # bootstrap ppolicy again.
     #
 
-    echo "Checking ppolicy module..."
+    echo "Checking for existing ppolicy overlay..."
 
     if ldapsearch -Q -Y EXTERNAL -H ldapi:/// \
-        -b "cn=config" \
+        -b "olcDatabase={1}mdb,cn=config" \
         -LLL \
-        "(olcModuleLoad=*ppolicy*)" \
+        "(olcOverlay=ppolicy)" \
         dn 2>/dev/null | grep -q '^dn:'; then
 
-        echo "ppolicy module already loaded."
+        echo "Existing ppolicy overlay found."
+        echo "Marking ppolicy configuration as complete."
+
+        touch "${PPOLICY_MARKER}"
+
+        trap - EXIT
+
+        if kill -0 "${TEMP_SLAPD_PID}" 2>/dev/null; then
+            echo "Stopping temporary slapd..."
+            kill "${TEMP_SLAPD_PID}" 2>/dev/null || true
+            wait "${TEMP_SLAPD_PID}" 2>/dev/null || true
+        fi
 
     else
 
-        echo "Loading ppolicy module..."
+        echo "No existing ppolicy overlay found."
+        echo "Performing ppolicy bootstrap..."
 
-        ldapmodify -Q -Y EXTERNAL -H ldapi:/// <<'EOF'
+        #
+        # Load the ppolicy module.
+        #
+
+        echo "Checking ppolicy module..."
+
+        if ldapsearch -Q -Y EXTERNAL -H ldapi:/// \
+            -b "cn=config" \
+            -LLL \
+            "(olcModuleLoad=*ppolicy*)" \
+            dn 2>/dev/null | grep -q '^dn:'; then
+
+            echo "ppolicy module already loaded."
+
+        else
+
+            echo "Loading ppolicy module..."
+
+            ldapmodify -Q -Y EXTERNAL -H ldapi:/// <<'EOF'
 dn: cn=module{0},cn=config
 changetype: modify
 add: olcModuleLoad
 olcModuleLoad: ppolicy
 EOF
 
-    fi
+        fi
 
-    #
-    # Load the ppolicy schema.
-    #
+        #
+        # Load the ppolicy schema.
+        #
 
-    echo "Checking ppolicy schema..."
+        echo "Checking ppolicy schema..."
 
-    if ldapsearch -Q -Y EXTERNAL -H ldapi:/// \
-        -b "cn=schema,cn=config" \
-        -LLL \
-        -s one \
-        "(cn=ppolicy)" \
-        dn 2>/dev/null | grep -q '^dn:'; then
+        if ldapsearch -Q -Y EXTERNAL -H ldapi:/// \
+            -b "cn=schema,cn=config" \
+            -LLL \
+            -s one \
+            "(cn=ppolicy)" \
+            dn 2>/dev/null | grep -q '^dn:'; then
 
-        echo "ppolicy schema already loaded."
+            echo "ppolicy schema already loaded."
 
-    else
+        else
 
-        echo "Loading ppolicy schema..."
+            echo "Loading ppolicy schema..."
 
-        ldapadd -Q -Y EXTERNAL -H ldapi:/// \
-            -f /etc/ldap/schema/ppolicy.ldif
+            ldapadd -Q -Y EXTERNAL -H ldapi:/// \
+                -f /etc/ldap/schema/ppolicy.ldif
 
-    fi
+        fi
 
-    #
-    # Create the Policies OU in the normal LDAP database.
-    #
-    # This cannot be done with SASL/EXTERNAL because that authentication
-    # controls cn=config, not the directory database.
-    #
+        #
+        # Create the Policies OU in the normal LDAP database.
+        #
+        # This cannot be done with SASL/EXTERNAL because that
+        # authentication controls cn=config, not the directory database.
+        #
 
-    echo "Checking Policies OU..."
+        echo "Checking Policies OU..."
 
-    if ldapsearch -x \
-        -H ldap://localhost:389 \
-        -D "${LDAP_ADMIN_DN}" \
-        -w "${LDAP_ADMIN_PASSWORD}" \
-        -b "${LDAP_BASE_DN}" \
-        -LLL \
-        "(&(objectClass=organizationalUnit)(ou=Policies))" \
-        dn 2>/dev/null | grep -q '^dn: ou=Policies,'; then
-
-        echo "Policies OU already exists."
-
-    else
-
-        echo "Creating Policies OU..."
-
-        ldapadd -x \
+        if ldapsearch -x \
             -H ldap://localhost:389 \
             -D "${LDAP_ADMIN_DN}" \
-            -w "${LDAP_ADMIN_PASSWORD}" <<EOF
+            -w "${LDAP_ADMIN_PASSWORD}" \
+            -b "${LDAP_BASE_DN}" \
+            -LLL \
+            "(&(objectClass=organizationalUnit)(ou=Policies))" \
+            dn 2>/dev/null | grep -q '^dn: ou=Policies,'; then
+
+            echo "Policies OU already exists."
+
+        else
+
+            echo "Creating Policies OU..."
+
+            ldapadd -x \
+                -H ldap://localhost:389 \
+                -D "${LDAP_ADMIN_DN}" \
+                -w "${LDAP_ADMIN_PASSWORD}" <<EOF
 dn: ${LDAP_POLICY_OU_DN}
 objectClass: organizationalUnit
 ou: Policies
 EOF
 
-    fi
+        fi
 
-    #
-    # Create the default password policy.
-    #
+        #
+        # Create the default password policy.
+        #
 
-    echo "Checking default password policy..."
+        echo "Checking default password policy..."
 
-    if ldapsearch -x \
-        -H ldap://localhost:389 \
-        -D "${LDAP_ADMIN_DN}" \
-        -w "${LDAP_ADMIN_PASSWORD}" \
-        -b "${LDAP_POLICY_OU_DN}" \
-        -LLL \
-        "(cn=default)" \
-        dn 2>/dev/null | grep -q "^dn: ${LDAP_POLICY_DN}$"; then
-
-        echo "Default password policy already exists."
-
-    else
-
-        echo "Creating default password policy..."
-
-        ldapadd -x \
+        if ldapsearch -x \
             -H ldap://localhost:389 \
             -D "${LDAP_ADMIN_DN}" \
-            -w "${LDAP_ADMIN_PASSWORD}" <<EOF
+            -w "${LDAP_ADMIN_PASSWORD}" \
+            -b "${LDAP_POLICY_OU_DN}" \
+            -LLL \
+            "(cn=default)" \
+            dn 2>/dev/null | grep -q "^dn: ${LDAP_POLICY_DN}$"; then
+
+            echo "Default password policy already exists."
+
+        else
+
+            echo "Creating default password policy..."
+
+            ldapadd -x \
+                -H ldap://localhost:389 \
+                -D "${LDAP_ADMIN_DN}" \
+                -w "${LDAP_ADMIN_PASSWORD}" <<EOF
 dn: ${LDAP_POLICY_DN}
 objectClass: top
 objectClass: device
@@ -289,27 +322,27 @@ pwdLockoutDuration: 900
 pwdFailureCountInterval: 0
 EOF
 
-    fi
+        fi
 
-    #
-    # Attach the ppolicy overlay to the MDB database.
-    #
+        #
+        # Attach the ppolicy overlay to the MDB database.
+        #
 
-    echo "Checking ppolicy overlay..."
+        echo "Checking ppolicy overlay..."
 
-    if ldapsearch -Q -Y EXTERNAL -H ldapi:/// \
-        -b "olcDatabase={1}mdb,cn=config" \
-        -LLL \
-        "(olcOverlay=ppolicy)" \
-        dn 2>/dev/null | grep -q '^dn:'; then
+        if ldapsearch -Q -Y EXTERNAL -H ldapi:/// \
+            -b "olcDatabase={1}mdb,cn=config" \
+            -LLL \
+            "(olcOverlay=ppolicy)" \
+            dn 2>/dev/null | grep -q '^dn:'; then
 
-        echo "ppolicy overlay already configured."
+            echo "ppolicy overlay already configured."
 
-    else
+        else
 
-        echo "Creating ppolicy overlay..."
+            echo "Creating ppolicy overlay..."
 
-        ldapadd -Q -Y EXTERNAL -H ldapi:/// <<EOF
+            ldapadd -Q -Y EXTERNAL -H ldapi:/// <<EOF
 dn: olcOverlay=ppolicy,olcDatabase={1}mdb,cn=config
 objectClass: olcOverlayConfig
 objectClass: olcPPolicyConfig
@@ -318,30 +351,32 @@ olcPPolicyDefault: ${LDAP_POLICY_DN}
 olcPPolicyHashCleartext: TRUE
 EOF
 
-        echo "ppolicy overlay created."
+            echo "ppolicy overlay created."
 
-    fi
+        fi
 
-    #
-    # Everything required for ppolicy has completed successfully.
-    # Create the persistent marker so this bootstrap is not repeated
-    # on subsequent container starts.
-    #
+        #
+        # Everything required for ppolicy has completed successfully.
+        # Create the persistent marker so this bootstrap is not repeated
+        # on subsequent container starts.
+        #
 
-    touch "${PPOLICY_MARKER}"
+        touch "${PPOLICY_MARKER}"
 
-    echo "ppolicy configuration complete."
+        echo "ppolicy configuration complete."
 
-    #
-    # Stop temporary slapd.
-    #
+        #
+        # Stop temporary slapd.
+        #
 
-    trap - EXIT
+        trap - EXIT
 
-    if kill -0 "${TEMP_SLAPD_PID}" 2>/dev/null; then
-        echo "Stopping temporary slapd..."
-        kill "${TEMP_SLAPD_PID}" 2>/dev/null || true
-        wait "${TEMP_SLAPD_PID}" 2>/dev/null || true
+        if kill -0 "${TEMP_SLAPD_PID}" 2>/dev/null; then
+            echo "Stopping temporary slapd..."
+            kill "${TEMP_SLAPD_PID}" 2>/dev/null || true
+            wait "${TEMP_SLAPD_PID}" 2>/dev/null || true
+        fi
+
     fi
 
 fi
