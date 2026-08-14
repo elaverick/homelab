@@ -9,7 +9,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/containers/ldap
+  IMAGE_NAME: ${{ github.repository }}/ldap
 
 jobs:
   build:
@@ -51,8 +51,8 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v7
         with:
-          context: ./ldap
-          file: ./ldap/Containerfile
+           context: ./containers/ldap
+          file: ./containers/ldap/Containerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
