@@ -51,7 +51,7 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v7
         with:
-           context: ./containers/ldap
+          context: ./containers/ldap
           file: ./containers/ldap/Containerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
