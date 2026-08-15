@@ -1,0 +1,75 @@
+---
+
+- name: Pull Pi-hole container image
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_image:
+    name: "{{ pihole_image }}"
+    state: present
+
+- name: Create Pi-hole data volume
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_volume:
+    name: "{{ pihole_data_volume }}"
+    state: present
+
+- name: Create Pi-hole Quadlet
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container:
+    name: "{{ pihole_container_name }}"
+    image: "{{ pihole_image }}"
+    state: quadlet
+    quadlet_filename: "{{ pihole_quadlet_filename }}"
+    quadlet_file_mode: "0640"
+    publish:
+      - "{{ pihole_host_dns_port }}:53/tcp"
+      - "{{ pihole_host_dns_port }}:53/udp"
+      - "{{ pihole_host_web_port }}:80/tcp"
+    env:
+      TZ: "{{ pihole_timezone }}"
+      FTLCONF_webserver_api_password: "{{ pihole_webserver_api_password }}"
+      FTLCONF_dns_listeningMode: "{{ pihole_dns_listening_mode }}"
+      FTLCONF_dns_hosts: "{{ pihole_dns_hosts | join('\n') }}"
+    volumes:
+      - "{{ pihole_data_volume }}:/etc/pihole"
+    quadlet_options:
+      - "AutoUpdate=registry"
+      - |
+        [Install]
+        WantedBy=default.target
+  register: pihole_quadlet
+
+- name: Reload user systemd manager
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    scope: user
+
+- name: Remove existing Pi-hole container when configuration changes
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container:
+    name: "{{ pihole_container_name }}"
+    state: absent
+  when: pihole_quadlet.changed
+
+- name: Enable and start Pi-hole container
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.systemd_service:
+    name: "{{ pihole_container_name }}.service"
+    enabled: true
+    state: started
+    scope: user
+
+- name: Configure host DNS to use Pi-hole
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/dhcpcd.conf
+    regexp: '^static domain_name_servers='
+    line: 'static domain_name_servers=127.0.0.1'
+    insertafter: EOF
+  notify: Restart dhcpcd

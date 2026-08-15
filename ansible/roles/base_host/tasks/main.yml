@@ -9,6 +9,35 @@
       Detected {{ ansible_facts.distribution }}
       {{ ansible_facts.distribution_version }}.
 
+- name: Create APT keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install Smallstep repository signing key
+  ansible.builtin.get_url:
+    url: https://packages.smallstep.com/keys/apt/repo-signing-key.gpg
+    dest: /etc/apt/keyrings/smallstep.asc
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Configure Smallstep APT repository
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/smallstep.sources
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      Types: deb
+      URIs: https://packages.smallstep.com/stable/debian
+      Suites: debs
+      Components: main
+      Signed-By: /etc/apt/keyrings/smallstep.asc
+
 - name: Install required host packages
   ansible.builtin.apt:
     name: "{{ base_host_packages }}"
@@ -116,20 +145,15 @@
     to_port: "{{ ssh_port }}"
     proto: tcp
 
-- name: Allow LDAP from trusted IPv4 network
-  community.general.ufw:
-    rule: allow
-    from_ip: "{{ homelab_ipv4_network }}"
-    to_port: "{{ ldap_port }}"
-    proto: tcp
-
-- name: Allow LDAPS from trusted IPv4 network
-  community.general.ufw:
-    rule: allow
-    from_ip: "{{ homelab_ipv4_network }}"
-    to_port: "{{ ldaps_port }}"
-    proto: tcp
-
 - name: Enable UFW
   community.general.ufw:
     state: enabled
+
+- name: Install Homelab Root CA
+  ansible.builtin.copy:
+    src: "{{ source_certs_path }}/{{ root_certificate }}"
+    dest: "/usr/local/share/ca-certificates/{{ root_certificate }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Update CA certificates

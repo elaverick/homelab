@@ -28,7 +28,7 @@
   become_user: "{{ podman_user }}"
   become_method: containers.podman.podman_unshare
   ansible.builtin.copy:
-    src: "{{ intermediate_ca_source_certs_path }}/{{ intermediate_ca_root_certificate }}"
+    src: "{{ source_certs_path }}/{{ root_certificate }}"
     dest: "{{ intermediate_ca_volume_mountpoint }}/certs/root_ca.crt"
     owner: "{{ intermediate_ca_uid }}"
     group: "{{ intermediate_ca_gid }}"
@@ -39,7 +39,7 @@
   become_user: "{{ podman_user }}"
   become_method: containers.podman.podman_unshare
   ansible.builtin.copy:
-    src: "{{ intermediate_ca_source_certs_path }}/{{ intermediate_ca_certificate }}"
+    src: "{{ source_certs_path }}/{{ intermediate_ca_certificate }}"
     dest: "{{ intermediate_ca_volume_mountpoint }}/certs/intermediate_ca.crt"
     owner: "{{ intermediate_ca_uid }}"
     group: "{{ intermediate_ca_gid }}"
@@ -50,7 +50,7 @@
   become_user: "{{ podman_user }}"
   become_method: containers.podman.podman_unshare
   ansible.builtin.copy:
-    src: "{{ intermediate_ca_source_certs_path }}/{{ intermediate_ca_private_key }}"
+    src: "{{ source_certs_path }}/{{ intermediate_ca_private_key }}"
     dest: "{{ intermediate_ca_volume_mountpoint }}/secrets/intermediate_ca_key"
     owner: "{{ intermediate_ca_uid }}"
     group: "{{ intermediate_ca_gid }}"

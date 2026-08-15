@@ -13,3 +13,7 @@ base_host_packages:
   - ldap-utils
   - acl
   - python3-ldap
+  - curl
+  - gpg
+  - ca-certificates
+  - step-cli

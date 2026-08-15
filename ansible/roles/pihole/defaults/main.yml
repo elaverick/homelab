@@ -1,0 +1,18 @@
+---
+
+pihole_image: "docker.io/pihole/pihole:2026.07.2"
+pihole_container_name: "pihole"
+pihole_quadlet_filename: "{{pihole_container_name}}.container"
+
+pihole_web_password_secret_name: "{{ pihole_container_name }}-web-password"
+
+pihole_data_volume: "{{ pihole_container_name }}-data"
+
+pihole_host_web_port: 8080
+pihole_host_dns_port: 1053
+
+pihole_timezone: "Europe/London"
+pihole_dns_listening_mode: "ALL"
+
+pihole_dns_hosts:
+  - "{{ ansible_default_ipv4.address }} pihole.{{ domain }}.{{ tld }}"

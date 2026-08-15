@@ -25,14 +25,18 @@ admin_authorized_key: >-
 
 # Domain configuration
 domain: "laverick"
-tld: "local"
+tld: "home.arpa"
+
+# Certificates supplied by the offline Root CA
+source_certs_path: "{{ playbook_dir }}/../certs"
+
+root_certificate: "rootCA.crt"
+intermediate_ca_certificate: "intermediateCA.crt"
+intermediate_ca_private_key: "intermediateCA.key"
 
 # LDAP Container configuration
-ldap_image: "ghcr.io/elaverick/homelab/ldap:1.3.2"
-ldap_container_name: "ldap-server"
-ldap_quadlet_filename: "ldap-server.container"
 
-ldap_secret_name: "ldap_admin_password"
+ldap_container_name: "ldap-server"
 
 ldap_ports:
   - "{{ ldap_port }}:389"
@@ -41,16 +45,9 @@ ldap_ports:
 ldap_domain: "{{ domain }}.{{ tld }}"
 ldap_organisation: "Laverick Home Lab"
 
-
-# Persistent Podman volumes
-
-ldap_data_volume: "ldap-data"
-ldap_config_volume: "ldap-config"
-
 # LDAP connection
 
 ldap_host: "mimir."
-ldap_port: 1389
 
 ldap_uri: "ldap://{{ ldap_host }}:{{ ldap_port }}"
 

@@ -1,0 +1,20 @@
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    include {{ nginx_http_config_path }}/*.conf;
+}
+
+stream {
+    include {{ nginx_stream_config_path }}/*.conf;
+}

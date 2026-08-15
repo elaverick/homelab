@@ -6,6 +6,8 @@
 
   roles:
     - base_host
+    - nginx
+    - intermediate-ca
     - ldap
     - ldap-config
-    - intermediate-ca
+    - pihole

@@ -22,13 +22,6 @@ intermediate_ca_db_path: "{{ intermediate_ca_home }}/db"
 intermediate_ca_db_type: "badgerV2"
 intermediate_ca_db_file_loading_mode: "FileIO"
 
-# Certificates supplied by the offline Root CA
-intermediate_ca_source_certs_path: "{{ playbook_dir }}/../certs"
-
-intermediate_ca_root_certificate: "rootCA.crt"
-intermediate_ca_certificate: "intermediateCA.crt"
-intermediate_ca_private_key: "intermediateCA.key"
-
 # step-ca container user
 #
 # The official image runs as UID/GID 1000 ("step").
@@ -38,9 +31,6 @@ intermediate_ca_gid: 1000
 # Host networking
 intermediate_ca_host_port: 9000
 intermediate_ca_container_port: 9000
-
-# Podman secret
-intermediate_ca_password_secret: "intermediate_ca_password"
 
 # Quadlet
 intermediate_ca_quadlet_filename: "intermediate-ca.container"

@@ -1,0 +1,57 @@
+---
+# NGINX packages
+nginx_packages:
+  - nginx
+  - libnginx-mod-stream
+
+# NGINX configuration
+nginx_config_path: /etc/nginx/nginx.conf
+
+# NGINX stream configuration
+nginx_stream_config_path: /etc/nginx/stream.conf.d
+
+# NGINX HTTP configuration
+nginx_http_config_path: /etc/nginx/conf.d
+
+# HTTP proxy definitions
+nginx_http_proxies:
+  - name: pihole
+    server_name: pihole.{{ domain }}.{{ tld }}
+    listen_port: 80
+    backend_scheme: http
+    backend_host: 127.0.0.1
+    backend_port: 8080
+
+# TCP proxy definitions
+nginx_tcp_proxies:
+  - name: ldap
+    listen_port: 389
+    backend_host: 127.0.0.1
+    backend_port: 1389
+
+  - name: ldaps
+    listen_port: 636
+    backend_host: 127.0.0.1
+    backend_port: 1636
+
+  - name: pihole-dns-tcp
+    listen_port: 53
+    backend_host: 127.0.0.1
+    backend_port: 1053
+
+# UDP proxy definitions
+nginx_udp_proxies:
+  - name: pihole-dns
+    listen_port: 53
+    backend_host: 127.0.0.1
+    backend_port: 1053
+
+# Ports exposed by NGINX through the host firewall
+nginx_firewall_tcp_ports:
+  - 53
+  - 80
+  - 389
+  - 636
+
+nginx_firewall_udp_ports:
+  - 53

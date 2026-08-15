@@ -1,0 +1,72 @@
+---
+- name: Install NGINX packages
+  ansible.builtin.apt:
+    name: "{{ nginx_packages }}"
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Create NGINX stream configuration directory
+  ansible.builtin.file:
+    path: "{{ nginx_stream_config_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create NGINX HTTP configuration directory
+  ansible.builtin.file:
+    path: "{{ nginx_http_config_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Configure NGINX
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: "{{ nginx_config_path }}"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload NGINX
+
+- name: Configure NGINX TCP proxies
+  ansible.builtin.template:
+    src: stream.conf.j2
+    dest: "{{ nginx_stream_config_path }}/proxies.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload NGINX
+
+- name: Configure NGINX HTTP proxies
+  ansible.builtin.template:
+    src: http.conf.j2
+    dest: "{{ nginx_http_config_path }}/proxies.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload NGINX
+
+- name: Allow NGINX TCP proxy ports through UFW
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ homelab_ipv4_network }}"
+    to_port: "{{ item }}"
+    proto: tcp
+  loop: "{{ nginx_firewall_tcp_ports }}"
+
+- name: Allow NGINX UDP proxy ports through UFW
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ homelab_ipv4_network }}"
+    to_port: "{{ item }}"
+    proto: udp
+  loop: "{{ nginx_firewall_udp_ports }}"
+
+- name: Enable and start NGINX
+  ansible.builtin.systemd_service:
+    name: nginx
+    enabled: true
+    state: started

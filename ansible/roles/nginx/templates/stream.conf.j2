@@ -1,0 +1,13 @@
+{% for proxy in nginx_tcp_proxies %}
+server {
+    listen {{ proxy.listen_port }};
+    proxy_pass {{ proxy.backend_host }}:{{ proxy.backend_port }};
+}
+{% endfor %}
+
+{% for proxy in nginx_udp_proxies %}
+server {
+    listen {{ proxy.listen_port }} udp;
+    proxy_pass {{ proxy.backend_host }}:{{ proxy.backend_port }};
+}
+{% endfor %}

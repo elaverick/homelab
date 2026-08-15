@@ -12,6 +12,16 @@
     "badgerFileLoadingMode": "{{ intermediate_ca_db_file_loading_mode }}"
   },
   "authority": {
+    "policy": {
+      "x509": {
+        "allow": {
+          "dns": [
+            "*.{{ domain }}.{{ tld }}"
+          ]
+        },
+        "allowWildcardNames": false
+      }
+    },
     "provisioners": [
       {
         "type": "ACME",
