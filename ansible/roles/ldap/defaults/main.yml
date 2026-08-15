@@ -1,5 +1,5 @@
 ---
-ldap_image: "ghcr.io/elaverick/homelab/ldap:1.3.5"
+ldap_image: "ghcr.io/elaverick/homelab/ldap:1.3.6"
 
 ldap_secret_name: "ldap_admin_password"
 
