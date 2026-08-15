@@ -203,10 +203,10 @@ else
         echo "Checking ppolicy module..."
 
         if ldapsearch -Q -Y EXTERNAL -H ldapi:/// \
-            -b "cn=config" \
+            -b "cn=module{0},cn=config" \
             -LLL \
-            "(olcModuleLoad=*ppolicy*)" \
-            dn 2>/dev/null | grep -q '^dn:'; then
+            olcModuleLoad 2>/dev/null |
+            grep -q '^olcModuleLoad: ppolicy$'; then
 
             echo "ppolicy module already loaded."
 
@@ -220,6 +220,8 @@ changetype: modify
 add: olcModuleLoad
 olcModuleLoad: ppolicy
 EOF
+
+        fi
 
         fi
 
