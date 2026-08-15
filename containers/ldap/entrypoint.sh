@@ -223,8 +223,6 @@ EOF
 
         fi
 
-        fi
-
         #
         # Load the ppolicy schema.
         #

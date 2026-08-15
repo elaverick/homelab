@@ -41,7 +41,7 @@
       community.crypto.openssl_csr:
         path: "{{ rootCAPath }}/rootCA.csr"
         privatekey_path: "{{ rootCAPath }}/rootCA.key"
-        common_name: "{{ domain + '.' + tld }}"
+        common_name: "{{ domain + '.' + domain_suffix }}"
         country_name: "{{ country }}"
         organization_name: "{{ domain }}"
         organizational_unit_name: "Security"

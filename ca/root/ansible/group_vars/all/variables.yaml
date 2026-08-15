@@ -22,4 +22,4 @@ certsPath: "../../../certs"
 
 # Domain configuration
 domain: "laverick"
-tld: "home.arpa"
+domain_suffix: "home.arpa"

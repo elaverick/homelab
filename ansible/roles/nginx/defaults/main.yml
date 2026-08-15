@@ -16,7 +16,7 @@ nginx_http_config_path: /etc/nginx/conf.d
 # HTTP proxy definitions
 nginx_http_proxies:
   - name: pihole
-    server_name: pihole.{{ domain }}.{{ tld }}
+    server_name: pihole.{{ domain_fqdn }}
     listen_port: 80
     backend_scheme: http
     backend_host: 127.0.0.1

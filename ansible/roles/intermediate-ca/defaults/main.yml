@@ -9,7 +9,7 @@ intermediate_ca_data_volume: "intermediate_ca_data"
 
 # step-ca
 intermediate_ca_address: ":9000"
-intermediate_ca_dns_name: "ca.{{ domain }}.{{ tld }}"
+intermediate_ca_dns_name: "ca.{{ domain_fqdn }}"
 
 # CA filesystem inside the Podman volume
 intermediate_ca_home: "/home/step"

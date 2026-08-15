@@ -15,4 +15,4 @@ pihole_timezone: "Europe/London"
 pihole_dns_listening_mode: "ALL"
 
 pihole_dns_hosts:
-  - "{{ ansible_default_ipv4.address }} pihole.{{ domain }}.{{ tld }}"
+  - "{{ ansible_default_ipv4.address }} pihole.{{ domain_fqdn }}"
