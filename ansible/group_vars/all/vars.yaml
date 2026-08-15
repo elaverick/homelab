@@ -4,8 +4,10 @@ homelab_ipv4_network: "192.168.50.0/24"
 
 # Host services
 ssh_port: 22
-ldap_port: 1389
-ldaps_port: 1636
+external_ldap_port: 389
+external_ldaps_port: 636
+internal_ldap_port: 1389
+internal_ldaps_port: 1636
 
 # Podman service account
 podman_user: app-runner
@@ -39,17 +41,17 @@ intermediate_ca_private_key: "intermediateCA.key"
 ldap_container_name: "ldap-server"
 
 ldap_ports:
-  - "{{ ldap_port }}:389"
-  - "{{ ldaps_port }}:636"
+  - "127.0.0.1:{{ internal_ldap_port }}:{{ external_ldap_port }}"
+  - "127.0.0.1:{{ internal_ldaps_port }}:{{ external_ldaps_port }}"
 
 ldap_domain: "{{ domain }}.{{ tld }}"
 ldap_organisation: "Laverick Home Lab"
 
 # LDAP connection
 
-ldap_host: "mimir."
+ldap_host: "127.0.0.1"
 
-ldap_uri: "ldap://{{ ldap_host }}:{{ ldap_port }}"
+ldap_uri: "ldap://{{ ldap_host }}:{{ external_ldap_port }}"
 
 # LDAP directory
 

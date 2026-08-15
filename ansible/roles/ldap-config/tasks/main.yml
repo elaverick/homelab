@@ -2,8 +2,8 @@
 - name: Check LDAP server is reachable
   ansible.builtin.wait_for:
     host: "{{ ldap_host }}"
-    port: "{{ ldap_port }}"
-    timeout: 10
+    port: "{{ external_ldap_port }}"
+    timeout: 30
 
 - name: Create People OU
   community.general.ldap_entry:

@@ -25,14 +25,14 @@ nginx_http_proxies:
 # TCP proxy definitions
 nginx_tcp_proxies:
   - name: ldap
-    listen_port: 389
+    listen_port: "{{ external_ldap_port }}"
     backend_host: 127.0.0.1
-    backend_port: 1389
+    backend_port: "{{ internal_ldap_port }}"
 
   - name: ldaps
-    listen_port: 636
+    listen_port: "{{ external_ldaps_port }}"
     backend_host: 127.0.0.1
-    backend_port: 1636
+    backend_port: "{{ internal_ldaps_port }}"
 
   - name: pihole-dns-tcp
     listen_port: 53
@@ -50,8 +50,8 @@ nginx_udp_proxies:
 nginx_firewall_tcp_ports:
   - 53
   - 80
-  - 389
-  - 636
+  - "{{ external_ldap_port }}"
+  - "{{ external_ldaps_port }}"
 
 nginx_firewall_udp_ports:
   - 53
