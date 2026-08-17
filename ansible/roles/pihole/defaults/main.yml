@@ -14,5 +14,6 @@ pihole_host_dns_port: 1053
 pihole_timezone: "Europe/London"
 pihole_dns_listening_mode: "ALL"
 
-pihole_dns_hosts:
-  - "{{ ansible_default_ipv4.address }} pihole.{{ domain_fqdn }}"
+pihole_dns_cname_records:
+  - "pihole.{{ domain_fqdn }},{{ ansible_fqdn }}"
+  - "ca.{{ domain_fqdn }},{{ ansible_fqdn }}"

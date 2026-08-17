@@ -1,0 +1,9 @@
+[Unit]
+Description=Wait for Homelab primary network IPv4 connectivity
+After=networking.service
+Wants=networking.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'until ip -4 addr show dev {{ ansible_default_ipv4.interface }} scope global | grep -q "inet " && ip -4 route show default dev {{ ansible_default_ipv4.interface }} | grep -q "^default"; do sleep 1; done'
+RemainAfterExit=yes

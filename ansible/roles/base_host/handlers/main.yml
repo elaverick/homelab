@@ -25,6 +25,11 @@
   listen: Restart fail2ban
 
 - name: Update CA certificates
+  become: true
   ansible.builtin.command:
     cmd: update-ca-certificates
   changed_when: true
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true

@@ -29,6 +29,9 @@ admin_authorized_key: >-
 domain: "laverick"
 domain_suffix: "home.arpa"
 
+# Certificate Server Host Port
+intermediate_ca_host_port: 9000
+
 # Certificates supplied by the offline Root CA
 source_certs_path: "{{ playbook_dir }}/../certs"
 

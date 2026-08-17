@@ -49,6 +49,15 @@
     mode: "0644"
   notify: Reload NGINX
 
+- name: Configure NGINX HTTPS proxies
+  ansible.builtin.template:
+    src: https.conf.j2
+    dest: "{{ nginx_stream_config_path }}/https.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload NGINX
+
 - name: Allow NGINX TCP proxy ports through UFW
   community.general.ufw:
     rule: allow

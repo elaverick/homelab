@@ -31,7 +31,7 @@
       TZ: "{{ pihole_timezone }}"
       FTLCONF_webserver_api_password: "{{ pihole_webserver_api_password }}"
       FTLCONF_dns_listeningMode: "{{ pihole_dns_listening_mode }}"
-      FTLCONF_dns_hosts: "{{ pihole_dns_hosts | join('\n') }}"
+      FTLCONF_dns_cnameRecords: "{{ pihole_dns_cname_records | join(';') }}"
     volumes:
       - "{{ pihole_data_volume }}:/etc/pihole"
     quadlet_options:
@@ -41,19 +41,12 @@
         WantedBy=default.target
   register: pihole_quadlet
 
-- name: Reload user systemd manager
+- name: Reload app-runner user systemd manager
   become: true
   become_user: "{{ podman_user }}"
   ansible.builtin.systemd_service:
     daemon_reload: true
     scope: user
-
-- name: Remove existing Pi-hole container when configuration changes
-  become: true
-  become_user: "{{ podman_user }}"
-  containers.podman.podman_container:
-    name: "{{ pihole_container_name }}"
-    state: absent
   when: pihole_quadlet.changed
 
 - name: Enable and start Pi-hole container
@@ -62,7 +55,7 @@
   ansible.builtin.systemd_service:
     name: "{{ pihole_container_name }}.service"
     enabled: true
-    state: started
+    state: "{{ 'restarted' if pihole_quadlet.changed else 'started' }}"
     scope: user
 
 - name: Configure host DNS to use Pi-hole

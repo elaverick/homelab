@@ -1,0 +1,17 @@
+server {
+    listen 443;
+    proxy_pass $https_backend;
+    ssl_preread on;
+}
+
+map $ssl_preread_server_name $https_backend {
+{% for proxy in nginx_https_proxies %}
+    {{ proxy.server_name }} {{ proxy.name }};
+{% endfor %}
+}
+
+{% for proxy in nginx_https_proxies %}
+upstream {{ proxy.name }} {
+    server {{ proxy.backend_host }}:{{ proxy.backend_port }};
+}
+{% endfor %}

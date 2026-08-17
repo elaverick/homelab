@@ -9,16 +9,12 @@
     state: quadlet
     quadlet_filename: "{{ intermediate_ca_quadlet_filename }}"
     quadlet_file_mode: "0640"
-
     publish:
       - "{{ intermediate_ca_host_port }}:{{ intermediate_ca_container_port }}"
-
     volumes:
       - "{{ intermediate_ca_data_volume }}:{{ intermediate_ca_home }}"
-
     secrets:
       - "intermediate_ca_password,type=mount,target={{ intermediate_ca_secrets_dir }}/password"
-
     quadlet_options:
       - "AutoUpdate=registry"
       - |

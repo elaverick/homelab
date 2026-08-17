@@ -22,6 +22,18 @@ nginx_http_proxies:
     backend_host: 127.0.0.1
     backend_port: 8080
 
+# HTTPS/TLS passthrough proxies
+nginx_https_proxies:
+  - name: ca
+    server_name: "ca.{{ domain_fqdn }}"
+    backend_host: 127.0.0.1
+    backend_port: "{{ intermediate_ca_host_port }}"
+
+  - name: pihole
+    server_name: "pihole.{{ domain_fqdn }}"
+    backend_host: 127.0.0.1
+    backend_port: 8443
+
 # TCP proxy definitions
 nginx_tcp_proxies:
   - name: ldap
@@ -50,6 +62,7 @@ nginx_udp_proxies:
 nginx_firewall_tcp_ports:
   - 53
   - 80
+  - 443
   - "{{ external_ldap_port }}"
   - "{{ external_ldaps_port }}"
 

@@ -78,6 +78,32 @@
     cmd: "loginctl enable-linger {{ podman_user }}"
   changed_when: false
 
+- name: Create network-online target drop-in directory
+  ansible.builtin.file:
+    path: /etc/systemd/system/network-online.target.d
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install Homelab network readiness service
+  ansible.builtin.template:
+    src: homelab-network-online.service.j2
+    dest: /etc/systemd/system/homelab-network-online.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd
+
+- name: Configure network-online target dependency
+  ansible.builtin.template:
+    src: network-online.target.d/homelab.conf
+    dest: /etc/systemd/system/network-online.target.d/homelab.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd
+
 - name: Configure kernel hardening
   ansible.builtin.template:
     src: 99-server-hardening.conf.j2
