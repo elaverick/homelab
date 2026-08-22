@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-08-22T16:33:51Z"
+generated_at: "2026-08-22T17:06:47Z"
 
 host:
   operating_system:
