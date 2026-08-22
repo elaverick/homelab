@@ -10,6 +10,12 @@ server {
     listen {{ proxy.listen_port }};
     server_name {{ proxy.server_name }};
 
+{% if proxy.acme_webroot is defined %}
+    location /.well-known/acme-challenge/ {
+        root {{ proxy.acme_webroot }};
+    }
+
+{% endif %}
     location / {
         proxy_pass {{ proxy.backend_scheme }}://{{ proxy.backend_host }}:{{ proxy.backend_port }};
         proxy_set_header Host $host;

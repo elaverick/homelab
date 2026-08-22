@@ -7,6 +7,9 @@ intermediate_ca_image: "docker.io/smallstep/step-ca:0.30.2"
 # Podman persistent storage
 intermediate_ca_data_volume: "intermediate_ca_data"
 
+# ACME HTTP-01 challenge webroot
+intermediate_ca_acme_webroot: "/var/lib/homelab/acme"
+
 # step-ca
 intermediate_ca_address: ":9000"
 intermediate_ca_dns_name: "ca.{{ domain_fqdn }}"
@@ -29,8 +32,12 @@ intermediate_ca_uid: 1000
 intermediate_ca_gid: 1000
 
 # Host networking
-intermediate_ca_host_port: 9000
 intermediate_ca_container_port: 9000
 
 # Quadlet
 intermediate_ca_quadlet_filename: "intermediate-ca.container"
+
+# Certificate Validity
+intermediate_ca_acme_min_tls_cert_duration: "5m"
+intermediate_ca_acme_max_tls_cert_duration: "720h"
+intermediate_ca_acme_default_tls_cert_duration: "720h"

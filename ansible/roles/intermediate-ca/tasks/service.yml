@@ -9,10 +9,21 @@
     state: quadlet
     quadlet_filename: "{{ intermediate_ca_quadlet_filename }}"
     quadlet_file_mode: "0640"
+    add_hosts: >-
+      {{
+        dict(
+          acme_hostnames
+          | zip(
+              acme_hostnames
+              | map('regex_replace', '^.*$', 'host-gateway')
+            )
+        )
+      }}
     publish:
       - "{{ intermediate_ca_host_port }}:{{ intermediate_ca_container_port }}"
     volumes:
       - "{{ intermediate_ca_data_volume }}:{{ intermediate_ca_home }}"
+      - "{{ intermediate_ca_acme_webroot }}:/home/step/acme"
     secrets:
       - "intermediate_ca_password,type=mount,target={{ intermediate_ca_secrets_dir }}/password"
     quadlet_options:
@@ -20,6 +31,7 @@
       - |
         [Install]
         WantedBy=default.target
+  register: intermediate_ca_quadlet
 
 - name: Reload user systemd manager
   become: true
@@ -27,6 +39,7 @@
   ansible.builtin.systemd_service:
     daemon_reload: true
     scope: user
+  when: intermediate_ca_quadlet.changed
 
 - name: Enable and start Intermediate CA container
   become: true
@@ -34,5 +47,5 @@
   ansible.builtin.systemd_service:
     name: "{{ intermediate_ca_container_name }}.service"
     enabled: true
-    state: started
+    state: "{{ 'restarted' if intermediate_ca_quadlet.changed else 'started' }}"
     scope: user

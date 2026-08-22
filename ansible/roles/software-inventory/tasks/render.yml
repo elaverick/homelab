@@ -1,0 +1,8 @@
+---
+- name: Render software inventory
+  ansible.builtin.template:
+    src: software-inventory.md.j2
+    dest: "{{ software_inventory_path }}"
+    mode: "0644"
+  delegate_to: localhost
+  become: false

@@ -1,0 +1,36 @@
+---
+- name: Initialise current container inventory
+  ansible.builtin.set_fact:
+    software_inventory_current_inspect_data: {}
+    software_inventory_current_image_data: {}
+    software_inventory_current_os_info:
+      id: "unknown"
+      id_like: ""
+      name: "Unknown"
+    software_inventory_current_package_manager: "unknown"
+    software_inventory_current_packages: []
+
+- name: Get Podman containers
+  become: true
+  become_user: app-runner
+  ansible.builtin.command:
+    cmd: podman ps -a --format json
+  register: software_inventory_containers_raw
+  changed_when: false
+
+- name: Build container list
+  ansible.builtin.set_fact:
+    software_inventory_container_list: >-
+      {{ software_inventory_containers_raw.stdout | from_json }}
+
+- name: Initialise normalized container inventory
+  ansible.builtin.set_fact:
+    software_inventory_containers: []
+
+- name: Process each container
+  ansible.builtin.include_tasks:
+    file: container.yml
+  loop: "{{ software_inventory_container_list }}"
+  loop_control:
+    loop_var: software_inventory_container
+    label: "{{ software_inventory_container.Names | first }}"

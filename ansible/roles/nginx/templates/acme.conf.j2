@@ -1,0 +1,14 @@
+{% for hostname in acme_hostnames %}
+server {
+    listen 80;
+    server_name {{ hostname }};
+
+    location /.well-known/acme-challenge/ {
+        root {{ nginx_acme_webroot }};
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+{% endfor %}

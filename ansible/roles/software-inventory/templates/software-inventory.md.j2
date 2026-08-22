@@ -1,0 +1,132 @@
+---
+schema_version: 1
+generated_at: "{{ ansible_date_time.iso8601 }}"
+
+host:
+  operating_system:
+    distribution: "{{ software_inventory_host.operating_system.distribution }}"
+    version: "{{ software_inventory_host.operating_system.version }}"
+    architecture: "{{ software_inventory_host.operating_system.architecture }}"
+  kernel:
+    name: "{{ software_inventory_host.kernel.name }}"
+    version: "{{ software_inventory_host.kernel.version }}"
+  software:
+    podman: "{{ software_inventory_host.software.podman }}"
+  packages:
+{% for package in software_inventory_host.packages %}
+    - name: "{{ package.name }}"
+      version: "{{ package.version }}"
+      architecture: "{{ package.architecture }}"
+      status: "{{ package.status }}"
+{% endfor %}
+
+containers:
+{% for container in software_inventory_containers %}
+  - name: "{{ container.name }}"
+    id: "{{ container.id }}"
+    status: "{{ container.status }}"
+
+    image:
+      name: "{{ container.image.name }}"
+      id: "{{ container.image.id }}"
+      digest: "{{ container.image.digest | default('') }}"
+      version: "{{ container.image.version | default('') }}"
+      revision: "{{ container.image.revision | default('') }}"
+
+    operating_system:
+      id: "{{ container.operating_system.id }}"
+      id_like: "{{ container.operating_system.id_like }}"
+      name: "{{ container.operating_system.name }}"
+
+    package_manager: "{{ container.package_manager }}"
+
+    packages:
+{% for package in container.packages %}
+      - name: "{{ package.name }}"
+        version: "{{ package.version }}"
+{% if package.architecture is defined %}
+        architecture: "{{ package.architecture }}"
+{% endif %}
+{% if package.status is defined %}
+        status: "{{ package.status }}"
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+---
+
+# Software Inventory
+
+> This file is generated automatically by Ansible.
+> Do not edit manually.
+
+## Host
+
+### Operating System
+
+| Property | Value |
+|---|---|
+| Distribution | {{ software_inventory_host.operating_system.distribution }} |
+| Version | {{ software_inventory_host.operating_system.version }} |
+| Architecture | {{ software_inventory_host.operating_system.architecture }} |
+| Kernel | {{ software_inventory_host.kernel.name }} {{ software_inventory_host.kernel.version }} |
+
+### Podman
+
+`{{ software_inventory_host.software.podman }}`
+
+### Installed Packages
+
+| Package | Version | Architecture | Status |
+|---|---|---|---|
+{% for package in software_inventory_host.packages %}
+| {{ package.name }} | {{ package.version }} | {{ package.architecture }} | {{ package.status }} |
+{% endfor %}
+
+## Containers
+
+{% for container in software_inventory_containers %}
+
+### {{ container.name }}
+
+**Status:** {{ container.status }}
+
+#### Image
+
+| Property | Value |
+|---|---|
+| Name | {{ container.image.name }} |
+| ID | {{ container.image.id }} |
+| Digest | {{ container.image.digest | default('Not available') }} |
+| Version | {{ container.image.version | default('Not available') }} |
+| Revision | {{ container.image.revision | default('Not available') }} |
+
+#### Operating System
+
+| Property | Value |
+|---|---|
+| ID | {{ container.operating_system.id }} |
+| ID Like | {{ container.operating_system.id_like | default('') }} |
+| Name | {{ container.operating_system.name }} |
+
+#### Package Manager
+
+`{{ container.package_manager }}`
+
+#### Installed Packages
+
+{% if container.packages | length > 0 %}
+
+| Package | Version | Architecture | Status |
+|---|---|---|---|
+{% for package in container.packages %}
+| {{ package.name }} | {{ package.version }} | {{ package.architecture | default('') }} | {{ package.status | default('') }} |
+{% endfor %}
+
+{% else %}
+
+No package inventory available.
+
+{% endif %}
+
+{% endfor %}

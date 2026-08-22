@@ -11,3 +11,4 @@
     - ldap
     - ldap-config
     - pihole
+    - software-inventory

@@ -1,0 +1,59 @@
+---
+
+- name: Gather host OS information
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all"
+      - distribution
+      - os_family
+      - kernel
+      - architecture
+
+- name: Gather installed Debian packages
+  ansible.builtin.shell:
+    cmd: |
+      dpkg-query \
+        -W \
+        -f='${Package}\t${Version}\t${Architecture}\t${Status}\n'
+  register: software_inventory_dpkg
+  changed_when: false
+  when: ansible_facts.os_family == "Debian"
+
+- name: Gather Podman version
+  ansible.builtin.command:
+    cmd: podman --version
+  register: software_inventory_podman
+  changed_when: false
+  failed_when: false
+
+- name: Build host package inventory
+  ansible.builtin.set_fact:
+    software_inventory_host_packages: >-
+      {%- set packages = [] -%}
+      {%- for line in software_inventory_dpkg.stdout_lines -%}
+        {%- set fields = line.split('\t') -%}
+        {%- set package = {
+          'name': fields[0],
+          'version': fields[1],
+          'architecture': fields[2],
+          'status': fields[3]
+        } -%}
+        {%- set _ = packages.append(package) -%}
+      {%- endfor -%}
+      {{ packages }}
+  when: ansible_facts.os_family == "Debian"
+
+- name: Build normalized host inventory
+  ansible.builtin.set_fact:
+    software_inventory_host:
+      operating_system:
+        distribution: "{{ ansible_facts.distribution }}"
+        version: "{{ ansible_facts.distribution_version }}"
+        architecture: "{{ ansible_facts.architecture }}"
+      kernel:
+        name: "{{ ansible_facts.kernel }}"
+        version: "{{ ansible_facts.kernel_version }}"
+      software:
+        podman: >-
+          {{ software_inventory_podman.stdout | default('unknown') | trim }}
+      packages: "{{ software_inventory_host_packages | default([]) }}"

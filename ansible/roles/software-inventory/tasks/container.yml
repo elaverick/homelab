@@ -1,0 +1,346 @@
+---
+# ----------------------------------------------------------------------
+# Container metadata
+# ----------------------------------------------------------------------
+
+- name: Initialise current container inventory
+  ansible.builtin.set_fact:
+    software_inventory_current_inspect_data: {}
+    software_inventory_current_image_data: {}
+    software_inventory_current_os_info:
+      id: "unknown"
+      id_like: ""
+      name: "Unknown"
+    software_inventory_current_package_manager: "unknown"
+    software_inventory_current_packages: []
+
+- name: Inspect container
+  become: true
+  become_user: app-runner
+  ansible.builtin.command:
+    cmd: "podman inspect {{ software_inventory_container.Id }}"
+  register: software_inventory_current_inspect
+  changed_when: false
+
+- name: Parse container inspection data
+  ansible.builtin.set_fact:
+    software_inventory_current_inspect_data: >-
+      {{
+        software_inventory_current_inspect.stdout
+        | from_json
+        | first
+      }}
+
+- name: Inspect container image
+  become: true
+  become_user: app-runner
+  ansible.builtin.command:
+    cmd: >-
+      podman image inspect
+      {{ software_inventory_current_inspect_data.Image }}
+  register: software_inventory_current_image_inspect
+  changed_when: false
+  failed_when: false
+
+- name: Parse container image inspection data
+  ansible.builtin.set_fact:
+    software_inventory_current_image_data: >-
+      {{
+        software_inventory_current_image_inspect.stdout
+        | from_json
+        | first
+      }}
+  when:
+    - software_inventory_current_image_inspect.rc == 0
+
+# ----------------------------------------------------------------------
+# Operating system
+# ----------------------------------------------------------------------
+
+- name: Determine container operating system
+  become: true
+  become_user: app-runner
+  ansible.builtin.command:
+    cmd: >-
+      podman exec {{ software_inventory_container.Names | first }}
+      cat /etc/os-release
+  register: software_inventory_current_os
+  changed_when: false
+  failed_when: false
+  when:
+    - software_inventory_container.State == "running"
+
+- name: Parse container operating system information
+  ansible.builtin.set_fact:
+    software_inventory_current_os_info:
+      id: >-
+        {{
+          (
+            software_inventory_current_os.stdout_lines
+            | default([])
+            | select('match', '^ID=')
+            | first
+            | default('ID=unknown')
+          )
+          | regex_replace('^ID=', '')
+          | trim('"')
+        }}
+      id_like: >-
+        {{
+          (
+            software_inventory_current_os.stdout_lines
+            | default([])
+            | select('match', '^ID_LIKE=')
+            | first
+            | default('ID_LIKE=')
+          )
+          | regex_replace('^ID_LIKE=', '')
+          | trim('"')
+        }}
+      name: >-
+        {{
+          (
+            software_inventory_current_os.stdout_lines
+            | default([])
+            | select('match', '^PRETTY_NAME=')
+            | first
+            | default('PRETTY_NAME=Unknown')
+          )
+          | regex_replace('^PRETTY_NAME=', '')
+          | trim('"')
+        }}
+  when:
+    - software_inventory_container.State == "running"
+    - software_inventory_current_os.rc == 0
+
+- name: Set default operating system information
+  ansible.builtin.set_fact:
+    software_inventory_current_os_info:
+      id: "unknown"
+      id_like: ""
+      name: "Unknown"
+  when:
+    - software_inventory_container.State != "running"
+      or software_inventory_current_os.rc | default(1) != 0
+
+# ----------------------------------------------------------------------
+# Package manager detection
+# ----------------------------------------------------------------------
+
+- name: Detect dpkg package manager
+  become: true
+  become_user: app-runner
+  ansible.builtin.command:
+    cmd: >-
+      podman exec {{ software_inventory_container.Names | first }}
+      sh -c 'command -v dpkg-query'
+  register: software_inventory_current_dpkg_check
+  changed_when: false
+  failed_when: false
+  when:
+    - software_inventory_container.State == "running"
+
+- name: Detect RPM package manager
+  become: true
+  become_user: app-runner
+  ansible.builtin.command:
+    cmd: >-
+      podman exec {{ software_inventory_container.Names | first }}
+      sh -c 'command -v rpm'
+  register: software_inventory_current_rpm_check
+  changed_when: false
+  failed_when: false
+  when:
+    - software_inventory_container.State == "running"
+
+- name: Detect APK package manager
+  become: true
+  become_user: app-runner
+  ansible.builtin.command:
+    cmd: >-
+      podman exec {{ software_inventory_container.Names | first }}
+      sh -c 'command -v apk'
+  register: software_inventory_current_apk_check
+  changed_when: false
+  failed_when: false
+  when:
+    - software_inventory_container.State == "running"
+
+- name: Determine package manager
+  ansible.builtin.set_fact:
+    software_inventory_current_package_manager: >-
+      {% if software_inventory_container.State != "running" %}
+      unknown
+      {% elif software_inventory_current_dpkg_check.rc | default(1) == 0 %}
+      dpkg
+      {% elif software_inventory_current_rpm_check.rc | default(1) == 0 %}
+      rpm
+      {% elif software_inventory_current_apk_check.rc | default(1) == 0 %}
+      apk
+      {% else %}
+      none
+      {% endif %}
+
+# ----------------------------------------------------------------------
+# Package inventory
+# ----------------------------------------------------------------------
+
+# ----------------------------------------------------------------------
+# Package inventory
+# ----------------------------------------------------------------------
+
+- name: Initialise package inventory
+  ansible.builtin.set_fact:
+    software_inventory_current_packages: []
+
+- name: Gather Debian packages
+  become: true
+  become_user: app-runner
+  ansible.builtin.command:
+    cmd: >-
+      podman exec {{ software_inventory_container.Names | first }}
+      dpkg-query -W
+      -f='${Package}\t${Version}\t${Architecture}\t${Status}\n'
+  register: software_inventory_current_dpkg
+  changed_when: false
+  failed_when: false
+  when:
+    - software_inventory_current_package_manager | trim == "dpkg"
+
+- name: Parse Debian packages
+  ansible.builtin.set_fact:
+    software_inventory_current_packages: >-
+      {%- set packages = [] -%}
+      {%- for line in software_inventory_current_dpkg.stdout_lines | default([]) -%}
+        {%- set fields = line.split('\t') -%}
+        {%- if fields | length >= 4 -%}
+          {%- set _ = packages.append({
+            'name': fields[0],
+            'version': fields[1],
+            'architecture': fields[2],
+            'status': fields[3]
+          }) -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {{ packages }}
+  when:
+    - software_inventory_current_package_manager | trim == "dpkg"
+    - software_inventory_current_dpkg.rc | default(1) == 0
+
+- name: Gather RPM packages
+  become: true
+  become_user: app-runner
+  ansible.builtin.command:
+    cmd: >-
+      podman exec {{ software_inventory_container.Names | first }}
+      rpm -qa
+      --qf='%{NAME}\t%{VERSION}-%{RELEASE}\t%{ARCH}\n'
+  register: software_inventory_current_rpm
+  changed_when: false
+  failed_when: false
+  when:
+    - software_inventory_current_package_manager | trim == "rpm"
+
+- name: Parse RPM packages
+  ansible.builtin.set_fact:
+    software_inventory_current_packages: >-
+      {%- set packages = [] -%}
+      {%- for line in software_inventory_current_rpm.stdout_lines | default([]) -%}
+        {%- set fields = line.split('\t') -%}
+        {%- if fields | length >= 3 -%}
+          {%- set _ = packages.append({
+            'name': fields[0],
+            'version': fields[1],
+            'architecture': fields[2]
+          }) -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {{ packages }}
+  when:
+    - software_inventory_current_package_manager | trim == "rpm"
+    - software_inventory_current_rpm.rc | default(1) == 0
+
+- name: Gather Alpine packages
+  become: true
+  become_user: app-runner
+  ansible.builtin.command:
+    cmd: >-
+      podman exec {{ software_inventory_container.Names | first }}
+      apk info -v
+  register: software_inventory_current_apk
+  changed_when: false
+  failed_when: false
+  when:
+    - software_inventory_current_package_manager | trim == "apk"
+
+- name: Parse Alpine packages
+  ansible.builtin.set_fact:
+    software_inventory_current_packages: >-
+      {%- set packages = [] -%}
+      {%- for line in software_inventory_current_apk.stdout_lines | default([]) -%}
+        {%- set fields = line.rsplit('-', 1) -%}
+        {%- if fields | length == 2 -%}
+          {%- set _ = packages.append({
+            'name': fields[0],
+            'version': fields[1]
+          }) -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {{ packages }}
+  when:
+    - software_inventory_current_package_manager | trim == "apk"
+    - software_inventory_current_apk.rc | default(1) == 0
+
+# ----------------------------------------------------------------------
+# Normalized container record
+# ----------------------------------------------------------------------
+
+- name: Add container to normalized inventory
+  ansible.builtin.set_fact:
+    software_inventory_containers: >-
+      {{
+        software_inventory_containers + [
+          {
+            'name': software_inventory_container.Names | first,
+            'id': software_inventory_container.Id,
+            'status': software_inventory_container.State,
+            'image': {
+                'name': (
+                  software_inventory_current_image_data.RepoTags
+                  | default([])
+                  | first
+                  | default(
+                      software_inventory_current_inspect_data.Config.Image
+                      | default('unknown')
+                    )
+                ),
+                'id': software_inventory_current_image_data.Id
+                  | default('unknown'),
+                'digest': (
+                  software_inventory_current_image_data.RepoDigests
+                  | default([])
+                  | first
+                  | default(None)
+                ),
+                'version': (
+                  software_inventory_current_image_data.Config.Labels[
+                    'org.opencontainers.image.version'
+                  ]
+                  | default(None)
+                ),
+                'revision': (
+                  software_inventory_current_image_data.Config.Labels[
+                    'org.opencontainers.image.revision'
+                  ]
+                  | default(None)
+                )
+              },
+            'operating_system':
+              software_inventory_current_os_info,
+            'package_manager':
+              software_inventory_current_package_manager | trim,
+            'packages':
+              software_inventory_current_packages
+          }
+        ]
+      }}

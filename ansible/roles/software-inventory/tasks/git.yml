@@ -1,0 +1,65 @@
+---
+- name: Check software inventory file exists
+  ansible.builtin.stat:
+    path: "{{ software_inventory_path }}"
+  register: software_inventory_git_file
+  delegate_to: localhost
+  become: false
+
+- name: Fail if software inventory file does not exist
+  ansible.builtin.fail:
+    msg: >-
+      Cannot commit software inventory because
+      {{ software_inventory_path }} does not exist.
+  when: not software_inventory_git_file.stat.exists
+  delegate_to: localhost
+  become: false
+
+- name: Check software inventory Git status
+  ansible.builtin.command:
+    cmd: git status --porcelain -- software-inventory.md
+  args:
+    chdir: "{{ playbook_dir }}/.."
+  register: software_inventory_git_status
+  changed_when: false
+  delegate_to: localhost
+  become: false
+
+- name: Stage software inventory
+  ansible.builtin.command:
+    cmd: git add -- software-inventory.md
+  args:
+    chdir: "{{ playbook_dir }}/.."
+  changed_when: true
+  delegate_to: localhost
+  become: false
+  when: software_inventory_git_status.stdout | length > 0
+
+- name: Commit software inventory
+  ansible.builtin.command:
+    cmd: >-
+      git commit
+      --only
+      --message "Update software inventory"
+      --
+      software-inventory.md
+  args:
+    chdir: "{{ playbook_dir }}/.."
+  register: software_inventory_git_commit
+  changed_when: software_inventory_git_commit.rc == 0
+  delegate_to: localhost
+  become: false
+  when: software_inventory_git_status.stdout | length > 0
+
+- name: Push software inventory commit
+  ansible.builtin.command:
+    cmd: git push
+  args:
+    chdir: "{{ playbook_dir }}/.."
+  register: software_inventory_git_push
+  changed_when: true
+  delegate_to: localhost
+  become: false
+  when:
+    - software_inventory_git_commit is defined
+    - software_inventory_git_commit.rc == 0

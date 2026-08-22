@@ -1,0 +1,4 @@
+---
+
+software_inventory_repo_path: "{{ playbook_dir }}/.."
+software_inventory_path: "{{ software_inventory_repo_path }}/software-inventory.md"

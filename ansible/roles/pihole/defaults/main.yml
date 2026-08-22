@@ -9,10 +9,24 @@ pihole_web_password_secret_name: "{{ pihole_container_name }}-web-password"
 pihole_data_volume: "{{ pihole_container_name }}-data"
 
 pihole_host_web_port: 8080
+pihole_host_https_port: 8443
 pihole_host_dns_port: 1053
 
 pihole_timezone: "Europe/London"
 pihole_dns_listening_mode: "ALL"
+
+pihole_web_domain: "pihole.{{ domain_fqdn }}"
+
+# Cert path in container
+pihole_tls_cert: "/etc/pihole/tls.pem"
+
+pihole_tls_staging_dir: "/var/lib/homelab/pihole"
+pihole_tls_cert_host_path: "{{ pihole_tls_staging_dir }}/tls.pem"
+
+pihole_acme_webroot: "{{ nginx_acme_webroot }}"
+pihole_ca_url: "https://ca.{{ domain_fqdn }}"
+pihole_ca_root: "/etc/ssl/certs/ca-certificates.crt"
+pihole_acme_provisioner: "ACME"
 
 pihole_dns_cname_records:
   - "pihole.{{ domain_fqdn }},{{ ansible_fqdn }}"

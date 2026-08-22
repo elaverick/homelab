@@ -13,14 +13,16 @@ nginx_stream_config_path: /etc/nginx/stream.conf.d
 # NGINX HTTP configuration
 nginx_http_config_path: /etc/nginx/conf.d
 
+# ACME HTTP-01 challenge webroot
+nginx_acme_webroot: "/var/lib/homelab/acme"
+nginx_acme_challenge_path: "{{ nginx_acme_webroot }}/.well-known/acme-challenge"
+
+nginx_acme_hostnames:
+  - "pihole.{{ domain_fqdn }}"
+  - "ca.{{ domain_fqdn }}"
+
 # HTTP proxy definitions
-nginx_http_proxies:
-  - name: pihole
-    server_name: pihole.{{ domain_fqdn }}
-    listen_port: 80
-    backend_scheme: http
-    backend_host: 127.0.0.1
-    backend_port: 8080
+nginx_http_proxies: []
 
 # HTTPS/TLS passthrough proxies
 nginx_https_proxies:

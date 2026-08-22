@@ -39,6 +39,7 @@ root_certificate: "rootCA.crt"
 intermediate_ca_certificate: "intermediateCA.crt"
 intermediate_ca_private_key: "intermediateCA.key"
 
+
 # LDAP Container configuration
 
 ldap_container_name: "ldap-server"
@@ -83,3 +84,9 @@ ldapUsers:
     firstname: Tom
     surname: Laverick
     gidNumber: 10000
+
+# ACME Hostnames
+
+acme_hostnames:
+  - "pihole.{{ domain_fqdn }}"
+  - "ca.{{ domain_fqdn }}"

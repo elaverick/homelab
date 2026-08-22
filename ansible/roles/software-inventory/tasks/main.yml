@@ -1,0 +1,16 @@
+---
+- name: Gather host software inventory
+  ansible.builtin.include_tasks:
+    file: host.yml
+
+- name: Gather container software inventory
+  ansible.builtin.include_tasks:
+    file: containers.yml
+
+- name: Render software inventory
+  ansible.builtin.include_tasks:
+    file: render.yml
+
+- name: Commit software inventory
+  ansible.builtin.include_tasks:
+    file: git.yml

@@ -14,6 +14,10 @@
     name: "{{ pihole_data_volume }}"
     state: present
 
+- name: Configure Pi-hole TLS certificate
+  ansible.builtin.import_tasks:
+    file: certificate.yml
+
 - name: Create Pi-hole Quadlet
   become: true
   become_user: "{{ podman_user }}"
@@ -26,12 +30,15 @@
     publish:
       - "{{ pihole_host_dns_port }}:53/tcp"
       - "{{ pihole_host_dns_port }}:53/udp"
-      - "{{ pihole_host_web_port }}:80/tcp"
+      - "{{ pihole_host_https_port }}:443/tcp"
     env:
       TZ: "{{ pihole_timezone }}"
       FTLCONF_webserver_api_password: "{{ pihole_webserver_api_password }}"
       FTLCONF_dns_listeningMode: "{{ pihole_dns_listening_mode }}"
       FTLCONF_dns_cnameRecords: "{{ pihole_dns_cname_records | join(';') }}"
+      FTLCONF_webserver_domain: "{{ pihole_web_domain }}"
+      FTLCONF_webserver_port: "443s"
+      FTLCONF_webserver_tls_cert: "{{ pihole_tls_cert }}"
     volumes:
       - "{{ pihole_data_volume }}:/etc/pihole"
     quadlet_options:

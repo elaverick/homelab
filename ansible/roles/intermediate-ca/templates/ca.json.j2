@@ -25,7 +25,12 @@
     "provisioners": [
       {
         "type": "ACME",
-        "name": "ACME"
+        "name": "ACME",
+        "claims": {
+          "minTLSCertDuration": "{{ intermediate_ca_acme_min_tls_cert_duration }}",
+          "maxTLSCertDuration": "{{ intermediate_ca_acme_max_tls_cert_duration }}",
+          "defaultTLSCertDuration": "{{ intermediate_ca_acme_default_tls_cert_duration }}"
+        }
       }
     ]
   }
