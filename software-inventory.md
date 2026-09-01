@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-09-01T19:49:20Z"
+generated_at: "2026-09-01T20:05:52Z"
 
 host:
   operating_system:
@@ -1679,211 +1679,6 @@ host:
       status: "install ok installed"
 
 containers:
-  - name: "pihole"
-    id: "4de3a1d472310b24155b2a2b7b010e485d00434f9a187d6f43d49a9d7a3db09f"
-    status: "running"
-
-    image:
-      name: "docker.io/pihole/pihole:2026.07.2"
-      id: "27b410ff85b3449158c1ed568b4078c6037463952ad9939b673b28ba13bd9aa7"
-      digest: "docker.io/pihole/pihole@sha256:7c96327ecfb96dbc74b0a47d073dbef7d60526e0aa87519b2a2f7a0007cb5c88"
-      version: "2026.07.2"
-      revision: "dd91b4847d97f0aac68bfefd1c108ed0627e6c68"
-
-    operating_system:
-      id: "alpine"
-      id_like: ""
-      name: "Alpine Linux v3.24"
-
-    package_manager: "apk"
-
-    packages:
-      - name: "acl-libs-2.3.2"
-        version: "r1"
-      - name: "alpine-baselayout-3.7.2"
-        version: "r1"
-      - name: "alpine-baselayout-data-3.7.2"
-        version: "r1"
-      - name: "alpine-keys-2.6"
-        version: "r0"
-      - name: "alpine-release-3.24.1"
-        version: "r0"
-      - name: "apk-tools-3.0.6"
-        version: "r0"
-      - name: "apk-tools-bash-completion-3.0.6"
-        version: "r0"
-      - name: "bash-5.3.9"
-        version: "r1"
-      - name: "bash-completion-2.17.0"
-        version: "r1"
-      - name: "bind-libs-9.20.24"
-        version: "r0"
-      - name: "bind-tools-9.20.24"
-        version: "r0"
-      - name: "binutils-2.45.1"
-        version: "r1"
-      - name: "brotli-libs-1.2.0"
-        version: "r1"
-      - name: "busybox-1.37.0"
-        version: "r31"
-      - name: "busybox-binsh-1.37.0"
-        version: "r31"
-      - name: "c-ares-1.34.6"
-        version: "r0"
-      - name: "ca-certificates-bundle-20260611"
-        version: "r0"
-      - name: "coreutils-9.11"
-        version: "r0"
-      - name: "coreutils-env-9.11"
-        version: "r0"
-      - name: "coreutils-fmt-9.11"
-        version: "r0"
-      - name: "coreutils-sha512sum-9.11"
-        version: "r0"
-      - name: "curl-8.21.0"
-        version: "r0"
-      - name: "fstrm-0.6.1"
-        version: "r4"
-      - name: "git-2.54.0"
-        version: "r0"
-      - name: "git-bash-completion-2.54.0"
-        version: "r0"
-      - name: "git-init-template-2.54.0"
-        version: "r0"
-      - name: "grep-3.12"
-        version: "r0"
-      - name: "iproute2-7.0.0"
-        version: "r0"
-      - name: "iproute2-bash-completion-7.0.0"
-        version: "r0"
-      - name: "iproute2-minimal-7.0.0"
-        version: "r0"
-      - name: "iproute2-ss-7.0.0"
-        version: "r0"
-      - name: "iproute2-tc-7.0.0"
-        version: "r0"
-      - name: "jansson-2.15.0"
-        version: "r0"
-      - name: "jq-1.8.1"
-        version: "r0"
-      - name: "json-c-0.18"
-        version: "r1"
-      - name: "keyutils-libs-1.6.3"
-        version: "r4"
-      - name: "krb5-conf-1.0"
-        version: "r2"
-      - name: "krb5-libs-1.22.2"
-        version: "r1"
-      - name: "libapk-3.0.6"
-        version: "r0"
-      - name: "libattr-2.5.2"
-        version: "r2"
-      - name: "libbsd-0.12.2"
-        version: "r0"
-      - name: "libcap-2.78"
-        version: "r0"
-      - name: "libcap-getcap-2.78"
-        version: "r0"
-      - name: "libcap-setcap-2.78"
-        version: "r0"
-      - name: "libcap-utils-2.78"
-        version: "r0"
-      - name: "libcap2-2.78"
-        version: "r0"
-      - name: "libcom_err-1.47.4"
-        version: "r0"
-      - name: "libcrypto3-3.5.7"
-        version: "r0"
-      - name: "libcurl-8.21.0"
-        version: "r0"
-      - name: "libelf-0.195"
-        version: "r0"
-      - name: "libexpat-2.8.2"
-        version: "r0"
-      - name: "libgcc-15.2.0"
-        version: "r5"
-      - name: "libidn2-2.3.8"
-        version: "r0"
-      - name: "libintl-1.0"
-        version: "r0"
-      - name: "libmd-1.2.0"
-        version: "r0"
-      - name: "libmnl-1.0.5"
-        version: "r2"
-      - name: "libncursesw-6.6_p20260516"
-        version: "r0"
-      - name: "libproc2-4.0.6"
-        version: "r0"
-      - name: "libpsl-0.21.5"
-        version: "r3"
-      - name: "libssl3-3.5.7"
-        version: "r0"
-      - name: "libstdc++-15.2.0"
-        version: "r5"
-      - name: "libunistring-1.4.2"
-        version: "r0"
-      - name: "libuv-1.52.1"
-        version: "r0"
-      - name: "libverto-0.3.2"
-        version: "r2"
-      - name: "libxml2-2.13.9"
-        version: "r2"
-      - name: "libxtables-1.8.13"
-        version: "r0"
-      - name: "linux-pam-1.7.1"
-        version: "r2"
-      - name: "logrotate-3.22.0"
-        version: "r0"
-      - name: "musl-1.2.6"
-        version: "r2"
-      - name: "musl-utils-1.2.6"
-        version: "r2"
-      - name: "ncurses-6.6_p20260516"
-        version: "r0"
-      - name: "ncurses-terminfo-base-6.6_p20260516"
-        version: "r0"
-      - name: "nghttp2-libs-1.69.0"
-        version: "r0"
-      - name: "oniguruma-6.9.10"
-        version: "r0"
-      - name: "pcre2-10.47"
-        version: "r1"
-      - name: "popt-1.19"
-        version: "r4"
-      - name: "procps-ng-4.0.6"
-        version: "r0"
-      - name: "protobuf-c-1.5.2"
-        version: "r2"
-      - name: "psmisc-23.7"
-        version: "r0"
-      - name: "readline-8.3.3"
-        version: "r1"
-      - name: "scanelf-1.3.9"
-        version: "r1"
-      - name: "shadow-4.18.0"
-        version: "r1"
-      - name: "skalibs-libs-2.15.0.0"
-        version: "r0"
-      - name: "ssl_client-1.37.0"
-        version: "r31"
-      - name: "sudo-1.9.17_p2"
-        version: "r1"
-      - name: "tzdata-2026b"
-        version: "r0"
-      - name: "unzip-6.0"
-        version: "r16"
-      - name: "userspace-rcu-0.15.3"
-        version: "r0"
-      - name: "utmps-libs-0.1.3.3"
-        version: "r0"
-      - name: "wget-1.25.0"
-        version: "r3"
-      - name: "xz-libs-5.8.3"
-        version: "r0"
-      - name: "zlib-1.3.2"
-        version: "r0"
-      - name: "zstd-libs-1.5.7"
-        version: "r2"
   - name: "intermediate-ca"
     id: "43f0e3781f68eb68cab5177416ff6fc59c6b4b481c0dfb2465bf95dee435fdd6"
     status: "running"
@@ -2544,6 +2339,211 @@ containers:
         version: "1:1.2.13.dfsg-1"
         architecture: "amd64"
         status: "install ok installed"
+  - name: "pihole"
+    id: "3299d9a8669c3b4afb4af841bc56a716deea749e6e262589e4e540def2231c01"
+    status: "running"
+
+    image:
+      name: "docker.io/pihole/pihole:2026.07.2"
+      id: "27b410ff85b3449158c1ed568b4078c6037463952ad9939b673b28ba13bd9aa7"
+      digest: "docker.io/pihole/pihole@sha256:7c96327ecfb96dbc74b0a47d073dbef7d60526e0aa87519b2a2f7a0007cb5c88"
+      version: "2026.07.2"
+      revision: "dd91b4847d97f0aac68bfefd1c108ed0627e6c68"
+
+    operating_system:
+      id: "alpine"
+      id_like: ""
+      name: "Alpine Linux v3.24"
+
+    package_manager: "apk"
+
+    packages:
+      - name: "acl-libs-2.3.2"
+        version: "r1"
+      - name: "alpine-baselayout-3.7.2"
+        version: "r1"
+      - name: "alpine-baselayout-data-3.7.2"
+        version: "r1"
+      - name: "alpine-keys-2.6"
+        version: "r0"
+      - name: "alpine-release-3.24.1"
+        version: "r0"
+      - name: "apk-tools-3.0.6"
+        version: "r0"
+      - name: "apk-tools-bash-completion-3.0.6"
+        version: "r0"
+      - name: "bash-5.3.9"
+        version: "r1"
+      - name: "bash-completion-2.17.0"
+        version: "r1"
+      - name: "bind-libs-9.20.24"
+        version: "r0"
+      - name: "bind-tools-9.20.24"
+        version: "r0"
+      - name: "binutils-2.45.1"
+        version: "r1"
+      - name: "brotli-libs-1.2.0"
+        version: "r1"
+      - name: "busybox-1.37.0"
+        version: "r31"
+      - name: "busybox-binsh-1.37.0"
+        version: "r31"
+      - name: "c-ares-1.34.6"
+        version: "r0"
+      - name: "ca-certificates-bundle-20260611"
+        version: "r0"
+      - name: "coreutils-9.11"
+        version: "r0"
+      - name: "coreutils-env-9.11"
+        version: "r0"
+      - name: "coreutils-fmt-9.11"
+        version: "r0"
+      - name: "coreutils-sha512sum-9.11"
+        version: "r0"
+      - name: "curl-8.21.0"
+        version: "r0"
+      - name: "fstrm-0.6.1"
+        version: "r4"
+      - name: "git-2.54.0"
+        version: "r0"
+      - name: "git-bash-completion-2.54.0"
+        version: "r0"
+      - name: "git-init-template-2.54.0"
+        version: "r0"
+      - name: "grep-3.12"
+        version: "r0"
+      - name: "iproute2-7.0.0"
+        version: "r0"
+      - name: "iproute2-bash-completion-7.0.0"
+        version: "r0"
+      - name: "iproute2-minimal-7.0.0"
+        version: "r0"
+      - name: "iproute2-ss-7.0.0"
+        version: "r0"
+      - name: "iproute2-tc-7.0.0"
+        version: "r0"
+      - name: "jansson-2.15.0"
+        version: "r0"
+      - name: "jq-1.8.1"
+        version: "r0"
+      - name: "json-c-0.18"
+        version: "r1"
+      - name: "keyutils-libs-1.6.3"
+        version: "r4"
+      - name: "krb5-conf-1.0"
+        version: "r2"
+      - name: "krb5-libs-1.22.2"
+        version: "r1"
+      - name: "libapk-3.0.6"
+        version: "r0"
+      - name: "libattr-2.5.2"
+        version: "r2"
+      - name: "libbsd-0.12.2"
+        version: "r0"
+      - name: "libcap-2.78"
+        version: "r0"
+      - name: "libcap-getcap-2.78"
+        version: "r0"
+      - name: "libcap-setcap-2.78"
+        version: "r0"
+      - name: "libcap-utils-2.78"
+        version: "r0"
+      - name: "libcap2-2.78"
+        version: "r0"
+      - name: "libcom_err-1.47.4"
+        version: "r0"
+      - name: "libcrypto3-3.5.7"
+        version: "r0"
+      - name: "libcurl-8.21.0"
+        version: "r0"
+      - name: "libelf-0.195"
+        version: "r0"
+      - name: "libexpat-2.8.2"
+        version: "r0"
+      - name: "libgcc-15.2.0"
+        version: "r5"
+      - name: "libidn2-2.3.8"
+        version: "r0"
+      - name: "libintl-1.0"
+        version: "r0"
+      - name: "libmd-1.2.0"
+        version: "r0"
+      - name: "libmnl-1.0.5"
+        version: "r2"
+      - name: "libncursesw-6.6_p20260516"
+        version: "r0"
+      - name: "libproc2-4.0.6"
+        version: "r0"
+      - name: "libpsl-0.21.5"
+        version: "r3"
+      - name: "libssl3-3.5.7"
+        version: "r0"
+      - name: "libstdc++-15.2.0"
+        version: "r5"
+      - name: "libunistring-1.4.2"
+        version: "r0"
+      - name: "libuv-1.52.1"
+        version: "r0"
+      - name: "libverto-0.3.2"
+        version: "r2"
+      - name: "libxml2-2.13.9"
+        version: "r2"
+      - name: "libxtables-1.8.13"
+        version: "r0"
+      - name: "linux-pam-1.7.1"
+        version: "r2"
+      - name: "logrotate-3.22.0"
+        version: "r0"
+      - name: "musl-1.2.6"
+        version: "r2"
+      - name: "musl-utils-1.2.6"
+        version: "r2"
+      - name: "ncurses-6.6_p20260516"
+        version: "r0"
+      - name: "ncurses-terminfo-base-6.6_p20260516"
+        version: "r0"
+      - name: "nghttp2-libs-1.69.0"
+        version: "r0"
+      - name: "oniguruma-6.9.10"
+        version: "r0"
+      - name: "pcre2-10.47"
+        version: "r1"
+      - name: "popt-1.19"
+        version: "r4"
+      - name: "procps-ng-4.0.6"
+        version: "r0"
+      - name: "protobuf-c-1.5.2"
+        version: "r2"
+      - name: "psmisc-23.7"
+        version: "r0"
+      - name: "readline-8.3.3"
+        version: "r1"
+      - name: "scanelf-1.3.9"
+        version: "r1"
+      - name: "shadow-4.18.0"
+        version: "r1"
+      - name: "skalibs-libs-2.15.0.0"
+        version: "r0"
+      - name: "ssl_client-1.37.0"
+        version: "r31"
+      - name: "sudo-1.9.17_p2"
+        version: "r1"
+      - name: "tzdata-2026b"
+        version: "r0"
+      - name: "unzip-6.0"
+        version: "r16"
+      - name: "userspace-rcu-0.15.3"
+        version: "r0"
+      - name: "utmps-libs-0.1.3.3"
+        version: "r0"
+      - name: "wget-1.25.0"
+        version: "r3"
+      - name: "xz-libs-5.8.3"
+        version: "r0"
+      - name: "zlib-1.3.2"
+        version: "r0"
+      - name: "zstd-libs-1.5.7"
+        version: "r2"
 
 ---
 
@@ -2991,133 +2991,6 @@ containers:
 ## Containers
 
 
-### pihole
-
-**Status:** running
-
-#### Image
-
-| Property | Value |
-|---|---|
-| Name | docker.io/pihole/pihole:2026.07.2 |
-| ID | 27b410ff85b3449158c1ed568b4078c6037463952ad9939b673b28ba13bd9aa7 |
-| Digest | docker.io/pihole/pihole@sha256:7c96327ecfb96dbc74b0a47d073dbef7d60526e0aa87519b2a2f7a0007cb5c88 |
-| Version | 2026.07.2 |
-| Revision | dd91b4847d97f0aac68bfefd1c108ed0627e6c68 |
-
-#### Operating System
-
-| Property | Value |
-|---|---|
-| ID | alpine |
-| ID Like |  |
-| Name | Alpine Linux v3.24 |
-
-#### Package Manager
-
-`apk`
-
-#### Installed Packages
-
-
-| Package | Version | Architecture | Status |
-|---|---|---|---|
-| acl-libs-2.3.2 | r1 |  |  |
-| alpine-baselayout-3.7.2 | r1 |  |  |
-| alpine-baselayout-data-3.7.2 | r1 |  |  |
-| alpine-keys-2.6 | r0 |  |  |
-| alpine-release-3.24.1 | r0 |  |  |
-| apk-tools-3.0.6 | r0 |  |  |
-| apk-tools-bash-completion-3.0.6 | r0 |  |  |
-| bash-5.3.9 | r1 |  |  |
-| bash-completion-2.17.0 | r1 |  |  |
-| bind-libs-9.20.24 | r0 |  |  |
-| bind-tools-9.20.24 | r0 |  |  |
-| binutils-2.45.1 | r1 |  |  |
-| brotli-libs-1.2.0 | r1 |  |  |
-| busybox-1.37.0 | r31 |  |  |
-| busybox-binsh-1.37.0 | r31 |  |  |
-| c-ares-1.34.6 | r0 |  |  |
-| ca-certificates-bundle-20260611 | r0 |  |  |
-| coreutils-9.11 | r0 |  |  |
-| coreutils-env-9.11 | r0 |  |  |
-| coreutils-fmt-9.11 | r0 |  |  |
-| coreutils-sha512sum-9.11 | r0 |  |  |
-| curl-8.21.0 | r0 |  |  |
-| fstrm-0.6.1 | r4 |  |  |
-| git-2.54.0 | r0 |  |  |
-| git-bash-completion-2.54.0 | r0 |  |  |
-| git-init-template-2.54.0 | r0 |  |  |
-| grep-3.12 | r0 |  |  |
-| iproute2-7.0.0 | r0 |  |  |
-| iproute2-bash-completion-7.0.0 | r0 |  |  |
-| iproute2-minimal-7.0.0 | r0 |  |  |
-| iproute2-ss-7.0.0 | r0 |  |  |
-| iproute2-tc-7.0.0 | r0 |  |  |
-| jansson-2.15.0 | r0 |  |  |
-| jq-1.8.1 | r0 |  |  |
-| json-c-0.18 | r1 |  |  |
-| keyutils-libs-1.6.3 | r4 |  |  |
-| krb5-conf-1.0 | r2 |  |  |
-| krb5-libs-1.22.2 | r1 |  |  |
-| libapk-3.0.6 | r0 |  |  |
-| libattr-2.5.2 | r2 |  |  |
-| libbsd-0.12.2 | r0 |  |  |
-| libcap-2.78 | r0 |  |  |
-| libcap-getcap-2.78 | r0 |  |  |
-| libcap-setcap-2.78 | r0 |  |  |
-| libcap-utils-2.78 | r0 |  |  |
-| libcap2-2.78 | r0 |  |  |
-| libcom_err-1.47.4 | r0 |  |  |
-| libcrypto3-3.5.7 | r0 |  |  |
-| libcurl-8.21.0 | r0 |  |  |
-| libelf-0.195 | r0 |  |  |
-| libexpat-2.8.2 | r0 |  |  |
-| libgcc-15.2.0 | r5 |  |  |
-| libidn2-2.3.8 | r0 |  |  |
-| libintl-1.0 | r0 |  |  |
-| libmd-1.2.0 | r0 |  |  |
-| libmnl-1.0.5 | r2 |  |  |
-| libncursesw-6.6_p20260516 | r0 |  |  |
-| libproc2-4.0.6 | r0 |  |  |
-| libpsl-0.21.5 | r3 |  |  |
-| libssl3-3.5.7 | r0 |  |  |
-| libstdc++-15.2.0 | r5 |  |  |
-| libunistring-1.4.2 | r0 |  |  |
-| libuv-1.52.1 | r0 |  |  |
-| libverto-0.3.2 | r2 |  |  |
-| libxml2-2.13.9 | r2 |  |  |
-| libxtables-1.8.13 | r0 |  |  |
-| linux-pam-1.7.1 | r2 |  |  |
-| logrotate-3.22.0 | r0 |  |  |
-| musl-1.2.6 | r2 |  |  |
-| musl-utils-1.2.6 | r2 |  |  |
-| ncurses-6.6_p20260516 | r0 |  |  |
-| ncurses-terminfo-base-6.6_p20260516 | r0 |  |  |
-| nghttp2-libs-1.69.0 | r0 |  |  |
-| oniguruma-6.9.10 | r0 |  |  |
-| pcre2-10.47 | r1 |  |  |
-| popt-1.19 | r4 |  |  |
-| procps-ng-4.0.6 | r0 |  |  |
-| protobuf-c-1.5.2 | r2 |  |  |
-| psmisc-23.7 | r0 |  |  |
-| readline-8.3.3 | r1 |  |  |
-| scanelf-1.3.9 | r1 |  |  |
-| shadow-4.18.0 | r1 |  |  |
-| skalibs-libs-2.15.0.0 | r0 |  |  |
-| ssl_client-1.37.0 | r31 |  |  |
-| sudo-1.9.17_p2 | r1 |  |  |
-| tzdata-2026b | r0 |  |  |
-| unzip-6.0 | r16 |  |  |
-| userspace-rcu-0.15.3 | r0 |  |  |
-| utmps-libs-0.1.3.3 | r0 |  |  |
-| wget-1.25.0 | r3 |  |  |
-| xz-libs-5.8.3 | r0 |  |  |
-| zlib-1.3.2 | r0 |  |  |
-| zstd-libs-1.5.7 | r2 |  |  |
-
-
-
 ### intermediate-ca
 
 **Status:** running
@@ -3355,5 +3228,132 @@ containers:
 | util-linux | 2.38.1-5+deb12u3 | amd64 | install ok installed |
 | util-linux-extra | 2.38.1-5+deb12u3 | amd64 | install ok installed |
 | zlib1g | 1:1.2.13.dfsg-1 | amd64 | install ok installed |
+
+
+
+### pihole
+
+**Status:** running
+
+#### Image
+
+| Property | Value |
+|---|---|
+| Name | docker.io/pihole/pihole:2026.07.2 |
+| ID | 27b410ff85b3449158c1ed568b4078c6037463952ad9939b673b28ba13bd9aa7 |
+| Digest | docker.io/pihole/pihole@sha256:7c96327ecfb96dbc74b0a47d073dbef7d60526e0aa87519b2a2f7a0007cb5c88 |
+| Version | 2026.07.2 |
+| Revision | dd91b4847d97f0aac68bfefd1c108ed0627e6c68 |
+
+#### Operating System
+
+| Property | Value |
+|---|---|
+| ID | alpine |
+| ID Like |  |
+| Name | Alpine Linux v3.24 |
+
+#### Package Manager
+
+`apk`
+
+#### Installed Packages
+
+
+| Package | Version | Architecture | Status |
+|---|---|---|---|
+| acl-libs-2.3.2 | r1 |  |  |
+| alpine-baselayout-3.7.2 | r1 |  |  |
+| alpine-baselayout-data-3.7.2 | r1 |  |  |
+| alpine-keys-2.6 | r0 |  |  |
+| alpine-release-3.24.1 | r0 |  |  |
+| apk-tools-3.0.6 | r0 |  |  |
+| apk-tools-bash-completion-3.0.6 | r0 |  |  |
+| bash-5.3.9 | r1 |  |  |
+| bash-completion-2.17.0 | r1 |  |  |
+| bind-libs-9.20.24 | r0 |  |  |
+| bind-tools-9.20.24 | r0 |  |  |
+| binutils-2.45.1 | r1 |  |  |
+| brotli-libs-1.2.0 | r1 |  |  |
+| busybox-1.37.0 | r31 |  |  |
+| busybox-binsh-1.37.0 | r31 |  |  |
+| c-ares-1.34.6 | r0 |  |  |
+| ca-certificates-bundle-20260611 | r0 |  |  |
+| coreutils-9.11 | r0 |  |  |
+| coreutils-env-9.11 | r0 |  |  |
+| coreutils-fmt-9.11 | r0 |  |  |
+| coreutils-sha512sum-9.11 | r0 |  |  |
+| curl-8.21.0 | r0 |  |  |
+| fstrm-0.6.1 | r4 |  |  |
+| git-2.54.0 | r0 |  |  |
+| git-bash-completion-2.54.0 | r0 |  |  |
+| git-init-template-2.54.0 | r0 |  |  |
+| grep-3.12 | r0 |  |  |
+| iproute2-7.0.0 | r0 |  |  |
+| iproute2-bash-completion-7.0.0 | r0 |  |  |
+| iproute2-minimal-7.0.0 | r0 |  |  |
+| iproute2-ss-7.0.0 | r0 |  |  |
+| iproute2-tc-7.0.0 | r0 |  |  |
+| jansson-2.15.0 | r0 |  |  |
+| jq-1.8.1 | r0 |  |  |
+| json-c-0.18 | r1 |  |  |
+| keyutils-libs-1.6.3 | r4 |  |  |
+| krb5-conf-1.0 | r2 |  |  |
+| krb5-libs-1.22.2 | r1 |  |  |
+| libapk-3.0.6 | r0 |  |  |
+| libattr-2.5.2 | r2 |  |  |
+| libbsd-0.12.2 | r0 |  |  |
+| libcap-2.78 | r0 |  |  |
+| libcap-getcap-2.78 | r0 |  |  |
+| libcap-setcap-2.78 | r0 |  |  |
+| libcap-utils-2.78 | r0 |  |  |
+| libcap2-2.78 | r0 |  |  |
+| libcom_err-1.47.4 | r0 |  |  |
+| libcrypto3-3.5.7 | r0 |  |  |
+| libcurl-8.21.0 | r0 |  |  |
+| libelf-0.195 | r0 |  |  |
+| libexpat-2.8.2 | r0 |  |  |
+| libgcc-15.2.0 | r5 |  |  |
+| libidn2-2.3.8 | r0 |  |  |
+| libintl-1.0 | r0 |  |  |
+| libmd-1.2.0 | r0 |  |  |
+| libmnl-1.0.5 | r2 |  |  |
+| libncursesw-6.6_p20260516 | r0 |  |  |
+| libproc2-4.0.6 | r0 |  |  |
+| libpsl-0.21.5 | r3 |  |  |
+| libssl3-3.5.7 | r0 |  |  |
+| libstdc++-15.2.0 | r5 |  |  |
+| libunistring-1.4.2 | r0 |  |  |
+| libuv-1.52.1 | r0 |  |  |
+| libverto-0.3.2 | r2 |  |  |
+| libxml2-2.13.9 | r2 |  |  |
+| libxtables-1.8.13 | r0 |  |  |
+| linux-pam-1.7.1 | r2 |  |  |
+| logrotate-3.22.0 | r0 |  |  |
+| musl-1.2.6 | r2 |  |  |
+| musl-utils-1.2.6 | r2 |  |  |
+| ncurses-6.6_p20260516 | r0 |  |  |
+| ncurses-terminfo-base-6.6_p20260516 | r0 |  |  |
+| nghttp2-libs-1.69.0 | r0 |  |  |
+| oniguruma-6.9.10 | r0 |  |  |
+| pcre2-10.47 | r1 |  |  |
+| popt-1.19 | r4 |  |  |
+| procps-ng-4.0.6 | r0 |  |  |
+| protobuf-c-1.5.2 | r2 |  |  |
+| psmisc-23.7 | r0 |  |  |
+| readline-8.3.3 | r1 |  |  |
+| scanelf-1.3.9 | r1 |  |  |
+| shadow-4.18.0 | r1 |  |  |
+| skalibs-libs-2.15.0.0 | r0 |  |  |
+| ssl_client-1.37.0 | r31 |  |  |
+| sudo-1.9.17_p2 | r1 |  |  |
+| tzdata-2026b | r0 |  |  |
+| unzip-6.0 | r16 |  |  |
+| userspace-rcu-0.15.3 | r0 |  |  |
+| utmps-libs-0.1.3.3 | r0 |  |  |
+| wget-1.25.0 | r3 |  |  |
+| xz-libs-5.8.3 | r0 |  |  |
+| zlib-1.3.2 | r0 |  |  |
+| zstd-libs-1.5.7 | r2 |  |  |
 
 
