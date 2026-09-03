@@ -48,8 +48,6 @@ ENV LDAP_ADMIN_PASSWORD_FILE="/run/secrets/ldap_admin_password"
 # ppolicy schema
 COPY schema/ppolicy.ldif /etc/ldap/schema/ppolicy.ldif
 
-COPY schema/managedDevice.ldif /etc/ldap/schema/managedDevice.ldif
-
 # Container startup script
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
