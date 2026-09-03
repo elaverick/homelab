@@ -1,56 +1,11 @@
 ---
 
-- name: Create Pi-hole certificate staging directory
-  become: true
-  become_user: "{{ podman_user }}"
-  ansible.builtin.file:
-    path: "{{ pihole_tls_cert_host_path | dirname }}"
-    state: directory
-    owner: "{{ podman_user }}"
-    group: "{{ podman_user }}"
-    mode: "0700"
-
-- name: Request Pi-hole certificate using ACME
-  become: true
-  become_user: "{{ podman_user }}"
-  ansible.builtin.command:
-    cmd: >-
-      step ca certificate
-      {{ pihole_web_domain }}
-      {{ pihole_tls_cert_host_path }}.crt
-      {{ pihole_tls_cert_host_path }}.key
-      --ca-url {{ pihole_ca_url }}
-      --root {{ pihole_ca_root }}
-      --provisioner {{ pihole_acme_provisioner }}
-      --webroot {{ pihole_acme_webroot }}
-      --force
-  register: pihole_acme_certificate
-
-- name: Build Pi-hole TLS PEM
-  become: true
-  become_user: "{{ podman_user }}"
-  ansible.builtin.shell:
-    cmd: >-
-      cat
-      {{ pihole_tls_cert_host_path }}.crt
-      {{ pihole_tls_cert_host_path }}.key
-      > {{ pihole_tls_cert_host_path }}
-  args:
-    executable: /bin/bash
-
-- name: Set Pi-hole TLS PEM permissions
-  become: true
-  become_user: "{{ podman_user }}"
-  ansible.builtin.file:
-    path: "{{ pihole_tls_cert_host_path }}"
-    owner: "{{ podman_user }}"
-    group: "{{ podman_user }}"
-    mode: "0600"
-
-- name: Copy Pi-hole TLS certificate into container
-  become: true
-  become_user: "{{ podman_user }}"
-  containers.podman.podman_container_copy:
-    container: "{{ pihole_container_name }}"
-    src: "{{ pihole_tls_cert_host_path }}"
-    dest: "{{ pihole_tls_cert }}"
+- name: Issue Pi-hole certificate
+  ansible.builtin.include_role:
+    name: certificate
+  vars:
+    certificate_name: "{{ pihole_container_name }}"
+    certificate_deployment_target: "{{ pihole_container_name }}"
+    certificate_deployment_mode: "bundle"
+    certificate_deploy_path: "{{ pihole_tls_cert }}"
+    certificate_restart_consumer_on_issue: true

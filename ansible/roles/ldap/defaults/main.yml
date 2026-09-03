@@ -5,14 +5,18 @@ ldap_secret_name: "ldap_admin_password"
 
 ldap_data_volume: "ldap-data"
 ldap_config_volume: "ldap-config"
+ldap_tls_volume: "ldap-tls"
 
 ldap_quadlet_dir: "{{ ansible_env.HOME }}/.config/containers/systemd"
 ldap_quadlet_filename: "ldap-server.container"
 
-ldap_tls_common_name: "{{ ansible_fqdn }}"
+ldap_tls_certificate_filename: "ldap.crt"
+ldap_tls_key_filename: "ldap.key"
 
 ldap_tls_directory: "/etc/ldap/tls"
-ldap_tls_certificate: "{{ ldap_tls_directory }}/ldap.crt"
-ldap_tls_key: "{{ ldap_tls_directory }}/ldap.key"
+ldap_tls_certificate: "{{ ldap_tls_directory }}/{{ ldap_tls_certificate_filename }}"
+ldap_tls_key: "{{ ldap_tls_directory }}/{{ ldap_tls_key_filename }}"
+ldap_tls_ldif_path: "{{ certificate_staging_root }}/ldap/tls.ldif"
 
-ldap_tls_validity: "720h"
+
+ldap_tls_host_directory: "{{ certificate_staging_root }}/ldap"

@@ -1,0 +1,15 @@
+---
+
+certificate_deployment_mode: "bundle"
+
+certificate_name: ""
+
+certificate_deploy_path: ""
+certificate_deploy_certificate_path: ""
+certificate_deploy_key_path: ""
+
+certificate_deployment_target: ""
+
+certificate_renewal_threshold: 604800
+
+certificate_restart_consumer_on_issue: true

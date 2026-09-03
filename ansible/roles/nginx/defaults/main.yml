@@ -14,12 +14,7 @@ nginx_stream_config_path: /etc/nginx/stream.conf.d
 nginx_http_config_path: /etc/nginx/conf.d
 
 # ACME HTTP-01 challenge webroot
-nginx_acme_webroot: "/var/lib/homelab/acme"
-nginx_acme_challenge_path: "{{ nginx_acme_webroot }}/.well-known/acme-challenge"
-
-nginx_acme_hostnames:
-  - "pihole.{{ domain_fqdn }}"
-  - "ca.{{ domain_fqdn }}"
+nginx_acme_challenge_path: "{{ acme_webroot }}/.well-known/acme-challenge"
 
 # HTTP proxy definitions
 nginx_http_proxies: []

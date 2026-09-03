@@ -1,0 +1,15 @@
+dn: cn=config
+changetype: modify
+{% if 'olcTLSCertificateFile:' in ldap_tls_config.stdout %}
+replace: olcTLSCertificateFile
+{% else %}
+add: olcTLSCertificateFile
+{% endif %}
+olcTLSCertificateFile: {{ ldap_tls_certificate }}
+-
+{% if 'olcTLSCertificateKeyFile:' in ldap_tls_config.stdout %}
+replace: olcTLSCertificateKeyFile
+{% else %}
+add: olcTLSCertificateKeyFile
+{% endif %}
+olcTLSCertificateKeyFile: {{ ldap_tls_key }}

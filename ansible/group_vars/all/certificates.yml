@@ -1,0 +1,21 @@
+---
+
+# ACME infrastructure
+acme_webroot: "/var/lib/homelab/acme"
+
+# Certificate infrastructure
+certificate_staging_root: "/var/lib/homelab/certificates"
+certificate_ca_url: "https://ca.{{ domain_fqdn }}"
+certificate_ca_root: "/etc/ssl/certs/ca-certificates.crt"
+certificate_acme_provisioner: "ACME"
+certificate_acme_webroot: "{{ acme_webroot }}"
+
+# Certificate file naming conventions
+certificate_leaf_filename: "tls.crt"
+certificate_key_filename: "tls.key"
+certificate_bundle_filename: "tls.pem"
+
+# Certificates issued by the Intermediate CA
+certificates:
+  - pihole
+  - ldap

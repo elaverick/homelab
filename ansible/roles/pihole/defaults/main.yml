@@ -2,7 +2,7 @@
 
 pihole_image: "docker.io/pihole/pihole:2026.07.2"
 pihole_container_name: "pihole"
-pihole_quadlet_filename: "{{pihole_container_name}}.container"
+pihole_quadlet_filename: "{{ pihole_container_name }}.container"
 
 pihole_web_password_secret_name: "{{ pihole_container_name }}-web-password"
 
@@ -17,17 +17,10 @@ pihole_dns_listening_mode: "ALL"
 
 pihole_web_domain: "pihole.{{ domain_fqdn }}"
 
-# Cert path in container
+# Certificate path inside the Pi-hole container
 pihole_tls_cert: "/etc/pihole/tls.pem"
-
-pihole_tls_staging_dir: "/var/lib/homelab/pihole"
-pihole_tls_cert_host_path: "{{ pihole_tls_staging_dir }}/tls.pem"
-
-pihole_acme_webroot: "{{ nginx_acme_webroot }}"
-pihole_ca_url: "https://ca.{{ domain_fqdn }}"
-pihole_ca_root: "/etc/ssl/certs/ca-certificates.crt"
-pihole_acme_provisioner: "ACME"
 
 pihole_dns_cname_records:
   - "pihole.{{ domain_fqdn }},{{ ansible_fqdn }}"
   - "ca.{{ domain_fqdn }},{{ ansible_fqdn }}"
+  - "ldap.{{ domain_fqdn }},{{ ansible_fqdn }}"

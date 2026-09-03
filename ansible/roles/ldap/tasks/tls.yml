@@ -1,0 +1,78 @@
+---
+
+- name: Read LDAP TLS configuration
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container_exec:
+    name: "{{ ldap_container_name }}"
+    command: >-
+      ldapsearch
+      -Q
+      -Y EXTERNAL
+      -H ldapi:///
+      -b cn=config
+      -s base
+      -LLL
+      olcTLSCertificateFile
+      olcTLSCertificateKeyFile
+  register: ldap_tls_config
+  changed_when: false
+
+- name: Determine whether LDAP TLS configuration requires changes
+  ansible.builtin.set_fact:
+    ldap_tls_requires_change: >-
+      {{
+        ('olcTLSCertificateFile: ' ~ ldap_tls_certificate) not in ldap_tls_config.stdout
+        or
+        ('olcTLSCertificateKeyFile: ' ~ ldap_tls_key) not in ldap_tls_config.stdout
+      }}
+
+- name: Create LDAP TLS configuration LDIF
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.template:
+    src: tls.ldif.j2
+    dest: "{{ ldap_tls_ldif_path }}"
+    owner: "{{ podman_user }}"
+    group: "{{ podman_user }}"
+    mode: "0600"
+  when: ldap_tls_requires_change
+
+- name: Copy LDAP TLS configuration into container
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container_copy:
+    container: "{{ ldap_container_name }}"
+    src: "{{ ldap_tls_ldif_path }}"
+    dest: /tmp/ldap-tls.ldif
+  when: ldap_tls_requires_change
+
+- name: Configure LDAP TLS certificate
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container_exec:
+    name: "{{ ldap_container_name }}"
+    command: >-
+      ldapmodify
+      -Q
+      -Y EXTERNAL
+      -H ldapi:///
+      -f /tmp/ldap-tls.ldif
+  register: ldap_tls_modify
+  when: ldap_tls_requires_change
+
+- name: Remove LDAP TLS configuration from container
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container_exec:
+    name: "{{ ldap_container_name }}"
+    command: rm -f /tmp/ldap-tls.ldif
+  when: ldap_tls_requires_change
+
+- name: Remove LDAP TLS configuration from host
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.file:
+    path: "{{ ldap_tls_ldif_path }}"
+    state: absent
+  when: ldap_tls_requires_change

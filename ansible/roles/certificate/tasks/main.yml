@@ -1,0 +1,125 @@
+---
+
+- name: Validate certificate name
+  ansible.builtin.assert:
+    that:
+      - certificate_name | length > 0
+      - certificate_name in certificates
+    fail_msg: >-
+      certificate_name must identify a certificate in the central
+      certificates list.
+
+- name: Validate certificate deployment configuration
+  ansible.builtin.assert:
+    that:
+      - certificate_deployment_mode in ['bundle', 'split']
+      - >-
+        (
+          certificate_deployment_mode == 'bundle'
+          and certificate_deployment_target | length > 0
+          and certificate_deploy_path | length > 0
+        )
+        or
+        (
+          certificate_deployment_mode == 'split'
+          and certificate_deployment_target | length > 0
+          and certificate_deploy_certificate_path | length > 0
+          and certificate_deploy_key_path | length > 0
+        )
+    fail_msg: >-
+      Invalid certificate deployment configuration for {{ certificate_name }}.
+      Bundle deployment requires certificate_deployment_target and
+      certificate_deploy_path.
+      Split deployment requires certificate_deployment_target,
+      certificate_deploy_certificate_path and
+      certificate_deploy_key_path.
+
+- name: Create certificate staging directory
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.file:
+    path: "{{ certificate_staging_root }}/{{ certificate_name }}"
+    state: directory
+    owner: "{{ podman_user }}"
+    group: "{{ podman_user }}"
+    mode: "0700"
+
+- name: Create user systemd directory
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.file:
+    path: "/home/{{ podman_user }}/.config/systemd/user"
+    state: directory
+    owner: "{{ podman_user }}"
+    group: "{{ podman_user }}"
+    mode: "0700"
+
+- name: Deploy certificate renewal script
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.template:
+    src: renew-certificate.sh.j2
+    dest: "{{ certificate_staging_root }}/{{ certificate_name }}/renew-certificate.sh"
+    owner: "{{ podman_user }}"
+    group: "{{ podman_user }}"
+    mode: "0700"
+
+- name: Request or renew certificate
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.command:
+    cmd: >-
+      {{ certificate_staging_root }}/{{ certificate_name }}/renew-certificate.sh
+      {% if not certificate_restart_consumer_on_issue %}
+      --no-restart
+      {% endif %}
+  register: certificate_renewal
+
+- name: Set certificate PEM bundle permissions
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.file:
+    path: "{{ certificate_staging_root }}/{{ certificate_name }}/{{ certificate_bundle_filename }}"
+    owner: "{{ podman_user }}"
+    group: "{{ podman_user }}"
+    mode: "0600"
+
+- name: Deploy certificate renewal systemd service
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.template:
+    src: certificate-renewal.service.j2
+    dest: "/home/{{ podman_user }}/.config/systemd/user/certificate-{{ certificate_name }}-renewal.service"
+    owner: "{{ podman_user }}"
+    group: "{{ podman_user }}"
+    mode: "0644"
+  register: certificate_renewal_service
+
+- name: Deploy certificate renewal systemd timer
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.template:
+    src: certificate-renewal.timer.j2
+    dest: "/home/{{ podman_user }}/.config/systemd/user/certificate-{{ certificate_name }}-renewal.timer"
+    owner: "{{ podman_user }}"
+    group: "{{ podman_user }}"
+    mode: "0644"
+  register: certificate_renewal_timer
+
+- name: Reload user systemd manager
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    scope: user
+  when:
+    - certificate_renewal_service.changed or certificate_renewal_timer.changed
+
+- name: Enable and start certificate renewal timer
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.systemd_service:
+    name: "certificate-{{ certificate_name }}-renewal.timer"
+    enabled: true
+    state: started
+    scope: user

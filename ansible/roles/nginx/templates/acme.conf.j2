@@ -1,10 +1,10 @@
-{% for hostname in acme_hostnames %}
+{% for certificate_name in certificates %}
 server {
     listen 80;
-    server_name {{ hostname }};
+    server_name {{ certificate_name }}.{{ domain_fqdn }};
 
     location /.well-known/acme-challenge/ {
-        root {{ nginx_acme_webroot }};
+        root {{ acme_webroot }};
     }
 
     location / {

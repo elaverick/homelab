@@ -15,6 +15,16 @@
     bind_pw: "{{ ldap_password }}"
     state: present
 
+- name: Create Devices OU
+  community.general.ldap_entry:
+    dn: "ou=Devices,{{ ldap_base_dn }}"
+    objectClass:
+      - organizationalUnit
+    server_uri: "{{ ldap_uri }}"
+    bind_dn: "{{ ldap_admin_dn }}"
+    bind_pw: "{{ ldap_password }}"
+    state: present
+
 - name: Create Groups OU
   community.general.ldap_entry:
     dn: "ou=Groups,{{ ldap_base_dn }}"

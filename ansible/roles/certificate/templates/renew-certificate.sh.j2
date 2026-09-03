@@ -1,0 +1,150 @@
+#!/bin/bash
+
+set -euo pipefail
+
+CERTIFICATE="{{ certificate_name }}"
+COMMON_NAME="{{ certificate_name }}.{{ domain_fqdn }}"
+STAGING_DIR="{{ certificate_staging_root }}/{{ certificate_name }}"
+
+CERTIFICATE_PATH="${STAGING_DIR}/{{ certificate_leaf_filename }}"
+PRIVATE_KEY_PATH="${STAGING_DIR}/{{ certificate_key_filename }}"
+BUNDLE_PATH="${STAGING_DIR}/{{ certificate_bundle_filename }}"
+
+RENEWAL_THRESHOLD="{{ certificate_renewal_threshold }}"
+
+RENEW_CERTIFICATE=false
+DEPLOYMENT_REQUIRED=false
+RESTART_CONSUMER=false
+
+if [[ "${1:-}" == "--no-restart" ]]; then
+    RESTART_CONSUMER=false
+else
+    RESTART_CONSUMER=true
+fi
+
+#
+# Determine whether the certificate needs renewal.
+#
+
+if [[ -f "${CERTIFICATE_PATH}" ]]; then
+
+    if openssl x509 \
+        -in "${CERTIFICATE_PATH}" \
+        -noout \
+        -checkend "${RENEWAL_THRESHOLD}"; then
+
+        echo "Certificate for ${COMMON_NAME} does not need renewal."
+
+    else
+
+        echo "Certificate for ${COMMON_NAME} requires renewal."
+        RENEW_CERTIFICATE=true
+
+    fi
+
+else
+
+    echo "Certificate for ${COMMON_NAME} does not exist."
+    RENEW_CERTIFICATE=true
+
+fi
+
+#
+# Issue or renew the certificate when required.
+#
+
+if [[ "${RENEW_CERTIFICATE}" == true ]]; then
+
+    step ca certificate \
+        "${COMMON_NAME}" \
+        "${CERTIFICATE_PATH}" \
+        "${PRIVATE_KEY_PATH}" \
+        --ca-url "{{ certificate_ca_url }}" \
+        --root "{{ certificate_ca_root }}" \
+        --provisioner "{{ certificate_acme_provisioner }}" \
+        --webroot "{{ certificate_acme_webroot }}" \
+        --force
+
+    cat \
+        "${CERTIFICATE_PATH}" \
+        "${PRIVATE_KEY_PATH}" \
+        > "${BUNDLE_PATH}"
+
+    chmod 0600 "${BUNDLE_PATH}"
+
+    DEPLOYMENT_REQUIRED=true
+
+fi
+
+#
+# Determine whether the deployment target already contains
+# the certificate material.
+#
+# The deployment target is always the consumer container.
+#
+
+{% if certificate_deployment_mode == 'bundle' %}
+
+if ! podman exec \
+    "{{ certificate_deployment_target }}" \
+    test -f "{{ certificate_deploy_path }}"; then
+
+    DEPLOYMENT_REQUIRED=true
+
+fi
+
+{% elif certificate_deployment_mode == 'split' %}
+
+if ! podman exec \
+    "{{ certificate_deployment_target }}" \
+    test -f "{{ certificate_deploy_certificate_path }}"; then
+
+    DEPLOYMENT_REQUIRED=true
+
+fi
+
+if ! podman exec \
+    "{{ certificate_deployment_target }}" \
+    test -f "{{ certificate_deploy_key_path }}"; then
+
+    DEPLOYMENT_REQUIRED=true
+
+fi
+
+{% endif %}
+
+#
+# Deploy the certificate when required.
+#
+
+if [[ "${DEPLOYMENT_REQUIRED}" == true ]]; then
+
+{% if certificate_deployment_mode == 'bundle' %}
+
+    podman cp \
+        "${BUNDLE_PATH}" \
+        "{{ certificate_deployment_target }}:{{ certificate_deploy_path }}"
+
+{% elif certificate_deployment_mode == 'split' %}
+
+    podman cp \
+        "${CERTIFICATE_PATH}" \
+        "{{ certificate_deployment_target }}:{{ certificate_deploy_certificate_path }}"
+
+    podman cp \
+        "${PRIVATE_KEY_PATH}" \
+        "{{ certificate_deployment_target }}:{{ certificate_deploy_key_path }}"
+
+{% endif %}
+
+    if [[ "${RESTART_CONSUMER}" == true ]]; then
+
+        echo "Restarting {{ certificate_deployment_target }}..."
+
+        systemctl --user restart "{{ certificate_deployment_target }}.service"
+
+    fi
+
+fi
+
+echo "Certificate for ${COMMON_NAME} processed successfully."

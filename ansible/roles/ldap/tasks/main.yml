@@ -29,6 +29,13 @@
     name: "{{ ldap_config_volume }}"
     state: present
 
+- name: Create LDAP TLS volume
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_volume:
+    name: "{{ ldap_tls_volume }}"
+    state: present
+
 - name: Create LDAP Quadlet
   become: true
   become_user: "{{ podman_user }}"
@@ -42,16 +49,19 @@
     env:
       LDAP_DOMAIN: "{{ ldap_domain }}"
       LDAP_ORGANISATION: "{{ ldap_organisation }}"
+    add_hosts: "{{ dict([('ldap.' ~ domain_fqdn, 'host-gateway')]) }}"
     secrets:
       - "{{ ldap_secret_name }},type=mount,target=ldap_admin_password"
     volumes:
       - "{{ ldap_data_volume }}:/var/lib/ldap"
       - "{{ ldap_config_volume }}:/etc/ldap/slapd.d"
+      - "{{ ldap_tls_volume }}:{{ ldap_tls_directory }}"
     quadlet_options:
       - "AutoUpdate=registry"
       - |
         [Install]
         WantedBy=default.target
+  register: ldap_quadlet
 
 - name: Reload user systemd manager
   become: true
@@ -68,3 +78,36 @@
     enabled: true
     state: started
     scope: user
+
+- name: Restart LDAP after Quadlet change
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.systemd_service:
+    name: "{{ ldap_container_name }}.service"
+    state: restarted
+    scope: user
+  when: ldap_quadlet.changed
+
+- name: Configure LDAP certificate
+  ansible.builtin.include_role:
+    name: certificate
+  vars:
+    certificate_name: "ldap"
+    certificate_deployment_mode: "split"
+    certificate_deployment_target: "{{ ldap_container_name }}"
+    certificate_deploy_certificate_path: "{{ ldap_tls_certificate }}"
+    certificate_deploy_key_path: "{{ ldap_tls_key }}"
+    certificate_restart_consumer_on_issue: false
+
+- name: Configure LDAP TLS
+  ansible.builtin.import_tasks:
+    file: tls.yml
+
+- name: Restart LDAP after TLS configuration
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.systemd_service:
+    name: "{{ ldap_container_name }}.service"
+    state: restarted
+    scope: user
+  when: ldap_tls_modify.changed

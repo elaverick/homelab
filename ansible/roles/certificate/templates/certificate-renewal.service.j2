@@ -1,0 +1,6 @@
+[Unit]
+Description=Renew {{ certificate_name }} certificate
+
+[Service]
+Type=oneshot
+ExecStart={{ certificate_staging_root }}/{{ certificate_name }}/renew-certificate.sh

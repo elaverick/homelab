@@ -1,14 +1,4 @@
 ---
-- name: Initialise current container inventory
-  ansible.builtin.set_fact:
-    software_inventory_current_inspect_data: {}
-    software_inventory_current_image_data: {}
-    software_inventory_current_os_info:
-      id: "unknown"
-      id_like: ""
-      name: "Unknown"
-    software_inventory_current_package_manager: "unknown"
-    software_inventory_current_packages: []
 
 - name: Get Podman containers
   become: true

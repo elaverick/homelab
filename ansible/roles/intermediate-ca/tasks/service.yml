@@ -12,9 +12,10 @@
     add_hosts: >-
       {{
         dict(
-          acme_hostnames
+          certificates
+          | map('regex_replace', '^(.*)$', '\1.' ~ domain_fqdn)
           | zip(
-              acme_hostnames
+              certificates
               | map('regex_replace', '^.*$', 'host-gateway')
             )
         )
