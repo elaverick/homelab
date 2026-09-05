@@ -1,0 +1,33 @@
+dn: cn=managedDevice,cn=schema,cn=config
+objectClass: olcSchemaConfig
+cn: managedDevice
+
+olcAttributeTypes: ( 1.3.6.1.4.1.66636.1.1.2.1
+  NAME 'deviceId'
+  DESC 'Stable identifier for a managed device enrolment'
+  EQUALITY caseExactMatch
+  SUBSTR caseExactSubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE )
+
+olcAttributeTypes: ( 1.3.6.1.4.1.66636.1.1.2.2
+  NAME 'deviceType'
+  DESC 'Broad classification of a managed device'
+  EQUALITY caseIgnoreMatch
+  SUBSTR caseIgnoreSubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE )
+
+olcAttributeTypes: ( 1.3.6.1.4.1.66636.1.1.2.3
+  NAME 'deviceDisabled'
+  DESC 'Indicates that the managed device is administratively disabled'
+  EQUALITY booleanMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
+  SINGLE-VALUE )
+
+olcObjectClasses: ( 1.3.6.1.4.1.66636.1.1.1.1
+  NAME 'managedDevice'
+  DESC 'Managed device with lifecycle metadata'
+  SUP top
+  AUXILIARY
+  MAY ( deviceId $ deviceType $ deviceDisabled ) )

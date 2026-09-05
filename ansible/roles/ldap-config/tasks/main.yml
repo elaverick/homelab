@@ -5,6 +5,72 @@
     port: "{{ external_ldap_port }}"
     timeout: 30
 
+- name: Check whether managedDevice schema is installed
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container_exec:
+    name: "{{ ldap_container_name }}"
+    command: >-
+      ldapsearch
+      -Q
+      -Y EXTERNAL
+      -H ldapi:///
+      -b cn=schema,cn=config
+      -s one
+      -LLL
+      "(cn=managedDevice)"
+      dn
+  register: managed_device_schema
+  changed_when: false
+  failed_when: managed_device_schema.rc != 0
+
+- name: Copy managedDevice schema LDIF to host
+  become: true
+  ansible.builtin.copy:
+    src: managedDevice.ldif
+    dest: /tmp/managedDevice.ldif
+    owner: "{{ podman_user }}"
+    group: "{{ podman_user }}"
+    mode: "0600"
+  when: managed_device_schema.stdout | trim == ""
+
+- name: Copy managedDevice schema LDIF to container
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container_copy:
+    container: "{{ ldap_container_name }}"
+    src: /tmp/managedDevice.ldif
+    dest: /tmp/managedDevice.ldif
+  when: managed_device_schema.stdout | trim == ""
+
+- name: Import managedDevice schema
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container_exec:
+    name: "{{ ldap_container_name }}"
+    command: >-
+      ldapadd
+      -Q
+      -Y EXTERNAL
+      -H ldapi:///
+      -f /tmp/managedDevice.ldif
+  when: managed_device_schema.stdout | trim == ""
+
+- name: Remove managedDevice schema LDIF from container
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container_exec:
+    name: "{{ ldap_container_name }}"
+    command: rm -f /tmp/managedDevice.ldif
+  when: managed_device_schema.stdout | trim == ""
+
+- name: Remove managedDevice schema LDIF from host
+  become: true
+  ansible.builtin.file:
+    path: /tmp/managedDevice.ldif
+    state: absent
+  when: managed_device_schema.stdout | trim == ""
+
 - name: Create People OU
   community.general.ldap_entry:
     dn: "ou=People,{{ ldap_base_dn }}"
