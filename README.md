@@ -1,51 +1,92 @@
 # Homelab
 
-Infrastructure configuration and container definitions for my homelab.
+Infrastructure configuration for a home network built around open standards and self-hosted services.
 
-## Services
+## Objective
 
-- **LDAP** — OpenLDAP running in a rootless Podman container
-- **Intermediate CA** — Smallstep `step-ca` providing certificates for homelab services
-- **Root CA** — Offline Root CA used to sign the Intermediate CA
-- More services will be added as required.
+The aim of this project is to build a homelab that provides control over the home network, particularly Wi-Fi authentication and the services that support it.
 
-## Approach
+The intended core services are:
 
-| Component | Purpose |
-|---|---|
-| **Ansible** | Host and service configuration |
-| **Podman** | Rootless container runtime |
-| **Quadlet** | Container service definitions |
-| **systemd** | Service lifecycle management |
-| **GHCR** | Container image registry |
-| **Smallstep** | Certificate authority |
+* **FreeRADIUS** — Wi-Fi authentication and network access control
+* **LDAP** — Identity and device information used by network services
+* **Pi-hole** — DNS filtering and local network name resolution
+* **NGINX** — Common entry point and proxy for network services
+* **Internal PKI** — Certificates for securing homelab services
 
-Services are deployed using Ansible and run under rootless Podman. Quadlet integrates the containers with the user-level systemd instance.
+The project is intended to be simple, reproducible and easy to extend as additional services are added.
 
-The Root CA remains offline. The Intermediate CA runs online and issues certificates for homelab services.
+## Architecture
 
-## Where to Find Things
+```text
+                         Home Network
+                              │
+                         Wi-Fi clients
+                              │
+                              ▼
+                         FreeRADIUS
+                              │
+                              ▼
+                            LDAP
+                              │
+             ┌────────────────┼────────────────┐
+             │                │                │
+          Pi-hole          Services        Network
+             │                │             access
+             │                │
+             └────────── NGINX ───────────────┘
+                              │
+                         TLS certificates
+                              │
+                         Intermediate CA
+                              │
+                         Offline Root CA
+```
+
+Ansible provides the main deployment entry point and configures both the underlying host and the services running on it.
+
+Containerised services run under rootless Podman and are managed through Quadlet and systemd.
+
+The Root CA remains offline. An online Intermediate CA issues certificates for services within the homelab.
+
+## Technology
+
+| Component     | Purpose                        |
+| ------------- | ------------------------------ |
+| **Ansible**   | Host and service configuration |
+| **Podman**    | Rootless container runtime     |
+| **Quadlet**   | Container service definitions  |
+| **systemd**   | Service lifecycle management   |
+| **NGINX**     | HTTP/HTTPS and network proxy   |
+| **LDAP**      | Directory and identity service |
+| **Pi-hole**   | DNS and network filtering      |
+| **Smallstep** | Internal certificate authority |
+| **GHCR**      | Container image registry       |
+
+## Repository Structure
 
 ```text
 homelab/
 ├── ansible/
-│   ├── site.yml                    # Main deployment playbook
-│   ├── inventory/                  # Hosts
-│   ├── group_vars/                 # Shared configuration and secrets
+│   ├── site.yml
+│   ├── inventory/
+│   ├── group_vars/
 │   └── roles/
-│       ├── base_host/              # Host configuration
-│       ├── ldap/                   # LDAP container deployment
-│       ├── ldap-config/            # LDAP configuration
-│       └── intermediate-ca/        # Intermediate CA deployment
+│       ├── base_host/
+│       ├── certificate/
+│       ├── intermediate-ca/
+│       ├── ldap/
+│       ├── ldap-config/
+│       ├── nginx/
+│       ├── pihole/
+│       └── software-inventory/
 │
 ├── ca/
 │   └── root/
-│       └── ansible/                # Offline Root CA project
-│
-├── certs/                           # CA certificates and Intermediate CA key
+│       └── ansible/
 │
 └── containers/
-    └── ldap/                        # LDAP container image definition
+    └── ldap/
 ```
 
 ## Certificate Architecture
@@ -56,32 +97,58 @@ homelab/
                          │ signs
                          ▼
                  Intermediate CA
-                 ca.laverick.home.arpa
                          │
-              ┌──────────┴──────────┐
-              │                     │
-             ACME             Future clients/
-              │                devices/mTLS
-              │
-        ┌─────┼─────┐
-        │     │     │
-      LDAPS  HTTPS  ...
+                    issues certificates
+                         │
+              ┌──────────┼──────────┐
+              │          │          │
+            LDAP       NGINX     Other services
+           (LDAPS)       │
+                       HTTPS
 ```
 
 The Root CA private key never leaves the offline Root CA.
 
-The Intermediate CA uses the Root CA certificate and its own encrypted private key. Its private-key passphrase is managed through Ansible Vault and a Podman Secret.
+The Intermediate CA operates online and uses its own protected private key to issue and renew certificates for homelab services.
 
 ## Current Status
 
-- [x] Base host configuration
-- [x] Rootless Podman
-- [x] LDAP container
-- [x] LDAP configuration
-- [x] Offline Root CA
-- [x] Intermediate CA
-- [x] Quadlet/systemd deployment
-- [x] ACME provisioner
-- [ ] Device provisioner
-- [ ] Client/mTLS provisioner
-- [ ] LDAPS certificate issued by Intermediate CA
+### Infrastructure
+
+* [x] Base host configuration and hardening
+* [x] Rootless Podman
+* [x] NGINX
+* [x] Pi-hole
+* [x] Software inventory
+
+### Identity and Network Services
+
+* [x] LDAP container
+* [x] LDAP configuration
+* [ ] FreeRADIUS
+* [ ] Wi-Fi authentication
+* [ ] Device authentication
+* [ ] Network access control
+
+### Certificate Authority
+
+* [x] Offline Root CA
+* [x] Online Intermediate CA
+* [x] Quadlet/systemd deployment
+* [x] ACME provisioner
+* [x] Service certificates
+* [x] LDAPS certificate
+* [ ] Device certificate provisioner
+* [ ] Client/mTLS provisioner
+
+### Future Network Security
+
+The longer-term goal is to use device identity and authentication to control network access.
+
+This may include separate network segments for trusted and untrusted devices, allowing devices that require remediation or do not meet the required security state to be isolated from the normal network.
+
+## AI Assistance
+
+This project has been developed with assistance from AI tools.
+
+AI assistance is used for research, design discussion, troubleshooting, documentation and code generation. **All generated code and configuration is subject to human review, testing and approval before being considered part of the intended system.**
