@@ -64,6 +64,11 @@ ldap_uri: "ldap://{{ ldap_host }}:{{ external_ldap_port }}"
 domain_fqdn: "{{ domain }}.{{ domain_suffix }}"
 ldap_base_dn: "{{ domain_fqdn.split('.') | map('regex_replace', '^(.*)$', 'dc=\\1') | join(',') }}"
 ldap_admin_dn: "cn=admin,{{ ldap_base_dn }}"
+freeradius_ldap_server: "ldaps://ldap.{{ domain_fqdn }}:636"
+
+# LDAP service accounts
+
+freeradius_bind_dn: "cn=freeradius,ou=ServiceAccounts,{{ ldap_base_dn }}"
 
 # User/group configuration
 

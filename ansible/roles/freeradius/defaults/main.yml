@@ -1,0 +1,21 @@
+---
+freeradius_image: "docker.io/freeradius/freeradius-server:3.2.10"
+
+freeradius_container_name: "freeradius"
+
+# Persistent FreeRADIUS configuration
+freeradius_config_volume: "freeradius-config"
+freeradius_config_directory: "/etc/freeradius"
+freeradius_ldap_module_config: "/mods-available/ldap"
+freeradius_ldap_module_enabled: "/mods-enabled/ldap"
+
+freeradius_trust_volume: "freeradius-trust"
+freeradius_trust_directory: "/etc/freeradius/trust"
+
+# RADIUS standard ports inside the container.
+# These are deliberately mapped to high, localhost-only host ports.
+freeradius_ports:
+  - "127.0.0.1:11812:1812/udp"
+  - "127.0.0.1:11813:1813/udp"
+
+freeradius_quadlet_filename: "freeradius.container"

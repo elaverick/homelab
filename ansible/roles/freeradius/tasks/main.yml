@@ -1,0 +1,114 @@
+---
+- name: Pull FreeRADIUS container image
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_image:
+    name: "{{ freeradius_image }}"
+    state: present
+
+- name: Create FreeRADIUS configuration volume
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_volume:
+    name: "{{ freeradius_config_volume }}"
+    state: present
+  register: freeradius_config_volume_info
+
+- name: Record FreeRADIUS configuration volume mount point
+  ansible.builtin.set_fact:
+    freeradius_config_volume_mountpoint: "{{ freeradius_config_volume_info.volume.Mountpoint }}"
+
+- name: Create FreeRADIUS trust volume
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_volume:
+    name: "{{ freeradius_trust_volume }}"
+    state: present
+  register: freeradius_trust_volume_info
+
+- name: Record FreeRADIUS trust volume mount point
+  ansible.builtin.set_fact:
+    freeradius_trust_volume_mountpoint: "{{ freeradius_trust_volume_info.volume.Mountpoint }}"
+
+- name: Install Root CA certificate
+  become: true
+  become_user: "{{ podman_user }}"
+  become_method: containers.podman.podman_unshare
+  ansible.builtin.copy:
+    src: "{{ source_certs_path }}/{{ root_certificate }}"
+    dest: "{{ freeradius_trust_volume_mountpoint }}/{{ root_certificate }}"
+    mode: "0644"
+  register: freeradius_trust_certificate
+
+- name: Deploy FreeRADIUS LDAP module configuration
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.template:
+    src: ldap.j2
+    dest: "{{ freeradius_config_volume_mountpoint }}{{ freeradius_ldap_module_config }}"
+    owner: "{{ podman_user }}"
+    group: "{{ podman_user }}"
+    mode: "0640"
+  register: freeradius_ldap_config
+  no_log: true
+
+- name: Enable FreeRADIUS LDAP module
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.file:
+    src: "../mods-available/ldap"
+    dest: "{{ freeradius_config_volume_mountpoint }}{{ freeradius_ldap_module_enabled }}"
+    state: link
+    force: true
+  register: freeradius_ldap_module
+
+- name: Create FreeRADIUS Quadlet
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container:
+    name: "{{ freeradius_container_name }}"
+    image: "{{ freeradius_image }}"
+    state: quadlet
+    quadlet_filename: "{{ freeradius_quadlet_filename }}"
+    quadlet_file_mode: "0640"
+    add_hosts: "{{ dict([('ldap.' ~ domain_fqdn, 'host-gateway')]) }}"
+    publish: "{{ freeradius_ports }}"
+
+    volumes:
+      - "{{ freeradius_config_volume }}:{{ freeradius_config_directory }}"
+      - "{{ freeradius_trust_volume }}:{{ freeradius_trust_directory }}:ro"
+
+    quadlet_options:
+      - "AutoUpdate=registry"
+      - |
+        [Install]
+        WantedBy=default.target
+
+  register: freeradius_quadlet
+
+- name: Reload app-runner user systemd manager
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    scope: user
+  when: freeradius_quadlet.changed
+
+- name: Enable and start FreeRADIUS container
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.systemd_service:
+    name: "{{ freeradius_container_name }}.service"
+    enabled: true
+    state: >-
+      {{
+        'restarted'
+        if (
+          freeradius_trust_certificate.changed
+          or freeradius_ldap_config.changed
+          or freeradius_ldap_module.changed
+          or freeradius_quadlet.changed
+        )
+        else 'started'
+      }}
+    scope: user

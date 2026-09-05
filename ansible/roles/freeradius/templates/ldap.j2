@@ -1,0 +1,25 @@
+ldap {
+    server = "{{ freeradius_ldap_server }}"
+
+    identity = "{{ freeradius_bind_dn }}"
+    password = "{{ freeradius_bind_password }}"
+
+    base_dn = "{{ ldap_base_dn }}"
+
+    tls {
+        ca_file = "{{ freeradius_trust_directory }}/{{ root_certificate }}"
+        require_cert = "demand"
+        tls_min_version = "1.2"
+    }
+
+    user {
+        base_dn = "${..base_dn}"
+        {% raw %}filter = "(uid=%{%{Stripped-User-Name}:-%{User-Name}})"{% endraw %}
+    }
+
+    group {
+        base_dn = "${..base_dn}"
+        filter = "(objectClass=posixGroup)"
+        membership_attribute = "memberOf"
+    }
+}

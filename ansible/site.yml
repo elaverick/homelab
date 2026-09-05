@@ -11,4 +11,5 @@
     - ldap
     - ldap-config
     - pihole
+    - freeradius
     - software-inventory

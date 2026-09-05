@@ -11,14 +11,14 @@
   containers.podman.podman_container_exec:
     name: "{{ ldap_container_name }}"
     command: >-
-      ldapsearch
-      -Q
-      -Y EXTERNAL
-      -H ldapi:///
-      -b cn=schema,cn=config
-      -s one
-      -LLL
-      "(cn=managedDevice)"
+      ldapsearch 
+      -Q 
+      -Y EXTERNAL 
+      -H ldapi:/// 
+      -b "cn=schema,cn=config" 
+      -s one 
+      -LLL 
+      "(olcObjectClasses=*1.3.6.1.4.1.66636.1.1.1.1*)" 
       dn
   register: managed_device_schema
   changed_when: false
@@ -84,6 +84,16 @@
 - name: Create Devices OU
   community.general.ldap_entry:
     dn: "ou=Devices,{{ ldap_base_dn }}"
+    objectClass:
+      - organizationalUnit
+    server_uri: "{{ ldap_uri }}"
+    bind_dn: "{{ ldap_admin_dn }}"
+    bind_pw: "{{ ldap_password }}"
+    state: present
+
+- name: Create Service Accounts OU
+  community.general.ldap_entry:
+    dn: "ou=ServiceAccounts,{{ ldap_base_dn }}"
     objectClass:
       - organizationalUnit
     server_uri: "{{ ldap_uri }}"
@@ -182,3 +192,20 @@
     label: "{{ item.0.uid }}"
   when: not ldap_users_created
   no_log: true
+
+- name: Create FreeRADIUS service account
+  community.general.ldap_entry:
+    dn: "{{ freeradius_bind_dn }}"
+    objectClass:
+      - simpleSecurityObject
+      - organizationalRole
+    attributes:
+      cn: "freeradius"
+      description: "FreeRADIUS LDAP bind account"
+      userPassword: "{{ freeradius_bind_password }}"
+    server_uri: "{{ ldap_uri }}"
+    bind_dn: "{{ ldap_admin_dn }}"
+    bind_pw: "{{ ldap_password }}"
+    state: present
+  no_log: true
+
