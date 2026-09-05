@@ -1,0 +1,10 @@
+[sshd]
+enabled = true
+port = {{ ssh_port }}
+filter = sshd
+logpath = %(sshd_log)s
+backend = %(sshd_backend)s
+maxretry = 5
+findtime = 10m
+bantime = 1h
+ignoreip = 127.0.0.1/8 ::1 {{ homelab_ipv4_network }} {{ homelab_ipv6_network }}

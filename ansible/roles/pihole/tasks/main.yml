@@ -18,6 +18,15 @@
   ansible.builtin.import_tasks:
     file: certificate.yml
 
+- name: Create Pi-hole web password secret
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_secret:
+    name: "{{ pihole_web_password_secret_name }}"
+    data: "{{ pihole_webserver_api_password }}"
+    state: present
+  no_log: true
+
 - name: Create Pi-hole Quadlet
   become: true
   become_user: "{{ podman_user }}"
@@ -33,12 +42,13 @@
       - "{{ pihole_host_https_port }}:443/tcp"
     env:
       TZ: "{{ pihole_timezone }}"
-      FTLCONF_webserver_api_password: "{{ pihole_webserver_api_password }}"
       FTLCONF_dns_listeningMode: "{{ pihole_dns_listening_mode }}"
       FTLCONF_dns_cnameRecords: "{{ pihole_dns_cname_records | join(';') }}"
       FTLCONF_webserver_domain: "{{ pihole_web_domain }}"
       FTLCONF_webserver_port: "443s"
       FTLCONF_webserver_tls_cert: "{{ pihole_tls_cert }}"
+    secrets:
+      - "{{ pihole_web_password_secret_name }},type=env,target=FTLCONF_webserver_api_password"
     volumes:
       - "{{ pihole_data_volume }}:/etc/pihole"
     quadlet_options:

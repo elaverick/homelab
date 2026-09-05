@@ -16,7 +16,7 @@
 
 - name: Inspect container
   become: true
-  become_user: app-runner
+  become_user: "{{ podman_user }}"
   ansible.builtin.command:
     cmd: "podman inspect {{ software_inventory_container.Id }}"
   register: software_inventory_current_inspect
@@ -33,7 +33,7 @@
 
 - name: Inspect container image
   become: true
-  become_user: app-runner
+  become_user: "{{ podman_user }}"
   ansible.builtin.command:
     cmd: >-
       podman image inspect
@@ -59,7 +59,7 @@
 
 - name: Determine container operating system
   become: true
-  become_user: app-runner
+  become_user: "{{ podman_user }}"
   ansible.builtin.command:
     cmd: >-
       podman exec {{ software_inventory_container.Names | first }}
@@ -129,7 +129,7 @@
 
 - name: Detect dpkg package manager
   become: true
-  become_user: app-runner
+  become_user: "{{ podman_user }}"
   ansible.builtin.command:
     cmd: >-
       podman exec {{ software_inventory_container.Names | first }}
@@ -142,7 +142,7 @@
 
 - name: Detect RPM package manager
   become: true
-  become_user: app-runner
+  become_user: "{{ podman_user }}"
   ansible.builtin.command:
     cmd: >-
       podman exec {{ software_inventory_container.Names | first }}
@@ -155,7 +155,7 @@
 
 - name: Detect APK package manager
   become: true
-  become_user: app-runner
+  become_user: "{{ podman_user }}"
   ansible.builtin.command:
     cmd: >-
       podman exec {{ software_inventory_container.Names | first }}
@@ -195,7 +195,7 @@
 
 - name: Gather Debian packages
   become: true
-  become_user: app-runner
+  become_user: "{{ podman_user }}"
   ansible.builtin.command:
     cmd: >-
       podman exec {{ software_inventory_container.Names | first }}
@@ -229,7 +229,7 @@
 
 - name: Gather RPM packages
   become: true
-  become_user: app-runner
+  become_user: "{{ podman_user }}"
   ansible.builtin.command:
     cmd: >-
       podman exec {{ software_inventory_container.Names | first }}
@@ -262,7 +262,7 @@
 
 - name: Gather Alpine packages
   become: true
-  become_user: app-runner
+  become_user: "{{ podman_user }}"
   ansible.builtin.command:
     cmd: >-
       podman exec {{ software_inventory_container.Names | first }}

@@ -11,14 +11,14 @@
   containers.podman.podman_container_exec:
     name: "{{ ldap_container_name }}"
     command: >-
-      ldapsearch 
-      -Q 
-      -Y EXTERNAL 
-      -H ldapi:/// 
-      -b "cn=schema,cn=config" 
-      -s one 
-      -LLL 
-      "(olcObjectClasses=*1.3.6.1.4.1.66636.1.1.1.1*)" 
+      ldapsearch
+      -Q
+      -Y EXTERNAL
+      -H ldapi:///
+      -b "cn=schema,cn=config"
+      -s one
+      -LLL
+      "(olcObjectClasses=*1.3.6.1.4.1.66636.1.1.1.1*)"
       dn
   register: managed_device_schema
   changed_when: false
@@ -71,141 +71,107 @@
     state: absent
   when: managed_device_schema.stdout | trim == ""
 
-- name: Create People OU
-  community.general.ldap_entry:
-    dn: "ou=People,{{ ldap_base_dn }}"
-    objectClass:
-      - organizationalUnit
-    server_uri: "{{ ldap_uri }}"
-    bind_dn: "{{ ldap_admin_dn }}"
-    bind_pw: "{{ ldap_password }}"
-    state: present
-
-- name: Create Devices OU
-  community.general.ldap_entry:
-    dn: "ou=Devices,{{ ldap_base_dn }}"
-    objectClass:
-      - organizationalUnit
-    server_uri: "{{ ldap_uri }}"
-    bind_dn: "{{ ldap_admin_dn }}"
-    bind_pw: "{{ ldap_password }}"
-    state: present
-
-- name: Create Service Accounts OU
-  community.general.ldap_entry:
-    dn: "ou=ServiceAccounts,{{ ldap_base_dn }}"
-    objectClass:
-      - organizationalUnit
-    server_uri: "{{ ldap_uri }}"
-    bind_dn: "{{ ldap_admin_dn }}"
-    bind_pw: "{{ ldap_password }}"
-    state: present
-
-- name: Create Groups OU
-  community.general.ldap_entry:
-    dn: "ou=Groups,{{ ldap_base_dn }}"
-    objectClass:
-      - organizationalUnit
-    server_uri: "{{ ldap_uri }}"
-    bind_dn: "{{ ldap_admin_dn }}"
-    bind_pw: "{{ ldap_password }}"
-    state: present
-
-- name: Create Groups
-  community.general.ldap_entry:
-    dn: "cn={{ item.name }},ou=Groups,{{ ldap_base_dn }}"
-    objectClass:
-      - posixGroup
-    attributes:
-      cn: "{{ item.name }}"
-      gidNumber: "{{ item.gidNumber | int }}"
-    server_uri: "{{ ldap_uri }}"
-    bind_dn: "{{ ldap_admin_dn }}"
-    bind_pw: "{{ ldap_password }}"
-    state: present
-  loop: "{{ ldapGroups }}"
-
-- name: Check whether LDAP users have already been created
-  community.general.ldap_search:
-    server_uri: "{{ ldap_uri }}"
-    bind_dn: "{{ ldap_admin_dn }}"
-    bind_pw: "{{ ldap_password }}"
-    dn: "{{ ldap_base_dn }}"
-    filter: "(uid={{ ldapUsers[0].uid }})"
-    scope: subordinate
-    attrs:
-      - uid
-  register: ldap_users_check
+- name: Manage LDAP directory objects
   no_log: true
+  vars:
+    ldap_auth:
+      server_uri: "{{ ldap_uri }}"
+      bind_dn: "{{ ldap_admin_dn }}"
+      bind_pw: "{{ ldap_password }}"
+  block:
+    - name: Create base OUs
+      community.general.ldap_entry:
+        dn: "ou={{ item }},{{ ldap_base_dn }}"
+        objectClass: [organizationalUnit]
+        state: present
+      args: "{{ ldap_auth }}"
+      loop: [People, Devices, ServiceAccounts, Groups]
+      loop_control:
+        label: "{{ item }}"
 
-- name: Set LDAP users creation state
-  ansible.builtin.set_fact:
-    ldap_users_created: "{{ ldap_users_check.results | length > 0 }}"
+    - name: Create Groups
+      community.general.ldap_entry:
+        dn: "cn={{ item.name }},ou=Groups,{{ ldap_base_dn }}"
+        objectClass:
+          - posixGroup
+        attributes:
+          cn: "{{ item.name }}"
+          gidNumber: "{{ item.gidNumber | int }}"
+        state: present
+      args: "{{ ldap_auth }}"
+      loop: "{{ ldapGroups }}"
+      loop_control:
+        label: "{{ item.name }}"
 
-- name: Prompt for LDAP user passwords
-  ansible.builtin.pause:
-    prompt: "Enter initial password for {{ item.uid }}"
-    echo: false
-  loop: "{{ ldapUsers }}"
-  loop_control:
-    label: "{{ item.uid }}"
-  register: ldap_password_prompts
-  no_log: true
-  when: not ldap_users_created
+    - name: Check whether LDAP users have already been created
+      community.general.ldap_search:
+        dn: "{{ ldap_base_dn }}"
+        filter: "(uid={{ ldapUsers[0].uid }})"
+        scope: subordinate
+        attrs:
+          - uid
+      args: "{{ ldap_auth }}"
+      register: ldap_users_check
 
-- name: Verify prompted passwords are different
-  ansible.builtin.assert:
-    that:
-      - ldap_password_prompts.results | map(attribute='user_input') | list | unique | length ==
-        ldap_password_prompts.results | length
-    fail_msg: "ERROR: LDAP user passwords must be different!"
-    success_msg: "LDAP user passwords are different."
-  no_log: true
-  when: not ldap_users_created
+    - name: Set LDAP users creation state
+      ansible.builtin.set_fact:
+        ldap_users_created: "{{ ldap_users_check.results | length > 0 }}"
 
-- name: Create LDAP users with prompted passwords
-  community.general.ldap_entry:
-    dn: "uid={{ item.0.uid }},ou=People,{{ ldap_base_dn }}"
-    objectClass:
-      - inetOrgPerson
-      - posixAccount
-      - shadowAccount
-    attributes:
-      uid: "{{ item.0.uid }}"
-      sn: "{{ item.0.surname }}"
-      givenName: "{{ item.0.firstname }}"
-      cn: "{{ item.0.firstname }} {{ item.0.surname }}"
-      uidNumber: "{{ (uidNumber | int) + index }}"
-      gidNumber: "{{ item.0.gidNumber | int }}"
-      userPassword: "{{ item.1.user_input }}"
-      pwdReset: "TRUE"
-      gecos: "{{ item.0.firstname }} {{ item.0.surname }}"
-      loginShell: "/bin/bash"
-      homeDirectory: "/home/{{ item.0.uid }}"
-    server_uri: "{{ ldap_uri }}"
-    bind_dn: "{{ ldap_admin_dn }}"
-    bind_pw: "{{ ldap_password }}"
-    state: present
-  loop: "{{ ldapUsers | zip(ldap_password_prompts.results) | list }}"
-  loop_control:
-    index_var: index
-    label: "{{ item.0.uid }}"
-  when: not ldap_users_created
-  no_log: true
+    - name: Prompt for LDAP user passwords
+      ansible.builtin.pause:
+        prompt: "Enter initial password for {{ item.uid }}"
+        echo: false
+      loop: "{{ ldapUsers }}"
+      loop_control:
+        label: "{{ item.uid }}"
+      register: ldap_password_prompts
+      when: not ldap_users_created
 
-- name: Create FreeRADIUS service account
-  community.general.ldap_entry:
-    dn: "{{ freeradius_bind_dn }}"
-    objectClass:
-      - simpleSecurityObject
-      - organizationalRole
-    attributes:
-      cn: "freeradius"
-      description: "FreeRADIUS LDAP bind account"
-      userPassword: "{{ freeradius_bind_password }}"
-    server_uri: "{{ ldap_uri }}"
-    bind_dn: "{{ ldap_admin_dn }}"
-    bind_pw: "{{ ldap_password }}"
-    state: present
-  no_log: true
+    - name: Verify prompted passwords are different
+      ansible.builtin.assert:
+        that:
+          - ldap_password_prompts.results | map(attribute='user_input') | list | unique | length ==
+            ldap_password_prompts.results | length
+        fail_msg: "ERROR: LDAP user passwords must be different!"
+        success_msg: "LDAP user passwords are different."
+      when: not ldap_users_created
 
+    - name: Create LDAP users with prompted passwords
+      community.general.ldap_entry:
+        dn: "uid={{ item.0.uid }},ou=People,{{ ldap_base_dn }}"
+        objectClass:
+          - inetOrgPerson
+          - posixAccount
+          - shadowAccount
+        attributes:
+          uid: "{{ item.0.uid }}"
+          sn: "{{ item.0.surname }}"
+          givenName: "{{ item.0.firstname }}"
+          cn: "{{ item.0.firstname }} {{ item.0.surname }}"
+          uidNumber: "{{ (uidNumber | int) + index }}"
+          gidNumber: "{{ item.0.gidNumber | int }}"
+          userPassword: "{{ item.1.user_input }}"
+          pwdReset: "TRUE"
+          gecos: "{{ item.0.firstname }} {{ item.0.surname }}"
+          loginShell: "/bin/bash"
+          homeDirectory: "/home/{{ item.0.uid }}"
+        state: present
+      args: "{{ ldap_auth }}"
+      loop: "{{ ldapUsers | zip(ldap_password_prompts.results) | list }}"
+      loop_control:
+        index_var: index
+        label: "{{ item.0.uid }}"
+      when: not ldap_users_created
+
+    - name: Create FreeRADIUS service account
+      community.general.ldap_entry:
+        dn: "{{ freeradius_bind_dn }}"
+        objectClass:
+          - simpleSecurityObject
+          - organizationalRole
+        attributes:
+          cn: "freeradius"
+          description: "FreeRADIUS LDAP bind account"
+          userPassword: "{{ freeradius_bind_password }}"
+        state: present
+      args: "{{ ldap_auth }}"
