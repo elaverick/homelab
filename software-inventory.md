@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-09-05T09:45:42Z"
+generated_at: "2026-09-05T09:58:53Z"
 
 host:
   operating_system:
@@ -2544,6 +2544,813 @@ containers:
         version: "r0"
       - name: "zstd-libs-1.5.7"
         version: "r2"
+  - name: "freeradius"
+    id: "c34e2d458a58650317daa492dc4eb8176dc711d4a637e12fca91df5174f457bb"
+    status: "running"
+
+    image:
+      name: "docker.io/freeradius/freeradius-server:3.2.10"
+      id: "801bb663071f6230612cd2ca43cbc3ebd9ba7887b32a6716d632ce2d847c6c9d"
+      digest: "docker.io/freeradius/freeradius-server@sha256:cc7fd136e7b03e7b332d94297530318e824a4ecfedbce54562cced723e71e812"
+      version: "22.04"
+      revision: ""
+
+    operating_system:
+      id: "ubuntu"
+      id_like: "debian"
+      name: "Ubuntu 22.04.5 LTS"
+
+    package_manager: "dpkg"
+
+    packages:
+      - name: "adduser"
+        version: "3.118ubuntu5"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "apt"
+        version: "2.4.14"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "base-files"
+        version: "12ubuntu4.7"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "base-passwd"
+        version: "3.5.52build1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "bash"
+        version: "5.1-6ubuntu1.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "bsdutils"
+        version: "1:2.37.2-4ubuntu3.5"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "ca-certificates"
+        version: "20240203~22.04.1"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "coreutils"
+        version: "8.32-4.1ubuntu1.3"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "dash"
+        version: "0.5.11+git20210903+057cd650a4ed-3build1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "dbus"
+        version: "1.12.20-2ubuntu4.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "debconf"
+        version: "1.5.79ubuntu1"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "debianutils"
+        version: "5.5-1ubuntu2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "diffutils"
+        version: "1:3.8-0ubuntu2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "dpkg"
+        version: "1.21.1ubuntu2.6"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "e2fsprogs"
+        version: "1.46.5-2ubuntu1.2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "findutils"
+        version: "4.8.0-1ubuntu3"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-common"
+        version: "3.2.10+git"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "freeradius-config"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-dbg"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-dhcp"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-freetds"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-kafka"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-krb5"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-ldap"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-memcached"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-mysql"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-perl-util"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-postgresql"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-python2"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-python3"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-redis"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-rest"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-unbound"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-unixodbc"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-utils"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-utils-json"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freeradius-yubikey"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "freetds-common"
+        version: "1.3.6-1"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "gcc-12-base"
+        version: "12.3.0-1ubuntu1~22.04.3"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "gpgv"
+        version: "2.2.27-3ubuntu2.5"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "grep"
+        version: "3.7-1build1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "gzip"
+        version: "1.10-4ubuntu4.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "hostname"
+        version: "3.23ubuntu2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "init-system-helpers"
+        version: "1.62"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "libacl1"
+        version: "2.3.1-1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libapparmor1"
+        version: "3.0.4-2ubuntu2.5"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libappconfig-perl"
+        version: "1.71-2.1"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "libapt-pkg6.0"
+        version: "2.4.14"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libattr1"
+        version: "1:2.5.1-1build1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libaudit-common"
+        version: "1:3.0.7-1build1"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "libaudit1"
+        version: "1:3.0.7-1build1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libblkid1"
+        version: "2.37.2-4ubuntu3.5"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libbrotli1"
+        version: "1.0.9-2build6"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libbsd0"
+        version: "0.11.5-1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libbz2-1.0"
+        version: "1.0.8-5build1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libc-bin"
+        version: "2.35-0ubuntu3.13"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libc6"
+        version: "2.35-0ubuntu3.13"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libcap-ng0"
+        version: "0.7.9-2.2build3"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libcap2"
+        version: "1:2.44-1ubuntu0.22.04.3"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libcom-err2"
+        version: "1.46.5-2ubuntu1.2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libcrypt1"
+        version: "1:4.4.27-1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libct4"
+        version: "1.3.6-1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libcurl3-gnutls"
+        version: "7.81.0-1ubuntu1.24"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libcurl4"
+        version: "7.81.0-1ubuntu1.24"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libdb5.3"
+        version: "5.3.28+dfsg1-0.8ubuntu3"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libdbd-mysql-perl"
+        version: "4.050-5ubuntu0.22.04.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libdbd-pg-perl"
+        version: "3.15.1-1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libdbd-sqlite3-perl"
+        version: "1.70-3build1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libdbd-sybase-perl"
+        version: "1.14-1build9"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libdbi-perl"
+        version: "1.643-3build3"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libdbus-1-3"
+        version: "1.12.20-2ubuntu4.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libdebconfclient0"
+        version: "0.261ubuntu1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libevent-2.1-7"
+        version: "2.1.12-stable-1build3"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libexpat1"
+        version: "2.4.7-1ubuntu0.7"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libext2fs2"
+        version: "1.46.5-2ubuntu1.2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libffi8"
+        version: "3.4.2-4"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libfreeradius-dev"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libfreeradius3"
+        version: "3.2.10+git"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libgcc-s1"
+        version: "12.3.0-1ubuntu1~22.04.3"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libgcrypt20"
+        version: "1.9.4-3ubuntu3"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libgdbm-compat4"
+        version: "1.23-1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libgdbm6"
+        version: "1.23-1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libgmp10"
+        version: "2:6.2.1+dfsg-3ubuntu1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libgnutls30"
+        version: "3.7.3-4ubuntu1.8"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libgpg-error0"
+        version: "1.43-3"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libgssapi-krb5-2"
+        version: "1.19.2-2ubuntu0.7"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libhiredis0.14"
+        version: "0.14.1-2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libhogweed6"
+        version: "3.7.3-1build2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libicu70"
+        version: "70.1-2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libidn2-0"
+        version: "2.3.2-2build1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libjson-c5"
+        version: "0.15-3~ubuntu1.22.04.2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libk5crypto3"
+        version: "1.19.2-2ubuntu0.7"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libkeyutils1"
+        version: "1.6.1-2ubuntu3"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libkrb5-3"
+        version: "1.19.2-2ubuntu0.7"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libkrb5support0"
+        version: "1.19.2-2ubuntu0.7"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libldap-2.5-0"
+        version: "2.5.20+dfsg-0ubuntu0.22.04.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libldap-common"
+        version: "2.5.20+dfsg-0ubuntu0.22.04.1"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "libltdl7"
+        version: "2.4.6-15build2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "liblz4-1"
+        version: "1.9.3-2build2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "liblzma5"
+        version: "5.2.5-2ubuntu1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libmd0"
+        version: "1.0.4-1build1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libmemcached11"
+        version: "1.0.18-4.2ubuntu4"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libmount1"
+        version: "2.37.2-4ubuntu3.5"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libmpdec3"
+        version: "2.5.1-2build2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libmysqlclient21"
+        version: "8.0.46-0ubuntu0.22.04.2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libncurses6"
+        version: "6.3-2ubuntu0.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libncursesw6"
+        version: "6.3-2ubuntu0.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libnet-ip-perl"
+        version: "1.26-2ubuntu0.22.04.1"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "libnettle8"
+        version: "3.7.3-1build2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libnghttp2-14"
+        version: "1.43.0-1ubuntu0.3"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libnsl2"
+        version: "1.3.0-2build2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libodbc2"
+        version: "2.3.9-5ubuntu0.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libp11-kit0"
+        version: "0.24.0-6build1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libpam-modules"
+        version: "1.4.0-11ubuntu2.6"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libpam-modules-bin"
+        version: "1.4.0-11ubuntu2.6"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libpam-runtime"
+        version: "1.4.0-11ubuntu2.6"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "libpam0g"
+        version: "1.4.0-11ubuntu2.6"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libpcap0.8"
+        version: "1.10.1-4ubuntu1.22.04.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libpcre2-8-0"
+        version: "10.39-3ubuntu0.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libpcre3"
+        version: "2:8.39-13ubuntu0.22.04.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libperl5.34"
+        version: "5.34.0-3ubuntu1.5"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libpq5"
+        version: "14.23-0ubuntu0.22.04.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libprocps8"
+        version: "2:3.3.17-6ubuntu2.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libpsl5"
+        version: "0.21.0-1.2build2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libpython2.7"
+        version: "2.7.18-13ubuntu1.5"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libpython2.7-minimal"
+        version: "2.7.18-13ubuntu1.5"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libpython2.7-stdlib"
+        version: "2.7.18-13ubuntu1.5"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libpython3.10"
+        version: "3.10.12-1~22.04.15"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libpython3.10-minimal"
+        version: "3.10.12-1~22.04.15"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libpython3.10-stdlib"
+        version: "3.10.12-1~22.04.15"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "librdkafka1"
+        version: "1.8.0-1build1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libreadline8"
+        version: "8.1.2-1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "librtmp1"
+        version: "2.4+20151223.gitfa8646d.1-2build4"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libsasl2-2"
+        version: "2.1.27+dfsg2-3ubuntu1.2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libsasl2-modules"
+        version: "2.1.27+dfsg2-3ubuntu1.2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libsasl2-modules-db"
+        version: "2.1.27+dfsg2-3ubuntu1.2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libsasl2-modules-gssapi-mit"
+        version: "2.1.27+dfsg2-3ubuntu1.2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libseccomp2"
+        version: "2.5.3-2ubuntu3~22.04.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libselinux1"
+        version: "3.3-1build2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libsemanage-common"
+        version: "3.3-1build2"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "libsemanage2"
+        version: "3.3-1build2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libsepol2"
+        version: "3.3-1build1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libsmartcols1"
+        version: "2.37.2-4ubuntu3.5"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libsqlite3-0"
+        version: "3.37.2-2ubuntu0.5"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libss2"
+        version: "1.46.5-2ubuntu1.2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libssh-4"
+        version: "0.9.6-2ubuntu0.22.04.7"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libssl3"
+        version: "3.0.2-0ubuntu1.23"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libstdc++6"
+        version: "12.3.0-1ubuntu1~22.04.3"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libsystemd0"
+        version: "249.11-0ubuntu3.20"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libtalloc2"
+        version: "2.3.3-2build1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libtasn1-6"
+        version: "4.18.0-4ubuntu0.2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libtemplate-perl"
+        version: "2.27-1ubuntu0.22.04.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libtevent0"
+        version: "0.11.0-1build1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libtinfo6"
+        version: "6.3-2ubuntu0.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libtirpc-common"
+        version: "1.3.2-2ubuntu0.1"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "libtirpc3"
+        version: "1.3.2-2ubuntu0.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libudev1"
+        version: "249.11-0ubuntu3.20"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libunbound8"
+        version: "1.13.1-1ubuntu5.15"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libunistring2"
+        version: "1.0-1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libuuid1"
+        version: "2.37.2-4ubuntu3.5"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libwbclient0"
+        version: "2:4.15.13+dfsg-0ubuntu1.12"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libxxhash0"
+        version: "0.8.1-1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libyaml-0-2"
+        version: "0.2.2-1build2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libyaml-libyaml-perl"
+        version: "0.83+ds-1ubuntu0.22.04.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libykclient3"
+        version: "2.15-2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libyubikey0"
+        version: "1.13-6"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "libzstd1"
+        version: "1.4.8+dfsg-3build1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "login"
+        version: "1:4.8.1-2ubuntu2.2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "logsave"
+        version: "1.46.5-2ubuntu1.2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "lsb-base"
+        version: "11.1.0ubuntu4"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "make"
+        version: "4.3-4.1build1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "mawk"
+        version: "1.3.4.20200120-3"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "media-types"
+        version: "7.0.0"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "mount"
+        version: "2.37.2-4ubuntu3.5"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "mysql-common"
+        version: "5.8+1.0.8"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "ncurses-base"
+        version: "6.3-2ubuntu0.1"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "ncurses-bin"
+        version: "6.3-2ubuntu0.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "netbase"
+        version: "6.3"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "openssl"
+        version: "3.0.2-0ubuntu1.23"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "passwd"
+        version: "1:4.8.1-2ubuntu2.2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "perl"
+        version: "5.34.0-3ubuntu1.5"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "perl-base"
+        version: "5.34.0-3ubuntu1.5"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "perl-modules-5.34"
+        version: "5.34.0-3ubuntu1.5"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "procps"
+        version: "2:3.3.17-6ubuntu2.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "publicsuffix"
+        version: "20211207.1025-1"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "readline-common"
+        version: "8.1.2-1"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "sed"
+        version: "4.8-1ubuntu2.1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "sensible-utils"
+        version: "0.0.17"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "ssl-cert"
+        version: "1.1.2"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "sysvinit-utils"
+        version: "3.01-1ubuntu1"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "tar"
+        version: "1.34+dfsg-1ubuntu0.1.22.04.2"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "tzdata"
+        version: "2026a-0ubuntu0.22.04.1"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "ubuntu-keyring"
+        version: "2021.03.26"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "usrmerge"
+        version: "25ubuntu2"
+        architecture: "all"
+        status: "install ok installed"
+      - name: "util-linux"
+        version: "2.37.2-4ubuntu3.5"
+        architecture: "amd64"
+        status: "install ok installed"
+      - name: "zlib1g"
+        version: "1:1.2.11.dfsg-2ubuntu9.2"
+        architecture: "amd64"
+        status: "install ok installed"
 
 ---
 
@@ -3355,5 +4162,236 @@ containers:
 | xz-libs-5.8.3 | r0 |  |  |
 | zlib-1.3.2 | r0 |  |  |
 | zstd-libs-1.5.7 | r2 |  |  |
+
+
+
+### freeradius
+
+**Status:** running
+
+#### Image
+
+| Property | Value |
+|---|---|
+| Name | docker.io/freeradius/freeradius-server:3.2.10 |
+| ID | 801bb663071f6230612cd2ca43cbc3ebd9ba7887b32a6716d632ce2d847c6c9d |
+| Digest | docker.io/freeradius/freeradius-server@sha256:cc7fd136e7b03e7b332d94297530318e824a4ecfedbce54562cced723e71e812 |
+| Version | 22.04 |
+| Revision |  |
+
+#### Operating System
+
+| Property | Value |
+|---|---|
+| ID | ubuntu |
+| ID Like | debian |
+| Name | Ubuntu 22.04.5 LTS |
+
+#### Package Manager
+
+`dpkg`
+
+#### Installed Packages
+
+
+| Package | Version | Architecture | Status |
+|---|---|---|---|
+| adduser | 3.118ubuntu5 | all | install ok installed |
+| apt | 2.4.14 | amd64 | install ok installed |
+| base-files | 12ubuntu4.7 | amd64 | install ok installed |
+| base-passwd | 3.5.52build1 | amd64 | install ok installed |
+| bash | 5.1-6ubuntu1.1 | amd64 | install ok installed |
+| bsdutils | 1:2.37.2-4ubuntu3.5 | amd64 | install ok installed |
+| ca-certificates | 20240203~22.04.1 | all | install ok installed |
+| coreutils | 8.32-4.1ubuntu1.3 | amd64 | install ok installed |
+| dash | 0.5.11+git20210903+057cd650a4ed-3build1 | amd64 | install ok installed |
+| dbus | 1.12.20-2ubuntu4.1 | amd64 | install ok installed |
+| debconf | 1.5.79ubuntu1 | all | install ok installed |
+| debianutils | 5.5-1ubuntu2 | amd64 | install ok installed |
+| diffutils | 1:3.8-0ubuntu2 | amd64 | install ok installed |
+| dpkg | 1.21.1ubuntu2.6 | amd64 | install ok installed |
+| e2fsprogs | 1.46.5-2ubuntu1.2 | amd64 | install ok installed |
+| findutils | 4.8.0-1ubuntu3 | amd64 | install ok installed |
+| freeradius | 3.2.10+git | amd64 | install ok installed |
+| freeradius-common | 3.2.10+git | all | install ok installed |
+| freeradius-config | 3.2.10+git | amd64 | install ok installed |
+| freeradius-dbg | 3.2.10+git | amd64 | install ok installed |
+| freeradius-dhcp | 3.2.10+git | amd64 | install ok installed |
+| freeradius-freetds | 3.2.10+git | amd64 | install ok installed |
+| freeradius-kafka | 3.2.10+git | amd64 | install ok installed |
+| freeradius-krb5 | 3.2.10+git | amd64 | install ok installed |
+| freeradius-ldap | 3.2.10+git | amd64 | install ok installed |
+| freeradius-memcached | 3.2.10+git | amd64 | install ok installed |
+| freeradius-mysql | 3.2.10+git | amd64 | install ok installed |
+| freeradius-perl-util | 3.2.10+git | amd64 | install ok installed |
+| freeradius-postgresql | 3.2.10+git | amd64 | install ok installed |
+| freeradius-python2 | 3.2.10+git | amd64 | install ok installed |
+| freeradius-python3 | 3.2.10+git | amd64 | install ok installed |
+| freeradius-redis | 3.2.10+git | amd64 | install ok installed |
+| freeradius-rest | 3.2.10+git | amd64 | install ok installed |
+| freeradius-unbound | 3.2.10+git | amd64 | install ok installed |
+| freeradius-unixodbc | 3.2.10+git | amd64 | install ok installed |
+| freeradius-utils | 3.2.10+git | amd64 | install ok installed |
+| freeradius-utils-json | 3.2.10+git | amd64 | install ok installed |
+| freeradius-yubikey | 3.2.10+git | amd64 | install ok installed |
+| freetds-common | 1.3.6-1 | all | install ok installed |
+| gcc-12-base | 12.3.0-1ubuntu1~22.04.3 | amd64 | install ok installed |
+| gpgv | 2.2.27-3ubuntu2.5 | amd64 | install ok installed |
+| grep | 3.7-1build1 | amd64 | install ok installed |
+| gzip | 1.10-4ubuntu4.1 | amd64 | install ok installed |
+| hostname | 3.23ubuntu2 | amd64 | install ok installed |
+| init-system-helpers | 1.62 | all | install ok installed |
+| libacl1 | 2.3.1-1 | amd64 | install ok installed |
+| libapparmor1 | 3.0.4-2ubuntu2.5 | amd64 | install ok installed |
+| libappconfig-perl | 1.71-2.1 | all | install ok installed |
+| libapt-pkg6.0 | 2.4.14 | amd64 | install ok installed |
+| libattr1 | 1:2.5.1-1build1 | amd64 | install ok installed |
+| libaudit-common | 1:3.0.7-1build1 | all | install ok installed |
+| libaudit1 | 1:3.0.7-1build1 | amd64 | install ok installed |
+| libblkid1 | 2.37.2-4ubuntu3.5 | amd64 | install ok installed |
+| libbrotli1 | 1.0.9-2build6 | amd64 | install ok installed |
+| libbsd0 | 0.11.5-1 | amd64 | install ok installed |
+| libbz2-1.0 | 1.0.8-5build1 | amd64 | install ok installed |
+| libc-bin | 2.35-0ubuntu3.13 | amd64 | install ok installed |
+| libc6 | 2.35-0ubuntu3.13 | amd64 | install ok installed |
+| libcap-ng0 | 0.7.9-2.2build3 | amd64 | install ok installed |
+| libcap2 | 1:2.44-1ubuntu0.22.04.3 | amd64 | install ok installed |
+| libcom-err2 | 1.46.5-2ubuntu1.2 | amd64 | install ok installed |
+| libcrypt1 | 1:4.4.27-1 | amd64 | install ok installed |
+| libct4 | 1.3.6-1 | amd64 | install ok installed |
+| libcurl3-gnutls | 7.81.0-1ubuntu1.24 | amd64 | install ok installed |
+| libcurl4 | 7.81.0-1ubuntu1.24 | amd64 | install ok installed |
+| libdb5.3 | 5.3.28+dfsg1-0.8ubuntu3 | amd64 | install ok installed |
+| libdbd-mysql-perl | 4.050-5ubuntu0.22.04.1 | amd64 | install ok installed |
+| libdbd-pg-perl | 3.15.1-1 | amd64 | install ok installed |
+| libdbd-sqlite3-perl | 1.70-3build1 | amd64 | install ok installed |
+| libdbd-sybase-perl | 1.14-1build9 | amd64 | install ok installed |
+| libdbi-perl | 1.643-3build3 | amd64 | install ok installed |
+| libdbus-1-3 | 1.12.20-2ubuntu4.1 | amd64 | install ok installed |
+| libdebconfclient0 | 0.261ubuntu1 | amd64 | install ok installed |
+| libevent-2.1-7 | 2.1.12-stable-1build3 | amd64 | install ok installed |
+| libexpat1 | 2.4.7-1ubuntu0.7 | amd64 | install ok installed |
+| libext2fs2 | 1.46.5-2ubuntu1.2 | amd64 | install ok installed |
+| libffi8 | 3.4.2-4 | amd64 | install ok installed |
+| libfreeradius-dev | 3.2.10+git | amd64 | install ok installed |
+| libfreeradius3 | 3.2.10+git | amd64 | install ok installed |
+| libgcc-s1 | 12.3.0-1ubuntu1~22.04.3 | amd64 | install ok installed |
+| libgcrypt20 | 1.9.4-3ubuntu3 | amd64 | install ok installed |
+| libgdbm-compat4 | 1.23-1 | amd64 | install ok installed |
+| libgdbm6 | 1.23-1 | amd64 | install ok installed |
+| libgmp10 | 2:6.2.1+dfsg-3ubuntu1 | amd64 | install ok installed |
+| libgnutls30 | 3.7.3-4ubuntu1.8 | amd64 | install ok installed |
+| libgpg-error0 | 1.43-3 | amd64 | install ok installed |
+| libgssapi-krb5-2 | 1.19.2-2ubuntu0.7 | amd64 | install ok installed |
+| libhiredis0.14 | 0.14.1-2 | amd64 | install ok installed |
+| libhogweed6 | 3.7.3-1build2 | amd64 | install ok installed |
+| libicu70 | 70.1-2 | amd64 | install ok installed |
+| libidn2-0 | 2.3.2-2build1 | amd64 | install ok installed |
+| libjson-c5 | 0.15-3~ubuntu1.22.04.2 | amd64 | install ok installed |
+| libk5crypto3 | 1.19.2-2ubuntu0.7 | amd64 | install ok installed |
+| libkeyutils1 | 1.6.1-2ubuntu3 | amd64 | install ok installed |
+| libkrb5-3 | 1.19.2-2ubuntu0.7 | amd64 | install ok installed |
+| libkrb5support0 | 1.19.2-2ubuntu0.7 | amd64 | install ok installed |
+| libldap-2.5-0 | 2.5.20+dfsg-0ubuntu0.22.04.1 | amd64 | install ok installed |
+| libldap-common | 2.5.20+dfsg-0ubuntu0.22.04.1 | all | install ok installed |
+| libltdl7 | 2.4.6-15build2 | amd64 | install ok installed |
+| liblz4-1 | 1.9.3-2build2 | amd64 | install ok installed |
+| liblzma5 | 5.2.5-2ubuntu1 | amd64 | install ok installed |
+| libmd0 | 1.0.4-1build1 | amd64 | install ok installed |
+| libmemcached11 | 1.0.18-4.2ubuntu4 | amd64 | install ok installed |
+| libmount1 | 2.37.2-4ubuntu3.5 | amd64 | install ok installed |
+| libmpdec3 | 2.5.1-2build2 | amd64 | install ok installed |
+| libmysqlclient21 | 8.0.46-0ubuntu0.22.04.2 | amd64 | install ok installed |
+| libncurses6 | 6.3-2ubuntu0.1 | amd64 | install ok installed |
+| libncursesw6 | 6.3-2ubuntu0.1 | amd64 | install ok installed |
+| libnet-ip-perl | 1.26-2ubuntu0.22.04.1 | all | install ok installed |
+| libnettle8 | 3.7.3-1build2 | amd64 | install ok installed |
+| libnghttp2-14 | 1.43.0-1ubuntu0.3 | amd64 | install ok installed |
+| libnsl2 | 1.3.0-2build2 | amd64 | install ok installed |
+| libodbc2 | 2.3.9-5ubuntu0.1 | amd64 | install ok installed |
+| libp11-kit0 | 0.24.0-6build1 | amd64 | install ok installed |
+| libpam-modules | 1.4.0-11ubuntu2.6 | amd64 | install ok installed |
+| libpam-modules-bin | 1.4.0-11ubuntu2.6 | amd64 | install ok installed |
+| libpam-runtime | 1.4.0-11ubuntu2.6 | all | install ok installed |
+| libpam0g | 1.4.0-11ubuntu2.6 | amd64 | install ok installed |
+| libpcap0.8 | 1.10.1-4ubuntu1.22.04.1 | amd64 | install ok installed |
+| libpcre2-8-0 | 10.39-3ubuntu0.1 | amd64 | install ok installed |
+| libpcre3 | 2:8.39-13ubuntu0.22.04.1 | amd64 | install ok installed |
+| libperl5.34 | 5.34.0-3ubuntu1.5 | amd64 | install ok installed |
+| libpq5 | 14.23-0ubuntu0.22.04.1 | amd64 | install ok installed |
+| libprocps8 | 2:3.3.17-6ubuntu2.1 | amd64 | install ok installed |
+| libpsl5 | 0.21.0-1.2build2 | amd64 | install ok installed |
+| libpython2.7 | 2.7.18-13ubuntu1.5 | amd64 | install ok installed |
+| libpython2.7-minimal | 2.7.18-13ubuntu1.5 | amd64 | install ok installed |
+| libpython2.7-stdlib | 2.7.18-13ubuntu1.5 | amd64 | install ok installed |
+| libpython3.10 | 3.10.12-1~22.04.15 | amd64 | install ok installed |
+| libpython3.10-minimal | 3.10.12-1~22.04.15 | amd64 | install ok installed |
+| libpython3.10-stdlib | 3.10.12-1~22.04.15 | amd64 | install ok installed |
+| librdkafka1 | 1.8.0-1build1 | amd64 | install ok installed |
+| libreadline8 | 8.1.2-1 | amd64 | install ok installed |
+| librtmp1 | 2.4+20151223.gitfa8646d.1-2build4 | amd64 | install ok installed |
+| libsasl2-2 | 2.1.27+dfsg2-3ubuntu1.2 | amd64 | install ok installed |
+| libsasl2-modules | 2.1.27+dfsg2-3ubuntu1.2 | amd64 | install ok installed |
+| libsasl2-modules-db | 2.1.27+dfsg2-3ubuntu1.2 | amd64 | install ok installed |
+| libsasl2-modules-gssapi-mit | 2.1.27+dfsg2-3ubuntu1.2 | amd64 | install ok installed |
+| libseccomp2 | 2.5.3-2ubuntu3~22.04.1 | amd64 | install ok installed |
+| libselinux1 | 3.3-1build2 | amd64 | install ok installed |
+| libsemanage-common | 3.3-1build2 | all | install ok installed |
+| libsemanage2 | 3.3-1build2 | amd64 | install ok installed |
+| libsepol2 | 3.3-1build1 | amd64 | install ok installed |
+| libsmartcols1 | 2.37.2-4ubuntu3.5 | amd64 | install ok installed |
+| libsqlite3-0 | 3.37.2-2ubuntu0.5 | amd64 | install ok installed |
+| libss2 | 1.46.5-2ubuntu1.2 | amd64 | install ok installed |
+| libssh-4 | 0.9.6-2ubuntu0.22.04.7 | amd64 | install ok installed |
+| libssl3 | 3.0.2-0ubuntu1.23 | amd64 | install ok installed |
+| libstdc++6 | 12.3.0-1ubuntu1~22.04.3 | amd64 | install ok installed |
+| libsystemd0 | 249.11-0ubuntu3.20 | amd64 | install ok installed |
+| libtalloc2 | 2.3.3-2build1 | amd64 | install ok installed |
+| libtasn1-6 | 4.18.0-4ubuntu0.2 | amd64 | install ok installed |
+| libtemplate-perl | 2.27-1ubuntu0.22.04.1 | amd64 | install ok installed |
+| libtevent0 | 0.11.0-1build1 | amd64 | install ok installed |
+| libtinfo6 | 6.3-2ubuntu0.1 | amd64 | install ok installed |
+| libtirpc-common | 1.3.2-2ubuntu0.1 | all | install ok installed |
+| libtirpc3 | 1.3.2-2ubuntu0.1 | amd64 | install ok installed |
+| libudev1 | 249.11-0ubuntu3.20 | amd64 | install ok installed |
+| libunbound8 | 1.13.1-1ubuntu5.15 | amd64 | install ok installed |
+| libunistring2 | 1.0-1 | amd64 | install ok installed |
+| libuuid1 | 2.37.2-4ubuntu3.5 | amd64 | install ok installed |
+| libwbclient0 | 2:4.15.13+dfsg-0ubuntu1.12 | amd64 | install ok installed |
+| libxxhash0 | 0.8.1-1 | amd64 | install ok installed |
+| libyaml-0-2 | 0.2.2-1build2 | amd64 | install ok installed |
+| libyaml-libyaml-perl | 0.83+ds-1ubuntu0.22.04.1 | amd64 | install ok installed |
+| libykclient3 | 2.15-2 | amd64 | install ok installed |
+| libyubikey0 | 1.13-6 | amd64 | install ok installed |
+| libzstd1 | 1.4.8+dfsg-3build1 | amd64 | install ok installed |
+| login | 1:4.8.1-2ubuntu2.2 | amd64 | install ok installed |
+| logsave | 1.46.5-2ubuntu1.2 | amd64 | install ok installed |
+| lsb-base | 11.1.0ubuntu4 | all | install ok installed |
+| make | 4.3-4.1build1 | amd64 | install ok installed |
+| mawk | 1.3.4.20200120-3 | amd64 | install ok installed |
+| media-types | 7.0.0 | all | install ok installed |
+| mount | 2.37.2-4ubuntu3.5 | amd64 | install ok installed |
+| mysql-common | 5.8+1.0.8 | all | install ok installed |
+| ncurses-base | 6.3-2ubuntu0.1 | all | install ok installed |
+| ncurses-bin | 6.3-2ubuntu0.1 | amd64 | install ok installed |
+| netbase | 6.3 | all | install ok installed |
+| openssl | 3.0.2-0ubuntu1.23 | amd64 | install ok installed |
+| passwd | 1:4.8.1-2ubuntu2.2 | amd64 | install ok installed |
+| perl | 5.34.0-3ubuntu1.5 | amd64 | install ok installed |
+| perl-base | 5.34.0-3ubuntu1.5 | amd64 | install ok installed |
+| perl-modules-5.34 | 5.34.0-3ubuntu1.5 | all | install ok installed |
+| procps | 2:3.3.17-6ubuntu2.1 | amd64 | install ok installed |
+| publicsuffix | 20211207.1025-1 | all | install ok installed |
+| readline-common | 8.1.2-1 | all | install ok installed |
+| sed | 4.8-1ubuntu2.1 | amd64 | install ok installed |
+| sensible-utils | 0.0.17 | all | install ok installed |
+| ssl-cert | 1.1.2 | all | install ok installed |
+| sysvinit-utils | 3.01-1ubuntu1 | amd64 | install ok installed |
+| tar | 1.34+dfsg-1ubuntu0.1.22.04.2 | amd64 | install ok installed |
+| tzdata | 2026a-0ubuntu0.22.04.1 | all | install ok installed |
+| ubuntu-keyring | 2021.03.26 | all | install ok installed |
+| usrmerge | 25ubuntu2 | all | install ok installed |
+| util-linux | 2.37.2-4ubuntu3.5 | amd64 | install ok installed |
+| zlib1g | 1:1.2.11.dfsg-2ubuntu9.2 | amd64 | install ok installed |
 
 
