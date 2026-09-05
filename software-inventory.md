@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-09-03T17:43:01Z"
+generated_at: "2026-09-05T09:45:42Z"
 
 host:
   operating_system:
@@ -1679,298 +1679,8 @@ host:
       status: "install ok installed"
 
 containers:
-  - name: "intermediate-ca"
-    id: "8b62e47c47a857b09d8392fa9555ee1080e2af8d80bc3ee34ea52bb53156d1ba"
-    status: "running"
-
-    image:
-      name: "docker.io/smallstep/step-ca:0.30.2"
-      id: "b4dfb147207bec7553b84b620e5d383589e8e9fb02a25130e7a4b27592a2d01e"
-      digest: "docker.io/smallstep/step-ca@sha256:a2b17872915c193259b75a5474c398326f41bd199f0842093e52cf4182bc8270"
-      version: ""
-      revision: ""
-
-    operating_system:
-      id: "alpine"
-      id_like: ""
-      name: "Alpine Linux v3.23"
-
-    package_manager: "apk"
-
-    packages:
-      - name: "alpine-baselayout-3.7.1"
-        version: "r8"
-      - name: "alpine-baselayout-data-3.7.1"
-        version: "r8"
-      - name: "alpine-keys-2.6"
-        version: "r0"
-      - name: "alpine-release-3.23.3"
-        version: "r0"
-      - name: "apk-tools-3.0.5"
-        version: "r0"
-      - name: "bash-5.3.3"
-        version: "r1"
-      - name: "brotli-libs-1.2.0"
-        version: "r0"
-      - name: "busybox-1.37.0"
-        version: "r30"
-      - name: "busybox-binsh-1.37.0"
-        version: "r30"
-      - name: "c-ares-1.34.6"
-        version: "r0"
-      - name: "ca-certificates-bundle-20251003"
-        version: "r0"
-      - name: "curl-8.17.0"
-        version: "r1"
-      - name: "jq-1.8.1"
-        version: "r0"
-      - name: "libapk-3.0.5"
-        version: "r0"
-      - name: "libcrypto3-3.5.5"
-        version: "r0"
-      - name: "libcurl-8.17.0"
-        version: "r1"
-      - name: "libidn2-2.3.8"
-        version: "r0"
-      - name: "libncursesw-6.5_p20251123"
-        version: "r0"
-      - name: "libpsl-0.21.5"
-        version: "r3"
-      - name: "libssl3-3.5.5"
-        version: "r0"
-      - name: "libunistring-1.4.1"
-        version: "r0"
-      - name: "musl-1.2.5"
-        version: "r21"
-      - name: "musl-utils-1.2.5"
-        version: "r21"
-      - name: "ncurses-terminfo-base-6.5_p20251123"
-        version: "r0"
-      - name: "nghttp2-libs-1.68.0"
-        version: "r0"
-      - name: "nghttp3-1.13.1"
-        version: "r0"
-      - name: "oniguruma-6.9.10"
-        version: "r0"
-      - name: "readline-8.3.1"
-        version: "r0"
-      - name: "scanelf-1.3.8"
-        version: "r2"
-      - name: "ssl_client-1.37.0"
-        version: "r30"
-      - name: "tzdata-2026a"
-        version: "r0"
-      - name: "zlib-1.3.2"
-        version: "r0"
-      - name: "zstd-libs-1.5.7"
-        version: "r2"
-  - name: "pihole"
-    id: "4892873248abf42c302297556df88d0a1efc2c46b4b782df8a21cfd1417a7a56"
-    status: "running"
-
-    image:
-      name: "docker.io/pihole/pihole:2026.07.2"
-      id: "27b410ff85b3449158c1ed568b4078c6037463952ad9939b673b28ba13bd9aa7"
-      digest: "docker.io/pihole/pihole@sha256:7c96327ecfb96dbc74b0a47d073dbef7d60526e0aa87519b2a2f7a0007cb5c88"
-      version: "2026.07.2"
-      revision: "dd91b4847d97f0aac68bfefd1c108ed0627e6c68"
-
-    operating_system:
-      id: "alpine"
-      id_like: ""
-      name: "Alpine Linux v3.24"
-
-    package_manager: "apk"
-
-    packages:
-      - name: "acl-libs-2.3.2"
-        version: "r1"
-      - name: "alpine-baselayout-3.7.2"
-        version: "r1"
-      - name: "alpine-baselayout-data-3.7.2"
-        version: "r1"
-      - name: "alpine-keys-2.6"
-        version: "r0"
-      - name: "alpine-release-3.24.1"
-        version: "r0"
-      - name: "apk-tools-3.0.6"
-        version: "r0"
-      - name: "apk-tools-bash-completion-3.0.6"
-        version: "r0"
-      - name: "bash-5.3.9"
-        version: "r1"
-      - name: "bash-completion-2.17.0"
-        version: "r1"
-      - name: "bind-libs-9.20.24"
-        version: "r0"
-      - name: "bind-tools-9.20.24"
-        version: "r0"
-      - name: "binutils-2.45.1"
-        version: "r1"
-      - name: "brotli-libs-1.2.0"
-        version: "r1"
-      - name: "busybox-1.37.0"
-        version: "r31"
-      - name: "busybox-binsh-1.37.0"
-        version: "r31"
-      - name: "c-ares-1.34.6"
-        version: "r0"
-      - name: "ca-certificates-bundle-20260611"
-        version: "r0"
-      - name: "coreutils-9.11"
-        version: "r0"
-      - name: "coreutils-env-9.11"
-        version: "r0"
-      - name: "coreutils-fmt-9.11"
-        version: "r0"
-      - name: "coreutils-sha512sum-9.11"
-        version: "r0"
-      - name: "curl-8.21.0"
-        version: "r0"
-      - name: "fstrm-0.6.1"
-        version: "r4"
-      - name: "git-2.54.0"
-        version: "r0"
-      - name: "git-bash-completion-2.54.0"
-        version: "r0"
-      - name: "git-init-template-2.54.0"
-        version: "r0"
-      - name: "grep-3.12"
-        version: "r0"
-      - name: "iproute2-7.0.0"
-        version: "r0"
-      - name: "iproute2-bash-completion-7.0.0"
-        version: "r0"
-      - name: "iproute2-minimal-7.0.0"
-        version: "r0"
-      - name: "iproute2-ss-7.0.0"
-        version: "r0"
-      - name: "iproute2-tc-7.0.0"
-        version: "r0"
-      - name: "jansson-2.15.0"
-        version: "r0"
-      - name: "jq-1.8.1"
-        version: "r0"
-      - name: "json-c-0.18"
-        version: "r1"
-      - name: "keyutils-libs-1.6.3"
-        version: "r4"
-      - name: "krb5-conf-1.0"
-        version: "r2"
-      - name: "krb5-libs-1.22.2"
-        version: "r1"
-      - name: "libapk-3.0.6"
-        version: "r0"
-      - name: "libattr-2.5.2"
-        version: "r2"
-      - name: "libbsd-0.12.2"
-        version: "r0"
-      - name: "libcap-2.78"
-        version: "r0"
-      - name: "libcap-getcap-2.78"
-        version: "r0"
-      - name: "libcap-setcap-2.78"
-        version: "r0"
-      - name: "libcap-utils-2.78"
-        version: "r0"
-      - name: "libcap2-2.78"
-        version: "r0"
-      - name: "libcom_err-1.47.4"
-        version: "r0"
-      - name: "libcrypto3-3.5.7"
-        version: "r0"
-      - name: "libcurl-8.21.0"
-        version: "r0"
-      - name: "libelf-0.195"
-        version: "r0"
-      - name: "libexpat-2.8.2"
-        version: "r0"
-      - name: "libgcc-15.2.0"
-        version: "r5"
-      - name: "libidn2-2.3.8"
-        version: "r0"
-      - name: "libintl-1.0"
-        version: "r0"
-      - name: "libmd-1.2.0"
-        version: "r0"
-      - name: "libmnl-1.0.5"
-        version: "r2"
-      - name: "libncursesw-6.6_p20260516"
-        version: "r0"
-      - name: "libproc2-4.0.6"
-        version: "r0"
-      - name: "libpsl-0.21.5"
-        version: "r3"
-      - name: "libssl3-3.5.7"
-        version: "r0"
-      - name: "libstdc++-15.2.0"
-        version: "r5"
-      - name: "libunistring-1.4.2"
-        version: "r0"
-      - name: "libuv-1.52.1"
-        version: "r0"
-      - name: "libverto-0.3.2"
-        version: "r2"
-      - name: "libxml2-2.13.9"
-        version: "r2"
-      - name: "libxtables-1.8.13"
-        version: "r0"
-      - name: "linux-pam-1.7.1"
-        version: "r2"
-      - name: "logrotate-3.22.0"
-        version: "r0"
-      - name: "musl-1.2.6"
-        version: "r2"
-      - name: "musl-utils-1.2.6"
-        version: "r2"
-      - name: "ncurses-6.6_p20260516"
-        version: "r0"
-      - name: "ncurses-terminfo-base-6.6_p20260516"
-        version: "r0"
-      - name: "nghttp2-libs-1.69.0"
-        version: "r0"
-      - name: "oniguruma-6.9.10"
-        version: "r0"
-      - name: "pcre2-10.47"
-        version: "r1"
-      - name: "popt-1.19"
-        version: "r4"
-      - name: "procps-ng-4.0.6"
-        version: "r0"
-      - name: "protobuf-c-1.5.2"
-        version: "r2"
-      - name: "psmisc-23.7"
-        version: "r0"
-      - name: "readline-8.3.3"
-        version: "r1"
-      - name: "scanelf-1.3.9"
-        version: "r1"
-      - name: "shadow-4.18.0"
-        version: "r1"
-      - name: "skalibs-libs-2.15.0.0"
-        version: "r0"
-      - name: "ssl_client-1.37.0"
-        version: "r31"
-      - name: "sudo-1.9.17_p2"
-        version: "r1"
-      - name: "tzdata-2026b"
-        version: "r0"
-      - name: "unzip-6.0"
-        version: "r16"
-      - name: "userspace-rcu-0.15.3"
-        version: "r0"
-      - name: "utmps-libs-0.1.3.3"
-        version: "r0"
-      - name: "wget-1.25.0"
-        version: "r3"
-      - name: "xz-libs-5.8.3"
-        version: "r0"
-      - name: "zlib-1.3.2"
-        version: "r0"
-      - name: "zstd-libs-1.5.7"
-        version: "r2"
   - name: "ldap-server"
-    id: "b0bf1a1645b4f94cdc630787f471c588e7b8a3da2444bdf96d28370a7390a6b8"
+    id: "0878988d814ee7cb722d7a00ed21236458ba6f09a3788f8699933e231c13e899"
     status: "running"
 
     image:
@@ -2544,6 +2254,296 @@ containers:
         version: "1:1.2.13.dfsg-1"
         architecture: "amd64"
         status: "install ok installed"
+  - name: "intermediate-ca"
+    id: "fdbe5ee625b6e118bf505f2458bcd21bf430a0c3b35bde52ad40ec8ba6244f1b"
+    status: "running"
+
+    image:
+      name: "docker.io/smallstep/step-ca:0.30.2"
+      id: "b4dfb147207bec7553b84b620e5d383589e8e9fb02a25130e7a4b27592a2d01e"
+      digest: "docker.io/smallstep/step-ca@sha256:a2b17872915c193259b75a5474c398326f41bd199f0842093e52cf4182bc8270"
+      version: ""
+      revision: ""
+
+    operating_system:
+      id: "alpine"
+      id_like: ""
+      name: "Alpine Linux v3.23"
+
+    package_manager: "apk"
+
+    packages:
+      - name: "alpine-baselayout-3.7.1"
+        version: "r8"
+      - name: "alpine-baselayout-data-3.7.1"
+        version: "r8"
+      - name: "alpine-keys-2.6"
+        version: "r0"
+      - name: "alpine-release-3.23.3"
+        version: "r0"
+      - name: "apk-tools-3.0.5"
+        version: "r0"
+      - name: "bash-5.3.3"
+        version: "r1"
+      - name: "brotli-libs-1.2.0"
+        version: "r0"
+      - name: "busybox-1.37.0"
+        version: "r30"
+      - name: "busybox-binsh-1.37.0"
+        version: "r30"
+      - name: "c-ares-1.34.6"
+        version: "r0"
+      - name: "ca-certificates-bundle-20251003"
+        version: "r0"
+      - name: "curl-8.17.0"
+        version: "r1"
+      - name: "jq-1.8.1"
+        version: "r0"
+      - name: "libapk-3.0.5"
+        version: "r0"
+      - name: "libcrypto3-3.5.5"
+        version: "r0"
+      - name: "libcurl-8.17.0"
+        version: "r1"
+      - name: "libidn2-2.3.8"
+        version: "r0"
+      - name: "libncursesw-6.5_p20251123"
+        version: "r0"
+      - name: "libpsl-0.21.5"
+        version: "r3"
+      - name: "libssl3-3.5.5"
+        version: "r0"
+      - name: "libunistring-1.4.1"
+        version: "r0"
+      - name: "musl-1.2.5"
+        version: "r21"
+      - name: "musl-utils-1.2.5"
+        version: "r21"
+      - name: "ncurses-terminfo-base-6.5_p20251123"
+        version: "r0"
+      - name: "nghttp2-libs-1.68.0"
+        version: "r0"
+      - name: "nghttp3-1.13.1"
+        version: "r0"
+      - name: "oniguruma-6.9.10"
+        version: "r0"
+      - name: "readline-8.3.1"
+        version: "r0"
+      - name: "scanelf-1.3.8"
+        version: "r2"
+      - name: "ssl_client-1.37.0"
+        version: "r30"
+      - name: "tzdata-2026a"
+        version: "r0"
+      - name: "zlib-1.3.2"
+        version: "r0"
+      - name: "zstd-libs-1.5.7"
+        version: "r2"
+  - name: "pihole"
+    id: "12326b6359053cfa085ba9f408668dc34cd95be095d849761c551d1dbbdca3cd"
+    status: "running"
+
+    image:
+      name: "docker.io/pihole/pihole:2026.07.2"
+      id: "27b410ff85b3449158c1ed568b4078c6037463952ad9939b673b28ba13bd9aa7"
+      digest: "docker.io/pihole/pihole@sha256:7c96327ecfb96dbc74b0a47d073dbef7d60526e0aa87519b2a2f7a0007cb5c88"
+      version: "2026.07.2"
+      revision: "dd91b4847d97f0aac68bfefd1c108ed0627e6c68"
+
+    operating_system:
+      id: "alpine"
+      id_like: ""
+      name: "Alpine Linux v3.24"
+
+    package_manager: "apk"
+
+    packages:
+      - name: "acl-libs-2.3.2"
+        version: "r1"
+      - name: "alpine-baselayout-3.7.2"
+        version: "r1"
+      - name: "alpine-baselayout-data-3.7.2"
+        version: "r1"
+      - name: "alpine-keys-2.6"
+        version: "r0"
+      - name: "alpine-release-3.24.1"
+        version: "r0"
+      - name: "apk-tools-3.0.6"
+        version: "r0"
+      - name: "apk-tools-bash-completion-3.0.6"
+        version: "r0"
+      - name: "bash-5.3.9"
+        version: "r1"
+      - name: "bash-completion-2.17.0"
+        version: "r1"
+      - name: "bind-libs-9.20.24"
+        version: "r0"
+      - name: "bind-tools-9.20.24"
+        version: "r0"
+      - name: "binutils-2.45.1"
+        version: "r1"
+      - name: "brotli-libs-1.2.0"
+        version: "r1"
+      - name: "busybox-1.37.0"
+        version: "r31"
+      - name: "busybox-binsh-1.37.0"
+        version: "r31"
+      - name: "c-ares-1.34.6"
+        version: "r0"
+      - name: "ca-certificates-bundle-20260611"
+        version: "r0"
+      - name: "coreutils-9.11"
+        version: "r0"
+      - name: "coreutils-env-9.11"
+        version: "r0"
+      - name: "coreutils-fmt-9.11"
+        version: "r0"
+      - name: "coreutils-sha512sum-9.11"
+        version: "r0"
+      - name: "curl-8.21.0"
+        version: "r0"
+      - name: "fstrm-0.6.1"
+        version: "r4"
+      - name: "git-2.54.0"
+        version: "r0"
+      - name: "git-bash-completion-2.54.0"
+        version: "r0"
+      - name: "git-init-template-2.54.0"
+        version: "r0"
+      - name: "grep-3.12"
+        version: "r0"
+      - name: "iproute2-7.0.0"
+        version: "r0"
+      - name: "iproute2-bash-completion-7.0.0"
+        version: "r0"
+      - name: "iproute2-minimal-7.0.0"
+        version: "r0"
+      - name: "iproute2-ss-7.0.0"
+        version: "r0"
+      - name: "iproute2-tc-7.0.0"
+        version: "r0"
+      - name: "jansson-2.15.0"
+        version: "r0"
+      - name: "jq-1.8.1"
+        version: "r0"
+      - name: "json-c-0.18"
+        version: "r1"
+      - name: "keyutils-libs-1.6.3"
+        version: "r4"
+      - name: "krb5-conf-1.0"
+        version: "r2"
+      - name: "krb5-libs-1.22.2"
+        version: "r1"
+      - name: "libapk-3.0.6"
+        version: "r0"
+      - name: "libattr-2.5.2"
+        version: "r2"
+      - name: "libbsd-0.12.2"
+        version: "r0"
+      - name: "libcap-2.78"
+        version: "r0"
+      - name: "libcap-getcap-2.78"
+        version: "r0"
+      - name: "libcap-setcap-2.78"
+        version: "r0"
+      - name: "libcap-utils-2.78"
+        version: "r0"
+      - name: "libcap2-2.78"
+        version: "r0"
+      - name: "libcom_err-1.47.4"
+        version: "r0"
+      - name: "libcrypto3-3.5.7"
+        version: "r0"
+      - name: "libcurl-8.21.0"
+        version: "r0"
+      - name: "libelf-0.195"
+        version: "r0"
+      - name: "libexpat-2.8.2"
+        version: "r0"
+      - name: "libgcc-15.2.0"
+        version: "r5"
+      - name: "libidn2-2.3.8"
+        version: "r0"
+      - name: "libintl-1.0"
+        version: "r0"
+      - name: "libmd-1.2.0"
+        version: "r0"
+      - name: "libmnl-1.0.5"
+        version: "r2"
+      - name: "libncursesw-6.6_p20260516"
+        version: "r0"
+      - name: "libproc2-4.0.6"
+        version: "r0"
+      - name: "libpsl-0.21.5"
+        version: "r3"
+      - name: "libssl3-3.5.7"
+        version: "r0"
+      - name: "libstdc++-15.2.0"
+        version: "r5"
+      - name: "libunistring-1.4.2"
+        version: "r0"
+      - name: "libuv-1.52.1"
+        version: "r0"
+      - name: "libverto-0.3.2"
+        version: "r2"
+      - name: "libxml2-2.13.9"
+        version: "r2"
+      - name: "libxtables-1.8.13"
+        version: "r0"
+      - name: "linux-pam-1.7.1"
+        version: "r2"
+      - name: "logrotate-3.22.0"
+        version: "r0"
+      - name: "musl-1.2.6"
+        version: "r2"
+      - name: "musl-utils-1.2.6"
+        version: "r2"
+      - name: "ncurses-6.6_p20260516"
+        version: "r0"
+      - name: "ncurses-terminfo-base-6.6_p20260516"
+        version: "r0"
+      - name: "nghttp2-libs-1.69.0"
+        version: "r0"
+      - name: "oniguruma-6.9.10"
+        version: "r0"
+      - name: "pcre2-10.47"
+        version: "r1"
+      - name: "popt-1.19"
+        version: "r4"
+      - name: "procps-ng-4.0.6"
+        version: "r0"
+      - name: "protobuf-c-1.5.2"
+        version: "r2"
+      - name: "psmisc-23.7"
+        version: "r0"
+      - name: "readline-8.3.3"
+        version: "r1"
+      - name: "scanelf-1.3.9"
+        version: "r1"
+      - name: "shadow-4.18.0"
+        version: "r1"
+      - name: "skalibs-libs-2.15.0.0"
+        version: "r0"
+      - name: "ssl_client-1.37.0"
+        version: "r31"
+      - name: "sudo-1.9.17_p2"
+        version: "r1"
+      - name: "tzdata-2026b"
+        version: "r0"
+      - name: "unzip-6.0"
+        version: "r16"
+      - name: "userspace-rcu-0.15.3"
+        version: "r0"
+      - name: "utmps-libs-0.1.3.3"
+        version: "r0"
+      - name: "wget-1.25.0"
+        version: "r3"
+      - name: "xz-libs-5.8.3"
+        version: "r0"
+      - name: "zlib-1.3.2"
+        version: "r0"
+      - name: "zstd-libs-1.5.7"
+        version: "r2"
 
 ---
 
@@ -2991,6 +2991,179 @@ containers:
 ## Containers
 
 
+### ldap-server
+
+**Status:** running
+
+#### Image
+
+| Property | Value |
+|---|---|
+| Name | ghcr.io/elaverick/homelab/ldap:1.3.6 |
+| ID | 15a286325dae862147518fa379c49d502e3ab50b5e6118e390ecc3564e7f2f44 |
+| Digest | ghcr.io/elaverick/homelab/ldap@sha256:c4cda2bce9ab9a7d2229a140046a93486ca62917947d6c466ab80b12f23faca4 |
+| Version | 1.3.6 |
+| Revision | 7c796a6d704d4371c070e3e3ba5c5885e3a3e78f |
+
+#### Operating System
+
+| Property | Value |
+|---|---|
+| ID | debian |
+| ID Like |  |
+| Name | Debian GNU/Linux 12 (bookworm) |
+
+#### Package Manager
+
+`dpkg`
+
+#### Installed Packages
+
+
+| Package | Version | Architecture | Status |
+|---|---|---|---|
+| adduser | 3.134 | all | install ok installed |
+| apt | 2.6.1 | amd64 | install ok installed |
+| base-files | 12.4+deb12u15 | amd64 | install ok installed |
+| base-passwd | 3.6.1 | amd64 | install ok installed |
+| bash | 5.2.15-2+b13 | amd64 | install ok installed |
+| bsdutils | 1:2.38.1-5+deb12u3 | amd64 | install ok installed |
+| ca-certificates | 20250419~deb12u1 | all | install ok installed |
+| coreutils | 9.1-1 | amd64 | install ok installed |
+| dash | 0.5.12-2 | amd64 | install ok installed |
+| debconf | 1.5.82 | all | install ok installed |
+| debconf-utils | 1.5.82 | all | install ok installed |
+| debian-archive-keyring | 2023.3+deb12u2 | all | install ok installed |
+| debianutils | 5.7-0.5~deb12u1 | amd64 | install ok installed |
+| diffutils | 1:3.8-4 | amd64 | install ok installed |
+| dpkg | 1.21.23 | amd64 | install ok installed |
+| e2fsprogs | 1.47.0-2+b2 | amd64 | install ok installed |
+| findutils | 4.9.0-4 | amd64 | install ok installed |
+| gcc-12-base | 12.2.0-14+deb12u1 | amd64 | install ok installed |
+| gpgv | 2.2.40-1.1+deb12u2 | amd64 | install ok installed |
+| grep | 3.8-5 | amd64 | install ok installed |
+| gzip | 1.12-1 | amd64 | install ok installed |
+| hostname | 3.23+nmu1 | amd64 | install ok installed |
+| init-system-helpers | 1.65.2+deb12u1 | all | install ok installed |
+| ldap-utils | 2.5.13+dfsg-5 | amd64 | install ok installed |
+| libacl1 | 2.3.1-3 | amd64 | install ok installed |
+| libapt-pkg6.0 | 2.6.1 | amd64 | install ok installed |
+| libargon2-1 | 0~20171227-0.3+deb12u1 | amd64 | install ok installed |
+| libattr1 | 1:2.5.1-4 | amd64 | install ok installed |
+| libaudit-common | 1:3.0.9-1 | all | install ok installed |
+| libaudit1 | 1:3.0.9-1 | amd64 | install ok installed |
+| libblkid1 | 2.38.1-5+deb12u3 | amd64 | install ok installed |
+| libbz2-1.0 | 1.0.8-5+b1 | amd64 | install ok installed |
+| libc-bin | 2.36-9+deb12u14 | amd64 | install ok installed |
+| libc6 | 2.36-9+deb12u14 | amd64 | install ok installed |
+| libcap-ng0 | 0.8.3-1+b3 | amd64 | install ok installed |
+| libcap2 | 1:2.66-4+deb12u3+b1 | amd64 | install ok installed |
+| libcom-err2 | 1.47.0-2+b2 | amd64 | install ok installed |
+| libcrypt1 | 1:4.4.33-2 | amd64 | install ok installed |
+| libdb5.3 | 5.3.28+dfsg2-1 | amd64 | install ok installed |
+| libdebconfclient0 | 0.270 | amd64 | install ok installed |
+| libexpat1 | 2.5.0-1+deb12u2 | amd64 | install ok installed |
+| libext2fs2 | 1.47.0-2+b2 | amd64 | install ok installed |
+| libffi8 | 3.4.4-1 | amd64 | install ok installed |
+| libgcc-s1 | 12.2.0-14+deb12u1 | amd64 | install ok installed |
+| libgcrypt20 | 1.10.1-3+deb12u1 | amd64 | install ok installed |
+| libgdbm-compat4 | 1.23-3 | amd64 | install ok installed |
+| libgdbm6 | 1.23-3 | amd64 | install ok installed |
+| libgmp10 | 2:6.2.1+dfsg1-1.1 | amd64 | install ok installed |
+| libgnutls30 | 3.7.9-2+deb12u7 | amd64 | install ok installed |
+| libgpg-error0 | 1.46-1 | amd64 | install ok installed |
+| libgssapi-krb5-2 | 1.20.1-2+deb12u5 | amd64 | install ok installed |
+| libhogweed6 | 3.8.1-2 | amd64 | install ok installed |
+| libidn2-0 | 2.3.3-1+b1 | amd64 | install ok installed |
+| libk5crypto3 | 1.20.1-2+deb12u5 | amd64 | install ok installed |
+| libkeyutils1 | 1.6.3-2 | amd64 | install ok installed |
+| libkrb5-3 | 1.20.1-2+deb12u5 | amd64 | install ok installed |
+| libkrb5support0 | 1.20.1-2+deb12u5 | amd64 | install ok installed |
+| libldap-2.5-0 | 2.5.13+dfsg-5 | amd64 | install ok installed |
+| libltdl7 | 2.4.7-7~deb12u1 | amd64 | install ok installed |
+| liblz4-1 | 1.9.4-1 | amd64 | install ok installed |
+| liblzma5 | 5.4.1-1+deb12u1 | amd64 | install ok installed |
+| libmd0 | 1.0.4-2 | amd64 | install ok installed |
+| libmount1 | 2.38.1-5+deb12u3 | amd64 | install ok installed |
+| libncursesw6 | 6.4-4 | amd64 | install ok installed |
+| libnettle8 | 3.8.1-2 | amd64 | install ok installed |
+| libnsl2 | 1.3.0-2 | amd64 | install ok installed |
+| libodbc2 | 2.3.11-2+deb12u1 | amd64 | install ok installed |
+| libp11-kit0 | 0.24.1-2 | amd64 | install ok installed |
+| libpam-modules | 1.5.2-6+deb12u2 | amd64 | install ok installed |
+| libpam-modules-bin | 1.5.2-6+deb12u2 | amd64 | install ok installed |
+| libpam-runtime | 1.5.2-6+deb12u2 | all | install ok installed |
+| libpam0g | 1.5.2-6+deb12u2 | amd64 | install ok installed |
+| libpcre2-8-0 | 10.42-1 | amd64 | install ok installed |
+| libperl5.36 | 5.36.0-7+deb12u3 | amd64 | install ok installed |
+| libpython3-stdlib | 3.11.2-1+b1 | amd64 | install ok installed |
+| libpython3.11-minimal | 3.11.2-6+deb12u8 | amd64 | install ok installed |
+| libpython3.11-stdlib | 3.11.2-6+deb12u8 | amd64 | install ok installed |
+| libreadline8 | 8.2-1.3 | amd64 | install ok installed |
+| libsasl2-2 | 2.1.28+dfsg-10 | amd64 | install ok installed |
+| libsasl2-modules-db | 2.1.28+dfsg-10 | amd64 | install ok installed |
+| libseccomp2 | 2.5.4-1+deb12u1 | amd64 | install ok installed |
+| libselinux1 | 3.4-1+b6 | amd64 | install ok installed |
+| libsemanage-common | 3.4-1 | all | install ok installed |
+| libsemanage2 | 3.4-1+b5 | amd64 | install ok installed |
+| libsepol2 | 3.4-2.1 | amd64 | install ok installed |
+| libsmartcols1 | 2.38.1-5+deb12u3 | amd64 | install ok installed |
+| libsqlite3-0 | 3.40.1-2+deb12u2 | amd64 | install ok installed |
+| libss2 | 1.47.0-2+b2 | amd64 | install ok installed |
+| libssl3 | 3.0.20-1~deb12u2 | amd64 | install ok installed |
+| libstdc++6 | 12.2.0-14+deb12u1 | amd64 | install ok installed |
+| libsystemd0 | 252.39-1~deb12u2 | amd64 | install ok installed |
+| libtasn1-6 | 4.19.0-2+deb12u1 | amd64 | install ok installed |
+| libtinfo6 | 6.4-4 | amd64 | install ok installed |
+| libtirpc-common | 1.3.3+ds-1 | all | install ok installed |
+| libtirpc3 | 1.3.3+ds-1 | amd64 | install ok installed |
+| libudev1 | 252.39-1~deb12u2 | amd64 | install ok installed |
+| libunistring2 | 1.0-2 | amd64 | install ok installed |
+| libuuid1 | 2.38.1-5+deb12u3 | amd64 | install ok installed |
+| libwrap0 | 7.6.q-32 | amd64 | install ok installed |
+| libxxhash0 | 0.8.1-1 | amd64 | install ok installed |
+| libyaml-0-2 | 0.2.5-1 | amd64 | install ok installed |
+| libzstd1 | 1.5.4+dfsg2-5 | amd64 | install ok installed |
+| login | 1:4.13+dfsg1-1+deb12u2 | amd64 | install ok installed |
+| logsave | 1.47.0-2+b2 | amd64 | install ok installed |
+| mawk | 1.3.4.20200120-3.1 | amd64 | install ok installed |
+| media-types | 10.0.0 | all | install ok installed |
+| mount | 2.38.1-5+deb12u3 | amd64 | install ok installed |
+| ncurses-base | 6.4-4 | all | install ok installed |
+| ncurses-bin | 6.4-4 | amd64 | install ok installed |
+| openssl | 3.0.20-1~deb12u2 | amd64 | install ok installed |
+| passwd | 1:4.13+dfsg1-1+deb12u2 | amd64 | install ok installed |
+| perl | 5.36.0-7+deb12u3 | amd64 | install ok installed |
+| perl-base | 5.36.0-7+deb12u3 | amd64 | install ok installed |
+| perl-modules-5.36 | 5.36.0-7+deb12u3 | all | install ok installed |
+| psmisc | 23.6-1 | amd64 | install ok installed |
+| python3 | 3.11.2-1+b1 | amd64 | install ok installed |
+| python3-distutils | 3.11.2-3 | all | install ok installed |
+| python3-ldap | 3.4.3-2+deb12u1 | amd64 | install ok installed |
+| python3-lib2to3 | 3.11.2-3 | all | install ok installed |
+| python3-minimal | 3.11.2-1+b1 | amd64 | install ok installed |
+| python3-pip | 23.0.1+dfsg-1 | all | install ok installed |
+| python3-pkg-resources | 66.1.1-1+deb12u2 | all | install ok installed |
+| python3-pyasn1 | 0.4.8-3+deb12u2 | all | install ok installed |
+| python3-pyasn1-modules | 0.2.8-1 | all | install ok installed |
+| python3-setuptools | 66.1.1-1+deb12u2 | all | install ok installed |
+| python3-wheel | 0.38.4-2 | all | install ok installed |
+| python3-yaml | 6.0-3+b2 | amd64 | install ok installed |
+| python3.11 | 3.11.2-6+deb12u8 | amd64 | install ok installed |
+| python3.11-minimal | 3.11.2-6+deb12u8 | amd64 | install ok installed |
+| readline-common | 8.2-1.3 | all | install ok installed |
+| sed | 4.9-1+deb12u1 | amd64 | install ok installed |
+| slapd | 2.5.13+dfsg-5 | amd64 | install ok installed |
+| sysvinit-utils | 3.06-4 | amd64 | install ok installed |
+| tar | 1.34+dfsg-1.2+deb12u1 | amd64 | install ok installed |
+| tzdata | 2026b-0+deb12u1 | all | install ok installed |
+| usr-is-merged | 37~deb12u1 | all | install ok installed |
+| util-linux | 2.38.1-5+deb12u3 | amd64 | install ok installed |
+| util-linux-extra | 2.38.1-5+deb12u3 | amd64 | install ok installed |
+| zlib1g | 1:1.2.13.dfsg-1 | amd64 | install ok installed |
+
+
+
 ### intermediate-ca
 
 **Status:** running
@@ -3182,178 +3355,5 @@ containers:
 | xz-libs-5.8.3 | r0 |  |  |
 | zlib-1.3.2 | r0 |  |  |
 | zstd-libs-1.5.7 | r2 |  |  |
-
-
-
-### ldap-server
-
-**Status:** running
-
-#### Image
-
-| Property | Value |
-|---|---|
-| Name | ghcr.io/elaverick/homelab/ldap:1.3.6 |
-| ID | 15a286325dae862147518fa379c49d502e3ab50b5e6118e390ecc3564e7f2f44 |
-| Digest | ghcr.io/elaverick/homelab/ldap@sha256:c4cda2bce9ab9a7d2229a140046a93486ca62917947d6c466ab80b12f23faca4 |
-| Version | 1.3.6 |
-| Revision | 7c796a6d704d4371c070e3e3ba5c5885e3a3e78f |
-
-#### Operating System
-
-| Property | Value |
-|---|---|
-| ID | debian |
-| ID Like |  |
-| Name | Debian GNU/Linux 12 (bookworm) |
-
-#### Package Manager
-
-`dpkg`
-
-#### Installed Packages
-
-
-| Package | Version | Architecture | Status |
-|---|---|---|---|
-| adduser | 3.134 | all | install ok installed |
-| apt | 2.6.1 | amd64 | install ok installed |
-| base-files | 12.4+deb12u15 | amd64 | install ok installed |
-| base-passwd | 3.6.1 | amd64 | install ok installed |
-| bash | 5.2.15-2+b13 | amd64 | install ok installed |
-| bsdutils | 1:2.38.1-5+deb12u3 | amd64 | install ok installed |
-| ca-certificates | 20250419~deb12u1 | all | install ok installed |
-| coreutils | 9.1-1 | amd64 | install ok installed |
-| dash | 0.5.12-2 | amd64 | install ok installed |
-| debconf | 1.5.82 | all | install ok installed |
-| debconf-utils | 1.5.82 | all | install ok installed |
-| debian-archive-keyring | 2023.3+deb12u2 | all | install ok installed |
-| debianutils | 5.7-0.5~deb12u1 | amd64 | install ok installed |
-| diffutils | 1:3.8-4 | amd64 | install ok installed |
-| dpkg | 1.21.23 | amd64 | install ok installed |
-| e2fsprogs | 1.47.0-2+b2 | amd64 | install ok installed |
-| findutils | 4.9.0-4 | amd64 | install ok installed |
-| gcc-12-base | 12.2.0-14+deb12u1 | amd64 | install ok installed |
-| gpgv | 2.2.40-1.1+deb12u2 | amd64 | install ok installed |
-| grep | 3.8-5 | amd64 | install ok installed |
-| gzip | 1.12-1 | amd64 | install ok installed |
-| hostname | 3.23+nmu1 | amd64 | install ok installed |
-| init-system-helpers | 1.65.2+deb12u1 | all | install ok installed |
-| ldap-utils | 2.5.13+dfsg-5 | amd64 | install ok installed |
-| libacl1 | 2.3.1-3 | amd64 | install ok installed |
-| libapt-pkg6.0 | 2.6.1 | amd64 | install ok installed |
-| libargon2-1 | 0~20171227-0.3+deb12u1 | amd64 | install ok installed |
-| libattr1 | 1:2.5.1-4 | amd64 | install ok installed |
-| libaudit-common | 1:3.0.9-1 | all | install ok installed |
-| libaudit1 | 1:3.0.9-1 | amd64 | install ok installed |
-| libblkid1 | 2.38.1-5+deb12u3 | amd64 | install ok installed |
-| libbz2-1.0 | 1.0.8-5+b1 | amd64 | install ok installed |
-| libc-bin | 2.36-9+deb12u14 | amd64 | install ok installed |
-| libc6 | 2.36-9+deb12u14 | amd64 | install ok installed |
-| libcap-ng0 | 0.8.3-1+b3 | amd64 | install ok installed |
-| libcap2 | 1:2.66-4+deb12u3+b1 | amd64 | install ok installed |
-| libcom-err2 | 1.47.0-2+b2 | amd64 | install ok installed |
-| libcrypt1 | 1:4.4.33-2 | amd64 | install ok installed |
-| libdb5.3 | 5.3.28+dfsg2-1 | amd64 | install ok installed |
-| libdebconfclient0 | 0.270 | amd64 | install ok installed |
-| libexpat1 | 2.5.0-1+deb12u2 | amd64 | install ok installed |
-| libext2fs2 | 1.47.0-2+b2 | amd64 | install ok installed |
-| libffi8 | 3.4.4-1 | amd64 | install ok installed |
-| libgcc-s1 | 12.2.0-14+deb12u1 | amd64 | install ok installed |
-| libgcrypt20 | 1.10.1-3+deb12u1 | amd64 | install ok installed |
-| libgdbm-compat4 | 1.23-3 | amd64 | install ok installed |
-| libgdbm6 | 1.23-3 | amd64 | install ok installed |
-| libgmp10 | 2:6.2.1+dfsg1-1.1 | amd64 | install ok installed |
-| libgnutls30 | 3.7.9-2+deb12u7 | amd64 | install ok installed |
-| libgpg-error0 | 1.46-1 | amd64 | install ok installed |
-| libgssapi-krb5-2 | 1.20.1-2+deb12u5 | amd64 | install ok installed |
-| libhogweed6 | 3.8.1-2 | amd64 | install ok installed |
-| libidn2-0 | 2.3.3-1+b1 | amd64 | install ok installed |
-| libk5crypto3 | 1.20.1-2+deb12u5 | amd64 | install ok installed |
-| libkeyutils1 | 1.6.3-2 | amd64 | install ok installed |
-| libkrb5-3 | 1.20.1-2+deb12u5 | amd64 | install ok installed |
-| libkrb5support0 | 1.20.1-2+deb12u5 | amd64 | install ok installed |
-| libldap-2.5-0 | 2.5.13+dfsg-5 | amd64 | install ok installed |
-| libltdl7 | 2.4.7-7~deb12u1 | amd64 | install ok installed |
-| liblz4-1 | 1.9.4-1 | amd64 | install ok installed |
-| liblzma5 | 5.4.1-1+deb12u1 | amd64 | install ok installed |
-| libmd0 | 1.0.4-2 | amd64 | install ok installed |
-| libmount1 | 2.38.1-5+deb12u3 | amd64 | install ok installed |
-| libncursesw6 | 6.4-4 | amd64 | install ok installed |
-| libnettle8 | 3.8.1-2 | amd64 | install ok installed |
-| libnsl2 | 1.3.0-2 | amd64 | install ok installed |
-| libodbc2 | 2.3.11-2+deb12u1 | amd64 | install ok installed |
-| libp11-kit0 | 0.24.1-2 | amd64 | install ok installed |
-| libpam-modules | 1.5.2-6+deb12u2 | amd64 | install ok installed |
-| libpam-modules-bin | 1.5.2-6+deb12u2 | amd64 | install ok installed |
-| libpam-runtime | 1.5.2-6+deb12u2 | all | install ok installed |
-| libpam0g | 1.5.2-6+deb12u2 | amd64 | install ok installed |
-| libpcre2-8-0 | 10.42-1 | amd64 | install ok installed |
-| libperl5.36 | 5.36.0-7+deb12u3 | amd64 | install ok installed |
-| libpython3-stdlib | 3.11.2-1+b1 | amd64 | install ok installed |
-| libpython3.11-minimal | 3.11.2-6+deb12u8 | amd64 | install ok installed |
-| libpython3.11-stdlib | 3.11.2-6+deb12u8 | amd64 | install ok installed |
-| libreadline8 | 8.2-1.3 | amd64 | install ok installed |
-| libsasl2-2 | 2.1.28+dfsg-10 | amd64 | install ok installed |
-| libsasl2-modules-db | 2.1.28+dfsg-10 | amd64 | install ok installed |
-| libseccomp2 | 2.5.4-1+deb12u1 | amd64 | install ok installed |
-| libselinux1 | 3.4-1+b6 | amd64 | install ok installed |
-| libsemanage-common | 3.4-1 | all | install ok installed |
-| libsemanage2 | 3.4-1+b5 | amd64 | install ok installed |
-| libsepol2 | 3.4-2.1 | amd64 | install ok installed |
-| libsmartcols1 | 2.38.1-5+deb12u3 | amd64 | install ok installed |
-| libsqlite3-0 | 3.40.1-2+deb12u2 | amd64 | install ok installed |
-| libss2 | 1.47.0-2+b2 | amd64 | install ok installed |
-| libssl3 | 3.0.20-1~deb12u2 | amd64 | install ok installed |
-| libstdc++6 | 12.2.0-14+deb12u1 | amd64 | install ok installed |
-| libsystemd0 | 252.39-1~deb12u2 | amd64 | install ok installed |
-| libtasn1-6 | 4.19.0-2+deb12u1 | amd64 | install ok installed |
-| libtinfo6 | 6.4-4 | amd64 | install ok installed |
-| libtirpc-common | 1.3.3+ds-1 | all | install ok installed |
-| libtirpc3 | 1.3.3+ds-1 | amd64 | install ok installed |
-| libudev1 | 252.39-1~deb12u2 | amd64 | install ok installed |
-| libunistring2 | 1.0-2 | amd64 | install ok installed |
-| libuuid1 | 2.38.1-5+deb12u3 | amd64 | install ok installed |
-| libwrap0 | 7.6.q-32 | amd64 | install ok installed |
-| libxxhash0 | 0.8.1-1 | amd64 | install ok installed |
-| libyaml-0-2 | 0.2.5-1 | amd64 | install ok installed |
-| libzstd1 | 1.5.4+dfsg2-5 | amd64 | install ok installed |
-| login | 1:4.13+dfsg1-1+deb12u2 | amd64 | install ok installed |
-| logsave | 1.47.0-2+b2 | amd64 | install ok installed |
-| mawk | 1.3.4.20200120-3.1 | amd64 | install ok installed |
-| media-types | 10.0.0 | all | install ok installed |
-| mount | 2.38.1-5+deb12u3 | amd64 | install ok installed |
-| ncurses-base | 6.4-4 | all | install ok installed |
-| ncurses-bin | 6.4-4 | amd64 | install ok installed |
-| openssl | 3.0.20-1~deb12u2 | amd64 | install ok installed |
-| passwd | 1:4.13+dfsg1-1+deb12u2 | amd64 | install ok installed |
-| perl | 5.36.0-7+deb12u3 | amd64 | install ok installed |
-| perl-base | 5.36.0-7+deb12u3 | amd64 | install ok installed |
-| perl-modules-5.36 | 5.36.0-7+deb12u3 | all | install ok installed |
-| psmisc | 23.6-1 | amd64 | install ok installed |
-| python3 | 3.11.2-1+b1 | amd64 | install ok installed |
-| python3-distutils | 3.11.2-3 | all | install ok installed |
-| python3-ldap | 3.4.3-2+deb12u1 | amd64 | install ok installed |
-| python3-lib2to3 | 3.11.2-3 | all | install ok installed |
-| python3-minimal | 3.11.2-1+b1 | amd64 | install ok installed |
-| python3-pip | 23.0.1+dfsg-1 | all | install ok installed |
-| python3-pkg-resources | 66.1.1-1+deb12u2 | all | install ok installed |
-| python3-pyasn1 | 0.4.8-3+deb12u2 | all | install ok installed |
-| python3-pyasn1-modules | 0.2.8-1 | all | install ok installed |
-| python3-setuptools | 66.1.1-1+deb12u2 | all | install ok installed |
-| python3-wheel | 0.38.4-2 | all | install ok installed |
-| python3-yaml | 6.0-3+b2 | amd64 | install ok installed |
-| python3.11 | 3.11.2-6+deb12u8 | amd64 | install ok installed |
-| python3.11-minimal | 3.11.2-6+deb12u8 | amd64 | install ok installed |
-| readline-common | 8.2-1.3 | all | install ok installed |
-| sed | 4.9-1+deb12u1 | amd64 | install ok installed |
-| slapd | 2.5.13+dfsg-5 | amd64 | install ok installed |
-| sysvinit-utils | 3.06-4 | amd64 | install ok installed |
-| tar | 1.34+dfsg-1.2+deb12u1 | amd64 | install ok installed |
-| tzdata | 2026b-0+deb12u1 | all | install ok installed |
-| usr-is-merged | 37~deb12u1 | all | install ok installed |
-| util-linux | 2.38.1-5+deb12u3 | amd64 | install ok installed |
-| util-linux-extra | 2.38.1-5+deb12u3 | amd64 | install ok installed |
-| zlib1g | 1:1.2.13.dfsg-1 | amd64 | install ok installed |
 
 
