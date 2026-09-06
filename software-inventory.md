@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-09-06T19:16:10Z"
+generated_at: "2026-09-06T19:55:34Z"
 
 host:
   operating_system:
@@ -264,6 +264,10 @@ host:
     - name: "fail2ban"
       version: "1.1.0-8"
       architecture: "all"
+      status: "install ok installed"
+    - name: "fastfetch"
+      version: "2.68.1"
+      architecture: "amd64"
       status: "install ok installed"
     - name: "fdisk"
       version: "2.41.5-0+deb13u1"
@@ -3445,6 +3449,7 @@ containers:
 | e2fsprogs | 1.47.2-3+b11 | amd64 | install ok installed |
 | emacsen-common | 3.0.8 | all | install ok installed |
 | fail2ban | 1.1.0-8 | all | install ok installed |
+| fastfetch | 2.68.1 | amd64 | install ok installed |
 | fdisk | 2.41.5-0+deb13u1 | amd64 | install ok installed |
 | file | 1:5.46-5 | amd64 | install ok installed |
 | findutils | 4.10.0-3 | amd64 | install ok installed |
