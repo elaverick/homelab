@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-09-06T11:16:04Z"
+generated_at: "2026-09-06T11:24:04Z"
 
 host:
   operating_system:
@@ -2781,7 +2781,7 @@ containers:
         architecture: "amd64"
         status: "install ok installed"
   - name: "ldap-server"
-    id: "f0d9c93a48973825c9957daf8d5d0190abc5e431d2eeb50cc9d6f324a7d55ee8"
+    id: "acea856b609af752604b3f28b584cfc7c7c1a89767eaac22aea46683c01ad019"
     status: "running"
 
     image:
