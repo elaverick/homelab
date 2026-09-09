@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-09-06T19:55:34Z"
+generated_at: "2026-09-09T18:42:40Z"
 
 host:
   operating_system:
@@ -1687,8 +1687,27 @@ host:
       status: "install ok installed"
 
 containers:
+  - name: "freeradius-debug"
+    id: "daa5b135511812ad859144fd79fbc9cc56be041af855e2a7fd7e90920b6117b9"
+    status: "exited"
+
+    image:
+      name: "docker.io/freeradius/freeradius-server:3.2.10"
+      id: "801bb663071f6230612cd2ca43cbc3ebd9ba7887b32a6716d632ce2d847c6c9d"
+      digest: "docker.io/freeradius/freeradius-server@sha256:cc7fd136e7b03e7b332d94297530318e824a4ecfedbce54562cced723e71e812"
+      version: "22.04"
+      revision: ""
+
+    operating_system:
+      id: "unknown"
+      id_like: ""
+      name: "Unknown"
+
+    package_manager: "unknown"
+
+    packages:
   - name: "ldap-server"
-    id: "23825b74a2429bc74da283eb6d95d85f57c1ea476ceb41dd263f5668fd21b5a3"
+    id: "4f452bf6511ce23836a14b3f316c56770c49151c0080e8af7df9a3f67a353fa4"
     status: "running"
 
     image:
@@ -2263,7 +2282,7 @@ containers:
         architecture: "amd64"
         status: "install ok installed"
   - name: "pihole"
-    id: "acac1977a3f627dcc8502b3304b0a442c9ecf2a181ae2bc475536f932c16298e"
+    id: "6e0d4a75b362e023b290ea0fbfede2249c786163ece30e560b8275ef695ad4cd"
     status: "running"
 
     image:
@@ -2468,7 +2487,7 @@ containers:
       - name: "zstd-libs-1.5.7"
         version: "r2"
   - name: "intermediate-ca"
-    id: "e1f47c6af530a32b2c2b46464f6ae95e991c92cafb66f01de59eb0d6242ccb62"
+    id: "1c34f2fc198bb54e8517d685c4d34bc02272b607849dc12565f53b911a47651c"
     status: "running"
 
     image:
@@ -2553,7 +2572,7 @@ containers:
       - name: "zstd-libs-1.5.7"
         version: "r2"
   - name: "freeradius"
-    id: "e250ad3ef23711b61976d46c3d4e7a39695b3a10d1dc0a3eae88af921af2f7a7"
+    id: "8cef1be07a7d01a81ef2dba410369ac56a52ba54c1fa3935223a69f8955f6288"
     status: "running"
 
     image:
@@ -3806,6 +3825,39 @@ containers:
 | zstd | 1.5.7+dfsg-1 | amd64 | install ok installed |
 
 ## Containers
+
+
+### freeradius-debug
+
+**Status:** exited
+
+#### Image
+
+| Property | Value |
+|---|---|
+| Name | docker.io/freeradius/freeradius-server:3.2.10 |
+| ID | 801bb663071f6230612cd2ca43cbc3ebd9ba7887b32a6716d632ce2d847c6c9d |
+| Digest | docker.io/freeradius/freeradius-server@sha256:cc7fd136e7b03e7b332d94297530318e824a4ecfedbce54562cced723e71e812 |
+| Version | 22.04 |
+| Revision |  |
+
+#### Operating System
+
+| Property | Value |
+|---|---|
+| ID | unknown |
+| ID Like |  |
+| Name | Unknown |
+
+#### Package Manager
+
+`unknown`
+
+#### Installed Packages
+
+
+No package inventory available.
+
 
 
 ### ldap-server
