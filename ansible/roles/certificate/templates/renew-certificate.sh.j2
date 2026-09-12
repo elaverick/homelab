@@ -171,7 +171,7 @@ if [[ "${DEPLOYMENT_REQUIRED}" == true ]]; then
 
         echo "Restarting {{ certificate_deployment_target }}..."
 
-        systemctl --user restart "{{ certificate_deployment_target }}.service"
+        systemctl --machine={{ podman_user }}@.host --user restart "{{ certificate_deployment_target }}.service"
 
     fi
 

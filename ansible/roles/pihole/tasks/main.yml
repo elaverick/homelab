@@ -79,6 +79,9 @@
     insertafter: EOF
   notify: Restart dhcpcd
 
+- name: Flush handlers before issuing certificates
+  ansible.builtin.meta: flush_handlers
+
 - name: Configure Pi-hole TLS certificate
   ansible.builtin.import_tasks:
     file: certificate.yml

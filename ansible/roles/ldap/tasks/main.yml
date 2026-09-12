@@ -36,6 +36,13 @@
     name: "{{ ldap_tls_volume }}"
     state: present
 
+- name: Check whether LDAP Quadlet already exists
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.stat:
+    path: "/home/{{ podman_user }}/.config/containers/systemd/{{ ldap_quadlet_filename }}"
+  register: ldap_quadlet_file
+
 - name: Create LDAP Quadlet
   become: true
   become_user: "{{ podman_user }}"
@@ -86,7 +93,9 @@
     name: "{{ ldap_container_name }}.service"
     state: restarted
     scope: user
-  when: ldap_quadlet.changed
+  when:
+    - ldap_quadlet.changed
+    - ldap_quadlet_file.stat.exists
 
 - name: Configure LDAP certificate
   ansible.builtin.include_role:
