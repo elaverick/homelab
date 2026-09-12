@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-09-12T17:47:09Z"
+generated_at: "2026-09-12T20:10:31Z"
 
 host:
   operating_system:
@@ -1177,10 +1177,6 @@ host:
       version: "6.12.107-1"
       architecture: "amd64"
       status: "install ok installed"
-    - name: "linux-image-6.12.94+deb13-amd64"
-      version: "6.12.94-1"
-      architecture: "amd64"
-      status: "install ok installed"
     - name: "linux-image-amd64"
       version: "6.12.107-1"
       architecture: "amd64"
@@ -1680,7 +1676,7 @@ host:
 
 containers:
   - name: "intermediate-ca"
-    id: "9ae56379fa49d8e86207931cbb2394cb3bf72682b5f07e69263f2fdfb857862d"
+    id: "42f79e7004abf0edd5bcd399179dc8181fc8f5533eeb3a004f70b1ff4f970a7f"
     status: "running"
 
     image:
@@ -1765,7 +1761,7 @@ containers:
       - name: "zstd-libs-1.5.7"
         version: "r2"
   - name: "pihole"
-    id: "499aa44c2669bbe259140537f1fe430252058ad4d3c472fab7eee9e47cea330e"
+    id: "e18f21c36a055ee2dd0d5712113f165cf900cf461452563fe23291adc239cae2"
     status: "running"
 
     image:
@@ -1970,7 +1966,7 @@ containers:
       - name: "zstd-libs-1.5.7"
         version: "r2"
   - name: "ldap-server"
-    id: "7a2d33e1542fb2f4fe191b5ed5fcb62a9ef13ae73753afd00886d953e70f0c08"
+    id: "c2aa4fc362780e65b343e586b60c9af545d3e3f61b5ebb0cdc5231d35658c642"
     status: "running"
 
     image:
@@ -2545,7 +2541,7 @@ containers:
         architecture: "amd64"
         status: "install ok installed"
   - name: "freeradius"
-    id: "338968d77b1443c87de4754957f31d2be37d2dbb9044804ea1a451c4394fe30a"
+    id: "d1e31a9591d712695ba8f23750054f67be571612d4115688aefd231081e5e931"
     status: "running"
 
     image:
@@ -3669,7 +3665,6 @@ containers:
 | libzstd1 | 1.5.7+dfsg-1 | amd64 | install ok installed |
 | linux-base | 4.12.1 | all | install ok installed |
 | linux-image-6.12.107+deb13-amd64 | 6.12.107-1 | amd64 | install ok installed |
-| linux-image-6.12.94+deb13-amd64 | 6.12.94-1 | amd64 | install ok installed |
 | linux-image-amd64 | 6.12.107-1 | amd64 | install ok installed |
 | linux-sysctl-defaults | 4.12.1 | all | install ok installed |
 | locales | 2.41-12+deb13u4 | all | install ok installed |
