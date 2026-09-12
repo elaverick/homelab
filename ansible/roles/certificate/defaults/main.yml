@@ -7,6 +7,9 @@ certificate_name: ""
 certificate_deploy_path: ""
 certificate_deploy_certificate_path: ""
 certificate_deploy_key_path: ""
+certificate_deploy_owner: "root"
+certificate_deploy_group: "root"
+certificate_deploy_mode: "0600"
 
 certificate_deployment_target: ""
 

@@ -1,15 +1,13 @@
 dn: cn=managedDevice,cn=schema,cn=config
 objectClass: olcSchemaConfig
 cn: managedDevice
-
 olcAttributeTypes: ( 1.3.6.1.4.1.66636.1.1.2.1
   NAME 'deviceId'
-  DESC 'Stable identifier for a managed device enrolment'
+  DESC 'Stable identifier for a managed device enrolment; must match the device certificate CN'
   EQUALITY caseExactMatch
   SUBSTR caseExactSubstringsMatch
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
   SINGLE-VALUE )
-
 olcAttributeTypes: ( 1.3.6.1.4.1.66636.1.1.2.2
   NAME 'deviceType'
   DESC 'Broad classification of a managed device'
@@ -17,17 +15,22 @@ olcAttributeTypes: ( 1.3.6.1.4.1.66636.1.1.2.2
   SUBSTR caseIgnoreSubstringsMatch
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
   SINGLE-VALUE )
-
 olcAttributeTypes: ( 1.3.6.1.4.1.66636.1.1.2.3
   NAME 'deviceDisabled'
   DESC 'Indicates that the managed device is administratively disabled'
   EQUALITY booleanMatch
   SYNTAX 1.3.6.1.4.1.1466.115.121.1.7
   SINGLE-VALUE )
-
+olcAttributeTypes: ( 1.3.6.1.4.1.66636.1.1.2.4
+  NAME 'deviceZone'
+  DESC 'Network authorisation zone assigned to the managed device'
+  EQUALITY caseIgnoreMatch
+  SUBSTR caseIgnoreSubstringsMatch
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE )
 olcObjectClasses: ( 1.3.6.1.4.1.66636.1.1.1.1
   NAME 'managedDevice'
-  DESC 'Managed device with lifecycle metadata'
+  DESC 'Managed device with lifecycle metadata and network authorisation'
   SUP top
   AUXILIARY
-  MAY ( deviceId $ deviceType $ deviceDisabled ) )
+  MAY ( deviceId $ deviceType $ deviceDisabled $ deviceZone ) )

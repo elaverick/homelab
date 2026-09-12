@@ -98,3 +98,6 @@
     name: nginx
     enabled: true
     state: started
+
+- name: Apply NGINX changes
+  ansible.builtin.meta: flush_handlers

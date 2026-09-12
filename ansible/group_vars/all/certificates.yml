@@ -19,3 +19,4 @@ certificate_bundle_filename: "tls.pem"
 certificates:
   - pihole
   - ldap
+  - freeradius

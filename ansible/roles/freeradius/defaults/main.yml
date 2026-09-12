@@ -8,9 +8,12 @@ freeradius_config_volume: "freeradius-config"
 freeradius_config_directory: "/etc/freeradius"
 freeradius_ldap_module_config: "/mods-available/ldap"
 freeradius_ldap_module_enabled: "/mods-enabled/ldap"
+freeradius_eap_module_config: "/mods-available/eap"
 
 freeradius_trust_volume: "freeradius-trust"
 freeradius_trust_directory: "/etc/freeradius/trust"
+
+freeradius_certificate_path: "{{ freeradius_trust_directory }}/freeradius.pem"
 
 # RADIUS standard ports inside the container.
 # These are deliberately mapped to high, localhost-only host ports.

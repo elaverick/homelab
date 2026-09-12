@@ -54,6 +54,7 @@
       -Y EXTERNAL
       -H ldapi:///
       -f /tmp/managedDevice.ldif
+  register: managed_device_schema_import
   when: managed_device_schema.stdout | trim == ""
 
 - name: Remove managedDevice schema LDIF from container
