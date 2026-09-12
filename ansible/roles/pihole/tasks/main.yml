@@ -14,10 +14,6 @@
     name: "{{ pihole_data_volume }}"
     state: present
 
-- name: Configure Pi-hole TLS certificate
-  ansible.builtin.import_tasks:
-    file: certificate.yml
-
 - name: Create Pi-hole web password secret
   become: true
   become_user: "{{ podman_user }}"
@@ -64,7 +60,6 @@
   ansible.builtin.systemd_service:
     daemon_reload: true
     scope: user
-  when: pihole_quadlet.changed
 
 - name: Enable and start Pi-hole container
   become: true
@@ -83,3 +78,7 @@
     line: 'static domain_name_servers=127.0.0.1'
     insertafter: EOF
   notify: Restart dhcpcd
+
+- name: Configure Pi-hole TLS certificate
+  ansible.builtin.import_tasks:
+    file: certificate.yml

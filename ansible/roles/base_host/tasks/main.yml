@@ -38,12 +38,15 @@
       Components: main
       Signed-By: /etc/apt/keyrings/smallstep.asc
 
+- name: Update APT cache after adding Smallstep repository
+  ansible.builtin.apt:
+    update_cache: true
+
 - name: Install required host packages
   ansible.builtin.apt:
     name: "{{ base_host_packages }}"
     state: present
     update_cache: true
-    cache_valid_time: 3600
 
 - name: Ensure app-runner user exists
   ansible.builtin.user:

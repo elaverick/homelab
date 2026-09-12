@@ -46,9 +46,7 @@
 # certificate before the container can start.
 #
 # A temporary container using the same image provides the deployment target.
-# It mounts the persistent trust volume but does not mount the FreeRADIUS
-# configuration volume and therefore cannot interfere with the eventual
-# FreeRADIUS container configuration.
+# It mounts only the persistent trust volume.
 
 - name: Check whether FreeRADIUS container exists
   become: true
@@ -96,6 +94,38 @@
     - freeradius_certificate_bootstrap_container is defined
     - freeradius_certificate_bootstrap_container.changed
 
+# A named volume initially mounted over a directory containing files in the
+# image is populated by Podman's native volume copy-up behaviour.
+#
+# Mounting the configuration volume directly at /etc/freeradius allows
+# Podman to initialise it from the image while retaining the image's
+# configuration layout and ownership.
+
+- name: Create temporary FreeRADIUS configuration bootstrap container
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container:
+    name: freeradius-config-bootstrap
+    image: "{{ freeradius_image }}"
+    state: started
+    command:
+      - sleep
+      - infinity
+    volumes:
+      - "{{ freeradius_config_volume }}:{{ freeradius_config_directory }}"
+  when: freeradius_config_volume_info.changed
+  register: freeradius_config_bootstrap_container
+
+- name: Remove temporary FreeRADIUS configuration bootstrap container
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container:
+    name: freeradius-config-bootstrap
+    state: absent
+  when:
+    - freeradius_config_bootstrap_container is defined
+    - freeradius_config_bootstrap_container.changed
+
 - name: Deploy FreeRADIUS LDAP module configuration
   become: true
   become_user: "{{ podman_user }}"
@@ -106,7 +136,7 @@
     group: "{{ podman_user }}"
     mode: "0640"
   register: freeradius_ldap_config
-  no_log: true
+  no_log: false
 
 - name: Deploy FreeRADIUS EAP module configuration
   become: true
@@ -140,17 +170,14 @@
     quadlet_file_mode: "0640"
     add_hosts: "{{ dict([('ldap.' ~ domain_fqdn, 'host-gateway')]) }}"
     publish: "{{ freeradius_ports }}"
-
     volumes:
       - "{{ freeradius_config_volume }}:{{ freeradius_config_directory }}"
       - "{{ freeradius_trust_volume }}:{{ freeradius_trust_directory }}"
-
     quadlet_options:
       - "AutoUpdate=registry"
       - |
         [Install]
         WantedBy=default.target
-
   register: freeradius_quadlet
 
 - name: Reload app-runner user systemd manager

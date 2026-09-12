@@ -8,8 +8,8 @@
     - base_host
     - nginx
     - intermediate-ca
+    - pihole
     - ldap
     - ldap-config
-    - pihole
     - freeradius
     - software-inventory
