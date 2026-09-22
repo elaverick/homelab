@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-09-22T19:35:12Z"
+generated_at: "2026-09-22T19:43:36Z"
 
 host:
   operating_system:
@@ -3348,15 +3348,15 @@ containers:
       - name: "zstd-libs-1.5.7"
         version: "r2"
   - name: "podwatch"
-    id: "4a7f63d83ebe09f8938e6d6db4658f1ca995a974b35bf76fcb63b76f59547b02"
+    id: "d5f4865ecd8bb72f315d64686e96fb59b435c7c66bb8e2260647171f7afd3caf"
     status: "running"
 
     image:
       name: "ghcr.io/elaverick/podwatch:latest"
-      id: "021a2bdc8de32e804c130e5144eff4655f110dbd835554985b28c58d15dbe6fc"
-      digest: "ghcr.io/elaverick/podwatch@sha256:a2c6b6a34918afdcc73ec7d4b2ed22f8710c43e15e9259bfb84e5808e2e81cf1"
+      id: "94426a3cebb4e2d0c8af2a46f740657675b366e4b5d55f66bb76c65bcc515efc"
+      digest: "ghcr.io/elaverick/podwatch@sha256:54d2ecb158f57b39bdb048157606c70889e24a71878e173708845bb31c0165c9"
       version: "latest"
-      revision: "e492d9841fb071728c23a3e6f46d1cc4e38c7643"
+      revision: "cea82f309e2c8ae876208ae72e065a95ee0109d6"
 
     operating_system:
       id: "debian"
@@ -4771,10 +4771,10 @@ containers:
 | Property | Value |
 |---|---|
 | Name | ghcr.io/elaverick/podwatch:latest |
-| ID | 021a2bdc8de32e804c130e5144eff4655f110dbd835554985b28c58d15dbe6fc |
-| Digest | ghcr.io/elaverick/podwatch@sha256:a2c6b6a34918afdcc73ec7d4b2ed22f8710c43e15e9259bfb84e5808e2e81cf1 |
+| ID | 94426a3cebb4e2d0c8af2a46f740657675b366e4b5d55f66bb76c65bcc515efc |
+| Digest | ghcr.io/elaverick/podwatch@sha256:54d2ecb158f57b39bdb048157606c70889e24a71878e173708845bb31c0165c9 |
 | Version | latest |
-| Revision | e492d9841fb071728c23a3e6f46d1cc4e38c7643 |
+| Revision | cea82f309e2c8ae876208ae72e065a95ee0109d6 |
 
 #### Operating System
 
