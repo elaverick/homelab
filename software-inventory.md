@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-09-22T18:21:39Z"
+generated_at: "2026-09-22T19:35:12Z"
 
 host:
   operating_system:
@@ -58,15 +58,15 @@ host:
       architecture: "all"
       status: "install ok installed"
     - name: "bind9-dnsutils"
-      version: "1:9.20.26-1~deb13u1"
+      version: "1:9.20.29-1~deb13u1"
       architecture: "amd64"
       status: "install ok installed"
     - name: "bind9-host"
-      version: "1:9.20.26-1~deb13u1"
+      version: "1:9.20.29-1~deb13u1"
       architecture: "amd64"
       status: "install ok installed"
     - name: "bind9-libs"
-      version: "1:9.20.26-1~deb13u1"
+      version: "1:9.20.29-1~deb13u1"
       architecture: "amd64"
       status: "install ok installed"
     - name: "bsdextrautils"
@@ -878,7 +878,7 @@ host:
       architecture: "amd64"
       status: "install ok installed"
     - name: "libnginx-mod-stream"
-      version: "1.26.3-3+deb13u8"
+      version: "1.26.3-3+deb13u9"
       architecture: "amd64"
       status: "install ok installed"
     - name: "libnl-3-200"
@@ -1274,11 +1274,11 @@ host:
       architecture: "amd64"
       status: "install ok installed"
     - name: "nginx"
-      version: "1.26.3-3+deb13u8"
+      version: "1.26.3-3+deb13u9"
       architecture: "amd64"
       status: "install ok installed"
     - name: "nginx-common"
-      version: "1.26.3-3+deb13u8"
+      version: "1.26.3-3+deb13u9"
       architecture: "all"
       status: "install ok installed"
     - name: "openssh-client"
@@ -3756,9 +3756,9 @@ containers:
 | base-passwd | 3.6.7 | amd64 | install ok installed |
 | bash | 5.2.37-2+b10 | amd64 | install ok installed |
 | bash-completion | 1:2.16.0-7 | all | install ok installed |
-| bind9-dnsutils | 1:9.20.26-1~deb13u1 | amd64 | install ok installed |
-| bind9-host | 1:9.20.26-1~deb13u1 | amd64 | install ok installed |
-| bind9-libs | 1:9.20.26-1~deb13u1 | amd64 | install ok installed |
+| bind9-dnsutils | 1:9.20.29-1~deb13u1 | amd64 | install ok installed |
+| bind9-host | 1:9.20.29-1~deb13u1 | amd64 | install ok installed |
+| bind9-libs | 1:9.20.29-1~deb13u1 | amd64 | install ok installed |
 | bsdextrautils | 2.41.5-0+deb13u1 | amd64 | install ok installed |
 | bsdutils | 1:2.41.5-0+deb13u1 | amd64 | install ok installed |
 | buildah | 1.39.3+ds1-1+b7 | amd64 | install ok installed |
@@ -3961,7 +3961,7 @@ containers:
 | libnftnl11 | 1.2.9-1 | amd64 | install ok installed |
 | libnghttp2-14 | 1.64.0-1.1+deb13u1 | amd64 | install ok installed |
 | libnghttp3-9 | 1.8.0-1 | amd64 | install ok installed |
-| libnginx-mod-stream | 1.26.3-3+deb13u8 | amd64 | install ok installed |
+| libnginx-mod-stream | 1.26.3-3+deb13u9 | amd64 | install ok installed |
 | libnl-3-200 | 3.7.0-2 | amd64 | install ok installed |
 | libnpth0t64 | 1.8-3 | amd64 | install ok installed |
 | libnss-systemd | 257.13-1~deb13u1 | amd64 | install ok installed |
@@ -4060,8 +4060,8 @@ containers:
 | netbase | 6.5 | all | install ok installed |
 | netcat-traditional | 1.10-50 | amd64 | install ok installed |
 | nftables | 1.1.3-1 | amd64 | install ok installed |
-| nginx | 1.26.3-3+deb13u8 | amd64 | install ok installed |
-| nginx-common | 1.26.3-3+deb13u8 | all | install ok installed |
+| nginx | 1.26.3-3+deb13u9 | amd64 | install ok installed |
+| nginx-common | 1.26.3-3+deb13u9 | all | install ok installed |
 | openssh-client | 1:10.0p1-7+deb13u4 | amd64 | install ok installed |
 | openssh-server | 1:10.0p1-7+deb13u4 | amd64 | install ok installed |
 | openssh-sftp-server | 1:10.0p1-7+deb13u4 | amd64 | install ok installed |
