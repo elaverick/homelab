@@ -1,0 +1,34 @@
+---
+# Main directory database in cn=config (created by the Debian slapd package)
+ldap_config_database_dn: "olcDatabase={1}mdb,cn=config"
+
+ldap_config_devices_dn: "ou=Devices,{{ ldap_base_dn }}"
+
+# Access rules for the main database, in evaluation order. The deployed
+# rules are replaced whenever they differ from this list.
+#
+# * Passwords are never readable; anonymous may only bind with them.
+# * cert-enrolment may create, edit and delete devices, and nothing else.
+# * Everything else is readable by authenticated clients only.
+ldap_config_access_rules:
+  - >-
+    to attrs=userPassword
+    by self write
+    by anonymous auth
+    by * none
+  - >-
+    to attrs=shadowLastChange
+    by self write
+    by * read
+  - >-
+    to dn.base="{{ ldap_config_devices_dn }}" attrs=children
+    by dn.exact="{{ cert_enrolment_bind_dn }}" write
+    by * break
+  - >-
+    to dn.children="{{ ldap_config_devices_dn }}"
+    by dn.exact="{{ cert_enrolment_bind_dn }}" write
+    by * break
+  - >-
+    to *
+    by users read
+    by * none

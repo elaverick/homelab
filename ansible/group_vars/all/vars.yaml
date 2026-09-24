@@ -76,6 +76,7 @@ freeradius_ldap_server: "ldaps://ldap.{{ domain_fqdn }}:636"
 # LDAP service accounts
 
 freeradius_bind_dn: "cn=freeradius,ou=ServiceAccounts,{{ ldap_base_dn }}"
+cert_enrolment_bind_dn: "cn=cert-enrolment,ou=ServiceAccounts,{{ ldap_base_dn }}"
 
 # User/group configuration
 

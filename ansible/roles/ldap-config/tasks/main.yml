@@ -187,3 +187,90 @@
           userPassword: "{{ freeradius_bind_password }}"
         state: present
       args: "{{ ldap_auth }}"
+
+    - name: Create cert-enrolment service account
+      community.general.ldap_entry:
+        dn: "{{ cert_enrolment_bind_dn }}"
+        objectClass:
+          - simpleSecurityObject
+          - organizationalRole
+        attributes:
+          cn: "cert-enrolment"
+          description: "cert-enrolment LDAP bind account"
+          userPassword: "{{ cert_enrolment_bind_password }}"
+        state: present
+      args: "{{ ldap_auth }}"
+
+# Access rules are compared with the deployed set as slapd stores them, and
+# replaced as a whole when they differ, so their order is always exact.
+- name: Read LDAP access rules
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container_exec:
+    name: "{{ ldap_container_name }}"
+    command: >-
+      ldapsearch
+      -Q
+      -Y EXTERNAL
+      -H ldapi:///
+      -o ldif-wrap=no
+      -LLL
+      -s base
+      -b "{{ ldap_config_database_dn }}"
+      olcAccess
+  register: ldap_access_rules_read
+  changed_when: false
+
+- name: Compare LDAP access rules
+  ansible.builtin.set_fact:
+    ldap_access_rules_deployed: >-
+      {{ ldap_access_rules_read.stdout_lines
+         | select('match', '^olcAccess: ')
+         | map('regex_replace', '^olcAccess: \{[0-9]+\}', '')
+         | list }}
+
+- name: Replace LDAP access rules
+  when: ldap_access_rules_deployed != ldap_config_access_rules
+  block:
+    - name: Copy LDAP access rules LDIF to host
+      become: true
+      ansible.builtin.template:
+        src: access.ldif.j2
+        dest: /tmp/access.ldif
+        owner: "{{ podman_user }}"
+        group: "{{ podman_user }}"
+        mode: "0600"
+
+    - name: Copy LDAP access rules LDIF to container
+      become: true
+      become_user: "{{ podman_user }}"
+      containers.podman.podman_container_copy:
+        container: "{{ ldap_container_name }}"
+        src: /tmp/access.ldif
+        dest: /tmp/access.ldif
+
+    - name: Apply LDAP access rules
+      become: true
+      become_user: "{{ podman_user }}"
+      containers.podman.podman_container_exec:
+        name: "{{ ldap_container_name }}"
+        command: >-
+          ldapmodify
+          -Q
+          -Y EXTERNAL
+          -H ldapi:///
+          -f /tmp/access.ldif
+
+  always:
+    - name: Remove LDAP access rules LDIF from container
+      become: true
+      become_user: "{{ podman_user }}"
+      containers.podman.podman_container_exec:
+        name: "{{ ldap_container_name }}"
+        command: rm -f /tmp/access.ldif
+
+    - name: Remove LDAP access rules LDIF from host
+      become: true
+      ansible.builtin.file:
+        path: /tmp/access.ldif
+        state: absent

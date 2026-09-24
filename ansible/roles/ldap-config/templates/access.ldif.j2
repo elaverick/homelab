@@ -1,0 +1,6 @@
+dn: {{ ldap_config_database_dn }}
+changetype: modify
+replace: olcAccess
+{% for rule in ldap_config_access_rules %}
+olcAccess: {{ '{' ~ loop.index0 ~ '}' }}{{ rule }}
+{% endfor %}
