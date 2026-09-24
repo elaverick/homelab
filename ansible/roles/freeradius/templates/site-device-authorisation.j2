@@ -33,6 +33,18 @@ authorize {
 		}
 		reject
 	}
+{% endraw %}
+
+	#  Device identities are a single label under the device domain,
+	#  matching the CA policy wildcard.
+	if (&TLS-Client-Cert-Common-Name !~ /^[A-Za-z0-9-]+\.{{ device_domain | regex_escape }}$/) {
+		update reply {
+			{% raw %}&Reply-Message := "Certificate %{TLS-Client-Cert-Common-Name} is not a device identity"{% endraw %}
+
+		}
+		reject
+	}
+{% raw %}
 
 	#  Finds an enabled managedDevice whose deviceId matches the
 	#  certificate Common Name, and copies its deviceZone and deviceType
