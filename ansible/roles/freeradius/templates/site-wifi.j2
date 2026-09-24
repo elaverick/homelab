@@ -1,0 +1,67 @@
+#  Wireless 802.1X authentication.
+#
+#  Accepts EAP-TLS only. Device authorisation and VLAN assignment happen in
+#  the {{ freeradius_device_site_name }} virtual server, which the eap module
+#  calls once the client certificate has been validated.
+#
+#  FreeRADIUS returns a VLAN; enforcement between VLANs is the firewall's
+#  responsibility.
+server {{ freeradius_site_name }} {
+
+listen {
+	type = auth
+	ipaddr = *
+	port = 1812
+
+	limit {
+		max_connections = 16
+		lifetime = 0
+		idle_timeout = 30
+	}
+}
+
+listen {
+	type = acct
+	ipaddr = *
+	port = 1813
+}
+
+authorize {
+	#  Handles every EAP round; "ok" and "updated" mean the request is
+	#  EAP and Auth-Type has been set.
+	eap {
+		ok = return
+		updated = return
+	}
+
+	#  Anything that is not EAP (PAP, CHAP, MAC authentication) is refused.
+	reject
+}
+
+authenticate {
+	Auth-Type EAP {
+		eap
+	}
+}
+
+preacct {
+	acct_unique
+}
+
+accounting {
+	ok
+}
+
+post-auth {
+	remove_reply_message_if_eap
+
+	Post-Auth-Type REJECT {
+		attr_filter.access_reject
+		eap
+		remove_reply_message_if_eap
+	}
+
+	Post-Auth-Type Challenge {
+	}
+}
+}

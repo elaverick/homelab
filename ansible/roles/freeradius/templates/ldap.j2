@@ -1,3 +1,11 @@
+#  Device directory lookup.
+#
+#  Called from the {{ freeradius_device_site_name }} virtual server once the
+#  device certificate has been validated. The device is identified by the
+#  certificate Common Name, which must match its deviceId. Disabled devices
+#  are excluded by the filter, so they are treated as unknown.
+#
+#  FreeRADIUS never reads passwords from the directory.
 ldap {
     server = "{{ freeradius_ldap_server }}"
 
@@ -12,14 +20,15 @@ ldap {
         tls_min_version = "1.2"
     }
 
-    user {
-        base_dn = "${..base_dn}"
-        {% raw %}filter = "(uid=%{%{Stripped-User-Name}:-%{User-Name}})"{% endraw %}
+    update {
+        control:Tmp-String-0 := 'deviceZone'
+        control:Tmp-String-1 := 'deviceType'
     }
 
-    group {
-        base_dn = "${..base_dn}"
-        filter = "(objectClass=posixGroup)"
-        membership_attribute = "memberOf"
+    user {
+        base_dn = "{{ freeradius_device_base_dn }}"
+        {% raw %}filter = "(&(objectClass=managedDevice)(deviceId=%{TLS-Client-Cert-Common-Name})(!(deviceDisabled=TRUE)))"{% endraw %}
+
+        scope = 'sub'
     }
 }

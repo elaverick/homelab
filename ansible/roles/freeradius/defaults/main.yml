@@ -3,22 +3,69 @@ freeradius_image: "docker.io/freeradius/freeradius-server:3.2.10"
 
 freeradius_container_name: "freeradius"
 
+# freerad group inside the image
+freeradius_gid: 101
+
 # Persistent FreeRADIUS configuration
 freeradius_config_volume: "freeradius-config"
 freeradius_config_directory: "/etc/freeradius"
 freeradius_ldap_module_config: "/mods-available/ldap"
 freeradius_ldap_module_enabled: "/mods-enabled/ldap"
 freeradius_eap_module_config: "/mods-available/eap"
+freeradius_clients_config: "/clients.conf"
+
+# Virtual servers. The stock "default" and "inner-tunnel" servers are
+# disabled: this deployment only performs EAP-TLS.
+freeradius_site_name: "wifi"
+freeradius_device_site_name: "device-authorisation"
+freeradius_disabled_sites:
+  - default
+  - inner-tunnel
 
 freeradius_trust_volume: "freeradius-trust"
 freeradius_trust_directory: "/etc/freeradius/trust"
 
 freeradius_certificate_path: "{{ freeradius_trust_directory }}/freeradius.pem"
 
+# Intermediate and Root CA certificates used to validate device
+# certificates. Supplicants normally present only their leaf certificate,
+# so FreeRADIUS must hold the Intermediate CA to build the chain.
+freeradius_client_ca_filename: "client-ca-chain.pem"
+freeradius_client_ca_path: "{{ freeradius_trust_directory }}/{{ freeradius_client_ca_filename }}"
+
+# EAP-TLS protocol versions. TLS 1.3 only is a deliberate design decision.
+freeradius_eap_tls_min_version: "1.3"
+freeradius_eap_tls_max_version: "1.3"
+
 # RADIUS standard ports inside the container.
 # These are deliberately mapped to high, localhost-only host ports.
 freeradius_ports:
   - "127.0.0.1:11812:1812/udp"
   - "127.0.0.1:11813:1813/udp"
+
+# RADIUS clients (wireless access points). Secrets belong in the vault.
+#
+# freeradius_clients:
+#   - name: ap-lounge
+#     ipaddr: 192.168.10.21
+#     secret: "{{ vault_freeradius_ap_secret }}"
+freeradius_clients: []
+
+# Networks allowed through the host firewall to reach RADIUS. Defaults to
+# the local network of the host's default IPv4 interface.
+freeradius_client_networks:
+  - "{{ ansible_default_ipv4.network }}/{{ ansible_default_ipv4.prefix }}"
+
+# Device directory lookup
+freeradius_device_base_dn: "ou=Devices,{{ ldap_base_dn }}"
+
+# Maps an LDAP deviceZone value to the VLAN returned to the access point.
+# A device whose zone is not listed here is rejected.
+#
+# VLAN IDs are placeholders until the VLAN plan is agreed with the
+# firewall design.
+freeradius_zone_vlans:
+  trusted: 20
+  quarantine: 30
 
 freeradius_quadlet_filename: "freeradius.container"

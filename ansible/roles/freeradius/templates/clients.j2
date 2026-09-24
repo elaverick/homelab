@@ -1,0 +1,13 @@
+#  RADIUS clients (wireless access points).
+#
+#  Managed by Ansible from freeradius_clients. Access points always send
+#  Message-Authenticator with EAP, so it is required (BlastRADIUS).
+{% for client in freeradius_clients %}
+
+client {{ client.name }} {
+	ipaddr = {{ client.ipaddr }}
+	secret = "{{ client.secret }}"
+	require_message_authenticator = yes
+	limit_proxy_state = yes
+}
+{% endfor %}

@@ -40,6 +40,18 @@
     mode: "0644"
   register: freeradius_trust_certificate
 
+- name: Install device certificate CA chain
+  become: true
+  become_user: "{{ podman_user }}"
+  become_method: containers.podman.podman_unshare
+  ansible.builtin.copy:
+    content: |
+      {{ lookup('ansible.builtin.file', source_certs_path ~ '/' ~ intermediate_ca_certificate) }}
+      {{ lookup('ansible.builtin.file', source_certs_path ~ '/' ~ root_certificate) }}
+    dest: "{{ freeradius_trust_volume_mountpoint }}/{{ freeradius_client_ca_filename }}"
+    mode: "0644"
+  register: freeradius_client_ca
+
 # The certificate role deploys using podman cp, which requires a container
 # as its destination. During initial deployment FreeRADIUS cannot itself
 # provide that destination because its EAP configuration requires the
@@ -159,6 +171,108 @@
     force: true
   register: freeradius_ldap_module
 
+- name: Validate FreeRADIUS clients
+  ansible.builtin.assert:
+    that:
+      - item.name is match('^[A-Za-z0-9_-]+$')
+      - item.ipaddr | length > 0
+      - item.secret | length >= 16
+    fail_msg: >-
+      Each RADIUS client needs a name, an ipaddr and a secret of at least
+      16 characters.
+    quiet: true
+  loop: "{{ freeradius_clients }}"
+  loop_control:
+    label: "{{ item.name | default('unnamed') }}"
+  no_log: true
+
+# The image owns /etc/freeradius, sites-available and sites-enabled by
+# freerad, which maps to a subordinate UID on the host. Files there are
+# managed from inside the rootless user namespace, where root can write.
+- name: Deploy FreeRADIUS clients configuration
+  become: true
+  become_user: "{{ podman_user }}"
+  become_method: containers.podman.podman_unshare
+  ansible.builtin.template:
+    src: clients.j2
+    dest: "{{ freeradius_config_volume_mountpoint }}{{ freeradius_clients_config }}"
+    owner: "0"
+    group: "{{ freeradius_gid }}"
+    mode: "0640"
+  register: freeradius_clients_file
+  no_log: true
+
+- name: Deploy FreeRADIUS virtual servers
+  become: true
+  become_user: "{{ podman_user }}"
+  become_method: containers.podman.podman_unshare
+  ansible.builtin.template:
+    src: "{{ item.template }}"
+    dest: "{{ freeradius_config_volume_mountpoint }}/sites-available/{{ item.name }}"
+    owner: "0"
+    group: "{{ freeradius_gid }}"
+    mode: "0640"
+  loop:
+    - name: "{{ freeradius_site_name }}"
+      template: site-wifi.j2
+    - name: "{{ freeradius_device_site_name }}"
+      template: site-device-authorisation.j2
+  loop_control:
+    label: "{{ item.name }}"
+  register: freeradius_sites
+
+- name: Enable FreeRADIUS virtual servers
+  become: true
+  become_user: "{{ podman_user }}"
+  become_method: containers.podman.podman_unshare
+  ansible.builtin.file:
+    src: "../sites-available/{{ item }}"
+    dest: "{{ freeradius_config_volume_mountpoint }}/sites-enabled/{{ item }}"
+    state: link
+    force: true
+  loop:
+    - "{{ freeradius_site_name }}"
+    - "{{ freeradius_device_site_name }}"
+  register: freeradius_sites_enabled
+
+- name: Disable stock FreeRADIUS virtual servers
+  become: true
+  become_user: "{{ podman_user }}"
+  become_method: containers.podman.podman_unshare
+  ansible.builtin.file:
+    path: "{{ freeradius_config_volume_mountpoint }}/sites-enabled/{{ item }}"
+    state: absent
+  loop: "{{ freeradius_disabled_sites }}"
+  register: freeradius_sites_disabled
+
+- name: Allow RADIUS from access point networks
+  community.general.ufw:
+    rule: allow
+    from_ip: "{{ item.0 }}"
+    to_port: "{{ item.1 }}"
+    proto: udp
+  loop: "{{ freeradius_client_networks | product(['1812', '1813']) | list }}"
+
+# A configuration error would otherwise only surface as a failed restart.
+- name: Check FreeRADIUS configuration
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.command:
+    argv:
+      - podman
+      - run
+      - --rm
+      - --add-host
+      - "ldap.{{ domain_fqdn }}:host-gateway"
+      - --volume
+      - "{{ freeradius_config_volume }}:{{ freeradius_config_directory }}"
+      - --volume
+      - "{{ freeradius_trust_volume }}:{{ freeradius_trust_directory }}"
+      - "{{ freeradius_image }}"
+      - freeradius
+      - -C
+  changed_when: false
+
 - name: Create FreeRADIUS Quadlet
   become: true
   become_user: "{{ podman_user }}"
@@ -196,6 +310,11 @@
     enabled: true
     state: "{{ 'restarted' if (
       freeradius_trust_certificate.changed
+      or freeradius_client_ca.changed
+      or freeradius_clients_file.changed
+      or freeradius_sites.changed
+      or freeradius_sites_enabled.changed
+      or freeradius_sites_disabled.changed
       or freeradius_ldap_config.changed
       or freeradius_ldap_module.changed
       or freeradius_eap_config.changed

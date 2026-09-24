@@ -1,0 +1,89 @@
+#  Device authorisation for EAP-TLS.
+#
+#  Called by the eap module's tls section after the client certificate
+#  chain has been validated against the homelab CA. It has access to the
+#  TLS-Client-Cert-* attributes. Accepting here allows EAP-TLS to succeed.
+#  Reply attributes set here are copied into the Access-Accept.
+#
+#  Every path that does not reach the end of authorize is a rejection.
+server {{ freeradius_device_site_name }} {
+authorize {
+{% raw %}
+	#  The Intermediate CA also issues service certificates through ACME,
+	#  which carry both serverAuth and clientAuth. Device certificates
+	#  carry clientAuth only, so a certificate with serverAuth can never
+	#  be used as a network credential.
+	if (!(&TLS-Client-Cert-X509v3-Extended-Key-Usage-OID[*] == '1.3.6.1.5.5.7.3.2')) {
+		update reply {
+			&Reply-Message := "Certificate is not valid for client authentication"
+		}
+		reject
+	}
+
+	if (&TLS-Client-Cert-X509v3-Extended-Key-Usage-OID[*] == '1.3.6.1.5.5.7.3.1') {
+		update reply {
+			&Reply-Message := "Service certificates are not accepted as device credentials"
+		}
+		reject
+	}
+
+	if (!&TLS-Client-Cert-Common-Name) {
+		update reply {
+			&Reply-Message := "Certificate has no Common Name"
+		}
+		reject
+	}
+
+	#  Finds an enabled managedDevice whose deviceId matches the
+	#  certificate Common Name, and copies its deviceZone and deviceType
+	#  into control:Tmp-String-0 and control:Tmp-String-1. A directory
+	#  failure stops processing here and rejects.
+	ldap
+	if (notfound) {
+		update reply {
+			&Reply-Message := "Device %{TLS-Client-Cert-Common-Name} is unknown or disabled"
+		}
+		reject
+	}
+
+	if (!&control:Tmp-String-0) {
+		update reply {
+			&Reply-Message := "Device %{TLS-Client-Cert-Common-Name} has no network zone"
+		}
+		reject
+	}
+{% endraw %}
+
+	switch &control:Tmp-String-0 {
+{% for zone, vlan in freeradius_zone_vlans.items() %}
+		case "{{ zone }}" {
+			update reply {
+				&Tunnel-Type := VLAN
+				&Tunnel-Medium-Type := IEEE-802
+				&Tunnel-Private-Group-Id := "{{ vlan }}"
+			}
+		}
+
+{% endfor %}
+		case {
+			update reply {
+				{% raw %}&Reply-Message := "Device %{TLS-Client-Cert-Common-Name} has unrecognised zone %{control:Tmp-String-0}"{% endraw %}
+
+			}
+			reject
+		}
+	}
+
+{% raw %}
+	#  Report the device identity rather than the EAP outer identity, so
+	#  the access point and accounting records name the device.
+	update reply {
+		&User-Name := "%{TLS-Client-Cert-Common-Name}"
+	}
+
+	update control {
+		&Auth-Type := Accept
+	}
+}
+}
+{% endraw %}
