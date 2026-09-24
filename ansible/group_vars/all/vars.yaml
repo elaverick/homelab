@@ -88,6 +88,12 @@ ldapGroups:
   - name: admins
     gidNumber: 10001
 
+  # May register devices and download enrollment material.
+  # Every provisioned user is a member.
+  - name: device-enrollers
+    gidNumber: 10002
+    includeProvisionedUsers: true
+
 ldapUsers:
   - uid: elaverick
     firstname: Edward

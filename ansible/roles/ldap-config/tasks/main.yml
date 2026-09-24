@@ -164,6 +164,17 @@
         label: "{{ item.0.uid }}"
       when: not ldap_users_created
 
+    - name: Add provisioned users to groups that include them
+      community.general.ldap_attrs:
+        dn: "cn={{ item.name }},ou=Groups,{{ ldap_base_dn }}"
+        attributes:
+          memberUid: "{{ ldapUsers | map(attribute='uid') | list }}"
+        state: present
+      args: "{{ ldap_auth }}"
+      loop: "{{ ldapGroups | selectattr('includeProvisionedUsers', 'defined') | selectattr('includeProvisionedUsers') | list }}"
+      loop_control:
+        label: "{{ item.name }}"
+
     - name: Create FreeRADIUS service account
       community.general.ldap_entry:
         dn: "{{ freeradius_bind_dn }}"
