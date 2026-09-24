@@ -31,6 +31,21 @@ nginx_https_proxies:
     backend_host: 127.0.0.1
     backend_port: 8443
 
+  # Terminated by the NGINX TLS proxy configured by the podwatch role
+  - name: podwatch
+    server_name: "{{ ansible_hostname }}.{{ domain_fqdn }}"
+    backend_host: 127.0.0.1
+    backend_port: "{{ podwatch_tls_port }}"
+
+# TLS-terminating proxy, configured by consumer roles via tls_proxy.yml
+# once their certificate has been issued.
+nginx_tls_proxy_name: ""
+nginx_tls_proxy_certificate_name: ""
+nginx_tls_proxy_listen_port: ""
+nginx_tls_proxy_backend_scheme: "http"
+nginx_tls_proxy_backend_host: 127.0.0.1
+nginx_tls_proxy_backend_port: ""
+
 # TCP proxy definitions
 nginx_tcp_proxies:
   - name: ldap

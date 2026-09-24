@@ -12,4 +12,5 @@
     - ldap
     - ldap-config
     - freeradius
+    - podwatch
     - software-inventory

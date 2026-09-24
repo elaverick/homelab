@@ -25,3 +25,6 @@ Thumbs.db
 
 # Ansible Inventory
 hosts
+
+# Bitwarden helper
+bitwarden-vault-client.sh

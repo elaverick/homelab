@@ -20,3 +20,5 @@ certificates:
   - pihole
   - ldap
   - freeradius
+  # Host certificate, served by NGINX for Podwatch
+  - "{{ ansible_hostname }}"

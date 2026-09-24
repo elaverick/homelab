@@ -76,6 +76,14 @@ if [[ "${RENEW_CERTIFICATE}" == true ]]; then
 
 fi
 
+{% if certificate_deployment_mode == 'host' %}
+#
+# Host deployment: the certificate is consumed in place from the
+# staging directory by a host service, which watches the bundle for
+# changes and reloads itself.
+#
+
+{% else %}
 #
 # Determine whether the deployment target already contains
 # the certificate material.
@@ -176,5 +184,7 @@ if [[ "${DEPLOYMENT_REQUIRED}" == true ]]; then
     fi
 
 fi
+
+{% endif %}
 
 echo "Certificate for ${COMMON_NAME} processed successfully."

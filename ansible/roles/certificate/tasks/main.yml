@@ -12,8 +12,10 @@
 - name: Validate certificate deployment configuration
   ansible.builtin.assert:
     that:
-      - certificate_deployment_mode in ['bundle', 'split']
+      - certificate_deployment_mode in ['bundle', 'split', 'host']
       - >-
+        certificate_deployment_mode == 'host'
+        or
         (
           certificate_deployment_mode == 'bundle'
           and certificate_deployment_target | length > 0
@@ -33,6 +35,7 @@
       Split deployment requires certificate_deployment_target,
       certificate_deploy_certificate_path and
       certificate_deploy_key_path.
+      Host deployment requires no further configuration.
 
 - name: Create certificate staging directory
   become: true

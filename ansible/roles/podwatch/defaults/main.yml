@@ -1,0 +1,13 @@
+---
+
+podwatch_image: "ghcr.io/elaverick/podwatch:latest"
+podwatch_container_name: "podwatch"
+podwatch_quadlet_filename: "{{ podwatch_container_name }}.container"
+
+podwatch_host_port: 8090
+podwatch_container_port: 8090
+
+podwatch_quadlet_directory: "/home/{{ podman_user }}/.config/containers/systemd"
+
+# Certificate for the host name, served by NGINX on port 443
+podwatch_certificate_name: "{{ ansible_hostname }}"

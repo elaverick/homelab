@@ -1,0 +1,11 @@
+[Unit]
+Description=Watch {{ nginx_tls_proxy_certificate_name }} certificate for renewal
+
+[Path]
+# The bundle is written last by the renewal script, after the
+# certificate and key are both in place.
+PathChanged={{ certificate_staging_root }}/{{ nginx_tls_proxy_certificate_name }}/{{ certificate_bundle_filename }}
+Unit=nginx-certificate-reload.service
+
+[Install]
+WantedBy=paths.target

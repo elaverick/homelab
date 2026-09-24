@@ -1,0 +1,18 @@
+---
+
+- name: Issue Podwatch certificate
+  ansible.builtin.include_role:
+    name: certificate
+  vars:
+    certificate_name: "{{ podwatch_certificate_name }}"
+    certificate_deployment_mode: "host"
+
+- name: Expose Podwatch through NGINX
+  ansible.builtin.include_role:
+    name: nginx
+    tasks_from: tls_proxy.yml
+  vars:
+    nginx_tls_proxy_name: "{{ podwatch_container_name }}"
+    nginx_tls_proxy_certificate_name: "{{ podwatch_certificate_name }}"
+    nginx_tls_proxy_listen_port: "{{ podwatch_tls_port }}"
+    nginx_tls_proxy_backend_port: "{{ podwatch_host_port }}"

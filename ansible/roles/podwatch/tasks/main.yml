@@ -1,0 +1,56 @@
+---
+- name: Pull Podwatch container image
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_image:
+    name: "{{ podwatch_image }}"
+    state: present
+    force: true
+  register: podwatch_image_pull
+
+- name: Create Podwatch Quadlet
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container:
+    name: "{{ podwatch_container_name }}"
+    image: "{{ podwatch_image }}"
+    state: quadlet
+    quadlet_filename: "{{ podwatch_quadlet_filename }}"
+    quadlet_file_mode: "0640"
+    quadlet_options:
+      - "Network=host"
+      - "PodmanArgs=--pid=host"
+      - "PodmanArgs=--cgroupns=host"
+      - >-
+        Volume={{ podwatch_quadlet_directory }}:/etc/containers/systemd:ro
+      - "AutoUpdate=registry"
+      - |
+        [Install]
+        WantedBy=default.target
+  register: podwatch_quadlet
+
+- name: Reload app-runner user systemd manager
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    scope: user
+  when: podwatch_quadlet.changed
+
+- name: Enable and start Podwatch
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.systemd_service:
+    name: "{{ podwatch_container_name }}.service"
+    enabled: true
+    state: >-
+      {{
+        'restarted'
+        if podwatch_image_pull.changed or podwatch_quadlet.changed
+        else 'started'
+      }}
+    scope: user
+
+- name: Configure Podwatch TLS certificate and NGINX proxy
+  ansible.builtin.import_tasks:
+    file: certificate.yml

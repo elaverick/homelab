@@ -1,0 +1,7 @@
+[Unit]
+Description=Reload NGINX after certificate renewal
+
+[Service]
+Type=oneshot
+ExecStartPre=/usr/sbin/nginx -t
+ExecStart=/usr/bin/systemctl reload nginx.service

@@ -1,5 +1,7 @@
 ---
 
+# bundle/split: copy the certificate into the consumer container.
+# host: a host service (e.g. NGINX) reads it from the staging directory.
 certificate_deployment_mode: "bundle"
 
 certificate_name: ""

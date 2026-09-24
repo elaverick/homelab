@@ -32,6 +32,9 @@ domain_suffix: "home.arpa"
 # Certificate Server Host Port
 intermediate_ca_host_port: 9000
 
+# Podwatch NGINX TLS termination port (loopback only)
+podwatch_tls_port: 8490
+
 # Certificates supplied by the offline Root CA
 source_certs_path: "{{ playbook_dir }}/../certs"
 
