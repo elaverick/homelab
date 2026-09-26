@@ -58,7 +58,6 @@
     owner: "{{ intermediate_ca_uid }}"
     group: "{{ intermediate_ca_gid }}"
     mode: "0644"
-  register: intermediate_ca_config_file
   register: intermediate_ca_device_template_file
 
 - name: Install step-ca configuration
@@ -71,3 +70,4 @@
     owner: "{{ intermediate_ca_uid }}"
     group: "{{ intermediate_ca_gid }}"
     mode: "0644"
+  register: intermediate_ca_config_file
