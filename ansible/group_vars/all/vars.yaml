@@ -38,6 +38,9 @@ podwatch_tls_port: 8490
 # cert-enrolment (join.<domain>) NGINX TLS termination port (loopback only)
 cert_enrolment_tls_port: 8491
 
+# cert-enrolment RA (ra.<domain>) NGINX TLS termination port (loopback only)
+cert_enrolment_ra_tls_port: 8492
+
 # Certificates supplied by the offline Root CA
 source_certs_path: "{{ playbook_dir }}/../certs"
 

@@ -43,8 +43,10 @@ intermediate_ca_acme_max_tls_cert_duration: "720h"
 intermediate_ca_acme_default_tls_cert_duration: "720h"
 
 # Device certificates, issued through the JWK provisioner whose private key
-# cert-enrolment holds (cert_enrolment_provisioner_jwk in the vault). Only
-# the public key is written to ca.json.
+# the cert-enrolment RA holds (cert_enrolment_provisioner_jwk in the vault).
+# Only the public key is written to ca.json. step-ca's own renewal is
+# disabled for this provisioner: devices renew through the RA, which checks
+# LDAP and records every certificate so it can revoke them.
 intermediate_ca_device_template: "{{ intermediate_ca_home }}/templates/device-client.tpl"
 intermediate_ca_device_min_cert_duration: "5m"
 intermediate_ca_device_max_cert_duration: "720h"

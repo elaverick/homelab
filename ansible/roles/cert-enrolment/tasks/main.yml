@@ -8,6 +8,15 @@
     force: true
   register: cert_enrolment_image_pull
 
+- name: Create cert-enrolment network
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_network:
+    name: "{{ cert_enrolment_network }}"
+    state: present
+
+# Secrets -------------------------------------------------------------------
+
 - name: Create cert-enrolment LDAP password secret
   become: true
   become_user: "{{ podman_user }}"
@@ -34,7 +43,69 @@
   no_log: true
   register: cert_enrolment_provisioner_secret
 
-- name: Create cert-enrolment Quadlet
+# Shared only between the portal and the RA on this host, so it is generated
+# here rather than kept in the vault. It is created once and then kept.
+- name: Create cert-enrolment RA API key secret
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_secret:
+    name: "{{ cert_enrolment_api_key_secret_name }}"
+    data: "{{ lookup('ansible.builtin.password', '/dev/null', length=48, chars=['ascii_letters', 'digits']) }}"
+    skip_existing: true
+    state: present
+  no_log: true
+  register: cert_enrolment_api_key_secret
+
+# RA --------------------------------------------------------------------------
+
+- name: Create cert-enrolment RA Quadlet
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container:
+    name: "{{ cert_enrolment_ra_container_name }}"
+    image: "{{ cert_enrolment_image }}"
+    state: quadlet
+    quadlet_filename: "{{ cert_enrolment_ra_quadlet_filename }}"
+    quadlet_file_mode: "0640"
+    network: "{{ cert_enrolment_network }}"
+    publish:
+      - "127.0.0.1:{{ cert_enrolment_ra_host_port }}:{{ cert_enrolment_container_port }}"
+    add_hosts: >-
+      {{ dict([('ldap.' ~ domain_fqdn, 'host-gateway'), ('ca.' ~ domain_fqdn, 'host-gateway')]) }}
+    env:
+      CERT_ENROLMENT_ROLE: "ra"
+      CERT_ENROLMENT_LISTEN: "0.0.0.0:{{ cert_enrolment_container_port }}"
+      CERT_ENROLMENT_LDAP_URL: "{{ cert_enrolment_ldap_url }}"
+      CERT_ENROLMENT_LDAP_PEOPLE_DN: "{{ cert_enrolment_people_dn }}"
+      CERT_ENROLMENT_LDAP_BIND_DN: "{{ cert_enrolment_bind_dn }}"
+      CERT_ENROLMENT_LDAP_BIND_PASSWORD_FILE: "{{ cert_enrolment_secret_dir }}/{{ cert_enrolment_secret_name }}"
+      CERT_ENROLMENT_LDAP_DEVICES_DN: "{{ cert_enrolment_devices_dn }}"
+      CERT_ENROLMENT_DEVICE_DOMAIN: "{{ device_domain }}"
+      CERT_ENROLMENT_DEVICE_ZONES: "{{ cert_enrolment_device_zones | join(',') }}"
+      CERT_ENROLMENT_CA_URL: "{{ cert_enrolment_ca_url }}"
+      CERT_ENROLMENT_PROVISIONER: "{{ device_provisioner_name }}"
+      CERT_ENROLMENT_PROVISIONER_KEY_FILE: "{{ cert_enrolment_secret_dir }}/{{ cert_enrolment_provisioner_secret_name }}"
+      CERT_ENROLMENT_RA_API_KEY_FILE: "{{ cert_enrolment_secret_dir }}/{{ cert_enrolment_api_key_secret_name }}"
+      SSL_CERT_FILE: "{{ cert_enrolment_container_root_ca }}"
+    secrets:
+      - >-
+        {{ cert_enrolment_secret_name }},type=mount,target={{ cert_enrolment_secret_name }},uid={{ cert_enrolment_uid }},gid={{ cert_enrolment_uid }},mode=0400
+      - >-
+        {{ cert_enrolment_provisioner_secret_name }},type=mount,target={{ cert_enrolment_provisioner_secret_name }},uid={{ cert_enrolment_uid }},gid={{ cert_enrolment_uid }},mode=0400
+      - >-
+        {{ cert_enrolment_api_key_secret_name }},type=mount,target={{ cert_enrolment_api_key_secret_name }},uid={{ cert_enrolment_uid }},gid={{ cert_enrolment_uid }},mode=0400
+    volumes:
+      - "{{ cert_enrolment_host_root_ca }}:{{ cert_enrolment_container_root_ca }}:ro"
+    quadlet_options:
+      - "AutoUpdate=registry"
+      - |
+        [Install]
+        WantedBy=default.target
+  register: cert_enrolment_ra_quadlet
+
+# Portal ------------------------------------------------------------------------
+
+- name: Create cert-enrolment portal Quadlet
   become: true
   become_user: "{{ podman_user }}"
   containers.podman.podman_container:
@@ -43,30 +114,27 @@
     state: quadlet
     quadlet_filename: "{{ cert_enrolment_quadlet_filename }}"
     quadlet_file_mode: "0640"
+    network: "{{ cert_enrolment_network }}"
     publish:
       - "127.0.0.1:{{ cert_enrolment_host_port }}:{{ cert_enrolment_container_port }}"
     add_hosts: "{{ dict([('ldap.' ~ domain_fqdn, 'host-gateway')]) }}"
     env:
+      CERT_ENROLMENT_ROLE: "portal"
       CERT_ENROLMENT_LISTEN: "0.0.0.0:{{ cert_enrolment_container_port }}"
       CERT_ENROLMENT_LDAP_URL: "{{ cert_enrolment_ldap_url }}"
       CERT_ENROLMENT_LDAP_PEOPLE_DN: "{{ cert_enrolment_people_dn }}"
       CERT_ENROLMENT_LDAP_ENROLLERS_GROUP_DN: "{{ cert_enrolment_enrollers_group_dn }}"
-      CERT_ENROLMENT_LDAP_BIND_DN: "{{ cert_enrolment_bind_dn }}"
-      CERT_ENROLMENT_LDAP_BIND_PASSWORD_FILE: "{{ cert_enrolment_secret_path }}"
-      CERT_ENROLMENT_LDAP_DEVICES_DN: "{{ cert_enrolment_devices_dn }}"
+      CERT_ENROLMENT_RA_URL: "{{ cert_enrolment_ra_internal_url }}"
+      CERT_ENROLMENT_RA_API_KEY_FILE: "{{ cert_enrolment_secret_dir }}/{{ cert_enrolment_api_key_secret_name }}"
+      CERT_ENROLMENT_RA_PUBLIC_URL: "{{ cert_enrolment_ra_public_url }}"
       CERT_ENROLMENT_DEVICE_DOMAIN: "{{ device_domain }}"
       CERT_ENROLMENT_DEVICE_ZONES: "{{ cert_enrolment_device_zones | join(',') }}"
-      CERT_ENROLMENT_CA_URL: "{{ cert_enrolment_ca_url }}"
-      CERT_ENROLMENT_PROVISIONER: "{{ device_provisioner_name }}"
-      CERT_ENROLMENT_PROVISIONER_KEY_FILE: "{{ cert_enrolment_provisioner_secret_path }}"
       CERT_ENROLMENT_WIFI_SSID: "{{ cert_enrolment_wifi_ssid }}"
       CERT_ENROLMENT_RADIUS_SERVER_NAME: "{{ cert_enrolment_radius_server_name }}"
       SSL_CERT_FILE: "{{ cert_enrolment_container_root_ca }}"
     secrets:
       - >-
-        {{ cert_enrolment_secret_name }},type=mount,target={{ cert_enrolment_secret_name }},uid={{ cert_enrolment_uid }},gid={{ cert_enrolment_uid }},mode=0400
-      - >-
-        {{ cert_enrolment_provisioner_secret_name }},type=mount,target={{ cert_enrolment_provisioner_secret_name }},uid={{ cert_enrolment_uid }},gid={{ cert_enrolment_uid }},mode=0400
+        {{ cert_enrolment_api_key_secret_name }},type=mount,target={{ cert_enrolment_api_key_secret_name }},uid={{ cert_enrolment_uid }},gid={{ cert_enrolment_uid }},mode=0400
     volumes:
       - "{{ cert_enrolment_host_root_ca }}:{{ cert_enrolment_container_root_ca }}:ro"
     quadlet_options:
@@ -76,15 +144,44 @@
         WantedBy=default.target
   register: cert_enrolment_quadlet
 
+# Start the RA, then the portal that depends on it ------------------------------
+
 - name: Reload app-runner user systemd manager
   become: true
   become_user: "{{ podman_user }}"
   ansible.builtin.systemd_service:
     daemon_reload: true
     scope: user
-  when: cert_enrolment_quadlet.changed
+  when: cert_enrolment_ra_quadlet.changed or cert_enrolment_quadlet.changed
 
-- name: Enable and start cert-enrolment
+- name: Enable and start cert-enrolment RA
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.systemd_service:
+    name: "{{ cert_enrolment_ra_container_name }}.service"
+    enabled: true
+    state: >-
+      {{
+        'restarted'
+        if cert_enrolment_image_pull.changed
+          or cert_enrolment_secret.changed
+          or cert_enrolment_provisioner_secret.changed
+          or cert_enrolment_api_key_secret.changed
+          or cert_enrolment_ra_quadlet.changed
+        else 'started'
+      }}
+    scope: user
+
+- name: Wait for cert-enrolment RA to answer
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ cert_enrolment_ra_host_port }}/healthz"
+    status_code: 200
+  register: cert_enrolment_ra_health
+  until: cert_enrolment_ra_health.status == 200
+  retries: 15
+  delay: 2
+
+- name: Enable and start cert-enrolment portal
   become: true
   become_user: "{{ podman_user }}"
   ansible.builtin.systemd_service:
@@ -94,14 +191,13 @@
       {{
         'restarted'
         if cert_enrolment_image_pull.changed
-          or cert_enrolment_secret.changed
-          or cert_enrolment_provisioner_secret.changed
+          or cert_enrolment_api_key_secret.changed
           or cert_enrolment_quadlet.changed
         else 'started'
       }}
     scope: user
 
-- name: Wait for cert-enrolment to answer
+- name: Wait for cert-enrolment portal to answer
   ansible.builtin.uri:
     url: "http://127.0.0.1:{{ cert_enrolment_host_port }}/healthz"
     status_code: 200
@@ -110,6 +206,6 @@
   retries: 15
   delay: 2
 
-- name: Configure cert-enrolment TLS certificate and NGINX proxy
+- name: Configure cert-enrolment TLS certificates and NGINX proxies
   ansible.builtin.import_tasks:
     file: certificate.yml

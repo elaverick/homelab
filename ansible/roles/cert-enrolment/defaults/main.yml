@@ -1,25 +1,39 @@
 ---
+# One image, two roles: the portal (web pages at join.<domain>) and the
+# registration authority (RA, at ra.<domain>). Both run from the same image
+# on a private network; the portal calls the RA by container name.
 cert_enrolment_image: "ghcr.io/elaverick/cert-enrolment:latest"
+cert_enrolment_network: "cert-enrolment"
+
+# Portal
 cert_enrolment_container_name: "cert-enrolment"
 cert_enrolment_quadlet_filename: "{{ cert_enrolment_container_name }}.container"
-
-# Plain HTTP backend, published on loopback only. NGINX terminates TLS.
 cert_enrolment_host_port: 8095
-cert_enrolment_container_port: 8080
-
-# Certificate and public name: join.<domain>
 cert_enrolment_certificate_name: "join"
 
-# Service account password, mounted into the container as a file
+# RA
+cert_enrolment_ra_container_name: "cert-enrolment-ra"
+cert_enrolment_ra_quadlet_filename: "{{ cert_enrolment_ra_container_name }}.container"
+cert_enrolment_ra_host_port: 8096
+cert_enrolment_ra_certificate_name: "ra"
+
+# Both roles listen here inside their containers; plain HTTP, published on
+# loopback only. NGINX terminates TLS.
+cert_enrolment_container_port: 8080
+
+# How the portal reaches the RA, and how devices reach it.
+cert_enrolment_ra_internal_url: "http://{{ cert_enrolment_ra_container_name }}:{{ cert_enrolment_container_port }}"
+cert_enrolment_ra_public_url: "https://{{ cert_enrolment_ra_certificate_name }}.{{ domain_fqdn }}"
+
+# Secrets, mounted into the containers as files. Only the RA holds the LDAP
+# service account and the step-ca provisioner key; both hold the API key the
+# portal uses to call the RA.
 cert_enrolment_secret_name: "cert_enrolment_bind_password"
-cert_enrolment_secret_path: "/run/secrets/{{ cert_enrolment_secret_name }}"
-
-# Private key of the step-ca JWK provisioner that signs device enrolment
-# tokens (cert_enrolment_provisioner_jwk in the vault), mounted as a file
 cert_enrolment_provisioner_secret_name: "cert_enrolment_provisioner_jwk"
-cert_enrolment_provisioner_secret_path: "/run/secrets/{{ cert_enrolment_provisioner_secret_name }}"
+cert_enrolment_api_key_secret_name: "cert_enrolment_ra_api_key"
+cert_enrolment_secret_dir: "/run/secrets"
 
-# Devices fetch their certificates from step-ca directly
+# step-ca, as the RA reaches it
 cert_enrolment_ca_url: "https://ca.{{ domain_fqdn }}"
 
 # Wi-Fi profile written by the enrolment scripts. Devices validate the
@@ -31,9 +45,13 @@ cert_enrolment_radius_server_name: "freeradius.{{ domain_fqdn }}"
 cert_enrolment_uid: 65532
 
 # The Root CA installed on the host by base_host is the only CA the
-# service trusts for LDAPS.
+# services trust for LDAPS and step-ca, and the one given to devices.
 cert_enrolment_host_root_ca: "/usr/local/share/ca-certificates/{{ root_certificate }}"
 cert_enrolment_container_root_ca: "/etc/cert-enrolment/root-ca.crt"
+
+# Root and Intermediate CA, against which NGINX verifies the certificates
+# devices present to the RA when renewing.
+cert_enrolment_client_ca_path: "/etc/nginx/cert-enrolment-client-ca.pem"
 
 cert_enrolment_ldap_url: "ldaps://ldap.{{ domain_fqdn }}:{{ external_ldaps_port }}"
 cert_enrolment_people_dn: "ou=People,{{ ldap_base_dn }}"

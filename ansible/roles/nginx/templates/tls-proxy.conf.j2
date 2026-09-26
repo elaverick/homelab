@@ -5,6 +5,15 @@ server {
     ssl_certificate {{ certificate_staging_root }}/{{ nginx_tls_proxy_certificate_name }}/{{ certificate_leaf_filename }};
     ssl_certificate_key {{ certificate_staging_root }}/{{ nginx_tls_proxy_certificate_name }}/{{ certificate_key_filename }};
     ssl_protocols TLSv1.2 TLSv1.3;
+{% if nginx_tls_proxy_client_ca %}
+
+    # Clients may present a certificate, verified against this CA chain.
+    # The backend decides what needs one; the result replaces any
+    # X-Client-* headers the client sent.
+    ssl_client_certificate {{ nginx_tls_proxy_client_ca }};
+    ssl_verify_client optional;
+    ssl_verify_depth 2;
+{% endif %}
 
     location / {
         proxy_pass {{ nginx_tls_proxy_backend_scheme }}://{{ nginx_tls_proxy_backend_host }}:{{ nginx_tls_proxy_backend_port }};
@@ -12,5 +21,9 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
+{% if nginx_tls_proxy_client_ca %}
+        proxy_set_header X-Client-Verify $ssl_client_verify;
+        proxy_set_header X-Client-Cert $ssl_client_escaped_cert;
+{% endif %}
     }
 }
