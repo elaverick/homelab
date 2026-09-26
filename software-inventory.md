@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-09-26T13:59:32Z"
+generated_at: "2026-09-26T14:12:35Z"
 
 host:
   operating_system:
@@ -3719,15 +3719,15 @@ containers:
       - name: "zstd-libs-1.5.7"
         version: "r2"
   - name: "cert-enrolment"
-    id: "4d5ca964abf766637113eef2dfca0763ce3a62eb445cd233c2f0e1b85c023fe5"
+    id: "29517d42a8a1bee30d725110921889dedf5309e6ead2bb929a724df56f78270d"
     status: "running"
 
     image:
       name: "ghcr.io/elaverick/cert-enrolment:latest"
-      id: "29d52f15e99d538d5e0e99b6f2c180f4687b040bb0e5f55e066f11f17ae8b5e5"
-      digest: "ghcr.io/elaverick/cert-enrolment@sha256:423dab0fdd3eeb9423a4937b14bb5aaaa5bca52da92569797afc57b3face048b"
+      id: "223ba8e4c03dd3acef709b73fd6c49a9003635ffb463b46fbfc6b4ff6ac9634d"
+      digest: "ghcr.io/elaverick/cert-enrolment@sha256:fa9117d75745af4f6185de5ab13981629e48c5c83543a94493488925b9fab08b"
       version: "latest"
-      revision: "60dc53ef5c102d71948da36c0d137893bb0165fb"
+      revision: "6109e89cb0fd601c73ffe55e50581fd6e8eb558c"
 
     operating_system:
       id: "debian"
@@ -5264,10 +5264,10 @@ containers:
 | Property | Value |
 |---|---|
 | Name | ghcr.io/elaverick/cert-enrolment:latest |
-| ID | 29d52f15e99d538d5e0e99b6f2c180f4687b040bb0e5f55e066f11f17ae8b5e5 |
-| Digest | ghcr.io/elaverick/cert-enrolment@sha256:423dab0fdd3eeb9423a4937b14bb5aaaa5bca52da92569797afc57b3face048b |
+| ID | 223ba8e4c03dd3acef709b73fd6c49a9003635ffb463b46fbfc6b4ff6ac9634d |
+| Digest | ghcr.io/elaverick/cert-enrolment@sha256:fa9117d75745af4f6185de5ab13981629e48c5c83543a94493488925b9fab08b |
 | Version | latest |
-| Revision | 60dc53ef5c102d71948da36c0d137893bb0165fb |
+| Revision | 6109e89cb0fd601c73ffe55e50581fd6e8eb558c |
 
 #### Operating System
 
