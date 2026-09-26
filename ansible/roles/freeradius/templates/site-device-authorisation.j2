@@ -47,13 +47,14 @@ authorize {
 {% raw %}
 
 	#  Finds an enabled managedDevice whose deviceId matches the
-	#  certificate Common Name, and copies its deviceZone and deviceType
+	#  certificate Common Name and which records the certificate's serial,
+	#  and copies its deviceZone and deviceType
 	#  into control:Tmp-String-0 and control:Tmp-String-1. A directory
 	#  failure stops processing here and rejects.
 	ldap
 	if (notfound) {
 		update reply {
-			&Reply-Message := "Device %{TLS-Client-Cert-Common-Name} is unknown or disabled"
+			&Reply-Message := "Device %{TLS-Client-Cert-Common-Name} is unknown or disabled, or certificate %{TLS-Client-Cert-Serial} is not recorded for it"
 		}
 		reject
 	}

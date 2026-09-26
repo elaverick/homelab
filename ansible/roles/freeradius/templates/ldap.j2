@@ -5,6 +5,11 @@
 #  certificate Common Name, which must match its deviceId. Disabled devices
 #  are excluded by the filter, so they are treated as unknown.
 #
+#  The certificate's serial must also be one the cert-enrolment RA recorded
+#  for the device (deviceCertificate values are "<serial hex> <expiry>").
+#  Certificates the RA revoked, from a deleted device or an earlier
+#  registration of the same name, therefore stop working at once.
+#
 #  FreeRADIUS never reads passwords from the directory.
 ldap {
     server = "{{ freeradius_ldap_server }}"
@@ -27,7 +32,7 @@ ldap {
 
     user {
         base_dn = "{{ freeradius_device_base_dn }}"
-        {% raw %}filter = "(&(objectClass=managedDevice)(deviceId=%{TLS-Client-Cert-Common-Name})(!(deviceDisabled=TRUE)))"{% endraw %}
+        {% raw %}filter = "(&(objectClass=managedDevice)(deviceId=%{TLS-Client-Cert-Common-Name})(!(deviceDisabled=TRUE))(deviceCertificate=%{TLS-Client-Cert-Serial} *))"{% endraw %}
 
         scope = 'sub'
     }
