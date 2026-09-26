@@ -72,6 +72,80 @@
     state: absent
   when: managed_device_schema.stdout | trim == ""
 
+# Directories created before deviceCertificate existed get it added in
+# place: the attribute, and the object class extended to allow it.
+- name: Read managedDevice schema entry
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container_exec:
+    name: "{{ ldap_container_name }}"
+    command: >-
+      ldapsearch
+      -Q
+      -Y EXTERNAL
+      -H ldapi:///
+      -o ldif-wrap=no
+      -b "cn=schema,cn=config"
+      -s one
+      -LLL
+      "(olcObjectClasses=*1.3.6.1.4.1.66636.1.1.1.1*)"
+      olcAttributeTypes
+  register: managed_device_schema_entry
+  changed_when: false
+
+- name: Check whether managedDevice schema needs upgrading
+  ansible.builtin.set_fact:
+    ldap_config_managed_device_schema_dn: >-
+      {{ managed_device_schema_entry.stdout_lines | select('match', '^dn: ') | first | regex_replace('^dn: ', '') }}
+    ldap_config_managed_device_schema_upgrade: >-
+      {{ '1.3.6.1.4.1.66636.1.1.2.5' not in managed_device_schema_entry.stdout }}
+
+- name: Upgrade managedDevice schema
+  when: ldap_config_managed_device_schema_upgrade | bool
+  block:
+    - name: Copy managedDevice schema upgrade LDIF to host
+      become: true
+      ansible.builtin.template:
+        src: managedDevice-upgrade.ldif.j2
+        dest: /tmp/managedDevice-upgrade.ldif
+        owner: "{{ podman_user }}"
+        group: "{{ podman_user }}"
+        mode: "0600"
+
+    - name: Copy managedDevice schema upgrade LDIF to container
+      become: true
+      become_user: "{{ podman_user }}"
+      containers.podman.podman_container_copy:
+        container: "{{ ldap_container_name }}"
+        src: /tmp/managedDevice-upgrade.ldif
+        dest: /tmp/managedDevice-upgrade.ldif
+
+    - name: Apply managedDevice schema upgrade
+      become: true
+      become_user: "{{ podman_user }}"
+      containers.podman.podman_container_exec:
+        name: "{{ ldap_container_name }}"
+        command: >-
+          ldapmodify
+          -Q
+          -Y EXTERNAL
+          -H ldapi:///
+          -f /tmp/managedDevice-upgrade.ldif
+
+  always:
+    - name: Remove managedDevice schema upgrade LDIF from container
+      become: true
+      become_user: "{{ podman_user }}"
+      containers.podman.podman_container_exec:
+        name: "{{ ldap_container_name }}"
+        command: rm -f /tmp/managedDevice-upgrade.ldif
+
+    - name: Remove managedDevice schema upgrade LDIF from host
+      become: true
+      ansible.builtin.file:
+        path: /tmp/managedDevice-upgrade.ldif
+        state: absent
+
 - name: Manage LDAP directory objects
   no_log: true
   vars:
