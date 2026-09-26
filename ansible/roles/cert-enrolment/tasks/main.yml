@@ -117,6 +117,7 @@
     network: "{{ cert_enrolment_network }}"
     publish:
       - "127.0.0.1:{{ cert_enrolment_host_port }}:{{ cert_enrolment_container_port }}"
+      - "127.0.0.1:{{ cert_enrolment_onboarding_host_port }}:{{ cert_enrolment_onboarding_container_port }}"
     add_hosts: "{{ dict([('ldap.' ~ domain_fqdn, 'host-gateway')]) }}"
     env:
       CERT_ENROLMENT_ROLE: "portal"
@@ -131,6 +132,7 @@
       CERT_ENROLMENT_DEVICE_ZONES: "{{ cert_enrolment_device_zones | join(',') }}"
       CERT_ENROLMENT_WIFI_SSID: "{{ cert_enrolment_wifi_ssid }}"
       CERT_ENROLMENT_RADIUS_SERVER_NAME: "{{ cert_enrolment_radius_server_name }}"
+      CERT_ENROLMENT_ONBOARDING_LISTEN: "0.0.0.0:{{ cert_enrolment_onboarding_container_port }}"
       SSL_CERT_FILE: "{{ cert_enrolment_container_root_ca }}"
     secrets:
       - >-
@@ -203,6 +205,15 @@
     status_code: 200
   register: cert_enrolment_health
   until: cert_enrolment_health.status == 200
+  retries: 15
+  delay: 2
+
+- name: Wait for cert-enrolment plain-HTTP portal to answer
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ cert_enrolment_onboarding_host_port }}/healthz"
+    status_code: 200
+  register: cert_enrolment_onboarding_health
+  until: cert_enrolment_onboarding_health.status == 200
   retries: 15
   delay: 2
 

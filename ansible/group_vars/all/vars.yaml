@@ -41,6 +41,10 @@ cert_enrolment_tls_port: 8491
 # cert-enrolment RA (ra.<domain>) NGINX TLS termination port (loopback only)
 cert_enrolment_ra_tls_port: 8492
 
+# cert-enrolment plain-HTTP portal (http://join.<domain>), the onboarding
+# captive portal. Host port, loopback only
+cert_enrolment_onboarding_host_port: 8097
+
 # Certificates supplied by the offline Root CA
 source_certs_path: "{{ playbook_dir }}/../certs"
 
@@ -83,7 +87,8 @@ freeradius_zone_vlans:
 
 # Wi-Fi networks (SSIDs), by role:
 # - trusted: WPA3-Enterprise, EAP-TLS; FreeRADIUS assigns the VLAN
-# - onboarding: open captive-portal network for enrolling new devices
+# - onboarding: Enhanced Open (OWE, never plain open) captive-portal network
+#   for enrolling new devices; the portal is served to it over plain HTTP
 # - iot: WPA2/WPA3-Personal for devices that cannot do 802.1X
 wifi_trusted_ssid: "Laverick"
 wifi_onboarding_ssid: "Laverick-Setup"

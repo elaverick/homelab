@@ -21,6 +21,12 @@ cert_enrolment_ra_certificate_name: "ra"
 # loopback only. NGINX terminates TLS.
 cert_enrolment_container_port: 8080
 
+# The portal also listens here for plain HTTP, which NGINX serves on
+# http://join.<domain>/ as the onboarding network's captive portal, for
+# devices that do not trust the Root CA yet. It has its own sessions and
+# cookies. Published on loopback at cert_enrolment_onboarding_host_port.
+cert_enrolment_onboarding_container_port: 8081
+
 # How the portal reaches the RA, and how devices reach it.
 cert_enrolment_ra_internal_url: "http://{{ cert_enrolment_ra_container_name }}:{{ cert_enrolment_container_port }}"
 cert_enrolment_ra_public_url: "https://{{ cert_enrolment_ra_certificate_name }}.{{ domain_fqdn }}"

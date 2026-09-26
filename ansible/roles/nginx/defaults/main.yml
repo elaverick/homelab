@@ -19,6 +19,13 @@ nginx_acme_challenge_path: "{{ acme_webroot }}/.well-known/acme-challenge"
 # HTTP proxy definitions
 nginx_http_proxies: []
 
+# Certificate names whose plain-HTTP site (port 80) is served by a loopback
+# backend instead of redirecting to HTTPS. ACME challenges are still
+# answered first.
+nginx_plain_http_backends:
+  # The cert-enrolment portal over plain HTTP: the onboarding captive portal
+  join: "{{ cert_enrolment_onboarding_host_port }}"
+
 # HTTPS/TLS passthrough proxies
 nginx_https_proxies:
   - name: ca
