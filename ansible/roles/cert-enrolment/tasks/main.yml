@@ -18,6 +18,22 @@
   no_log: true
   register: cert_enrolment_secret
 
+- name: Create cert-enrolment provisioner key secret
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_secret:
+    name: "{{ cert_enrolment_provisioner_secret_name }}"
+    data: >-
+      {{
+        (cert_enrolment_provisioner_jwk
+         if cert_enrolment_provisioner_jwk is mapping
+         else cert_enrolment_provisioner_jwk | from_json)
+        | to_json
+      }}
+    state: present
+  no_log: true
+  register: cert_enrolment_provisioner_secret
+
 - name: Create cert-enrolment Quadlet
   become: true
   become_user: "{{ podman_user }}"
@@ -40,10 +56,17 @@
       CERT_ENROLMENT_LDAP_DEVICES_DN: "{{ cert_enrolment_devices_dn }}"
       CERT_ENROLMENT_DEVICE_DOMAIN: "{{ device_domain }}"
       CERT_ENROLMENT_DEVICE_ZONES: "{{ cert_enrolment_device_zones | join(',') }}"
+      CERT_ENROLMENT_CA_URL: "{{ cert_enrolment_ca_url }}"
+      CERT_ENROLMENT_PROVISIONER: "{{ device_provisioner_name }}"
+      CERT_ENROLMENT_PROVISIONER_KEY_FILE: "{{ cert_enrolment_provisioner_secret_path }}"
+      CERT_ENROLMENT_WIFI_SSID: "{{ cert_enrolment_wifi_ssid }}"
+      CERT_ENROLMENT_RADIUS_SERVER_NAME: "{{ cert_enrolment_radius_server_name }}"
       SSL_CERT_FILE: "{{ cert_enrolment_container_root_ca }}"
     secrets:
       - >-
         {{ cert_enrolment_secret_name }},type=mount,target={{ cert_enrolment_secret_name }},uid={{ cert_enrolment_uid }},gid={{ cert_enrolment_uid }},mode=0400
+      - >-
+        {{ cert_enrolment_provisioner_secret_name }},type=mount,target={{ cert_enrolment_provisioner_secret_name }},uid={{ cert_enrolment_uid }},gid={{ cert_enrolment_uid }},mode=0400
     volumes:
       - "{{ cert_enrolment_host_root_ca }}:{{ cert_enrolment_container_root_ca }}:ro"
     quadlet_options:
@@ -72,6 +95,7 @@
         'restarted'
         if cert_enrolment_image_pull.changed
           or cert_enrolment_secret.changed
+          or cert_enrolment_provisioner_secret.changed
           or cert_enrolment_quadlet.changed
         else 'started'
       }}

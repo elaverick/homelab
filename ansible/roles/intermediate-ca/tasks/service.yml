@@ -48,5 +48,12 @@
   ansible.builtin.systemd_service:
     name: "{{ intermediate_ca_container_name }}.service"
     enabled: true
-    state: "{{ 'restarted' if intermediate_ca_quadlet.changed else 'started' }}"
+    state: >-
+      {{
+        'restarted'
+        if intermediate_ca_quadlet.changed
+          or intermediate_ca_config_file.changed
+          or intermediate_ca_device_template_file.changed
+        else 'started'
+      }}
     scope: user

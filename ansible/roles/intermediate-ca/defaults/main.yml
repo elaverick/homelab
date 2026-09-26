@@ -41,3 +41,11 @@ intermediate_ca_quadlet_filename: "intermediate-ca.container"
 intermediate_ca_acme_min_tls_cert_duration: "5m"
 intermediate_ca_acme_max_tls_cert_duration: "720h"
 intermediate_ca_acme_default_tls_cert_duration: "720h"
+
+# Device certificates, issued through the JWK provisioner whose private key
+# cert-enrolment holds (cert_enrolment_provisioner_jwk in the vault). Only
+# the public key is written to ca.json.
+intermediate_ca_device_template: "{{ intermediate_ca_home }}/templates/device-client.tpl"
+intermediate_ca_device_min_cert_duration: "5m"
+intermediate_ca_device_max_cert_duration: "720h"
+intermediate_ca_device_default_cert_duration: "720h"

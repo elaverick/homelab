@@ -1,5 +1,66 @@
 ---
 
+# The device provisioner's key comes from the vault as a private JWK, either
+# a mapping or a JSON string. Only its public half is given to step-ca.
+- name: Read device provisioner key
+  ansible.builtin.set_fact:
+    intermediate_ca_device_provisioner_jwk: >-
+      {{
+        cert_enrolment_provisioner_jwk
+        if cert_enrolment_provisioner_jwk is mapping
+        else cert_enrolment_provisioner_jwk | from_json
+      }}
+  no_log: true
+
+- name: Validate device provisioner key
+  ansible.builtin.assert:
+    that:
+      - intermediate_ca_device_provisioner_jwk.kty == 'EC'
+      - intermediate_ca_device_provisioner_jwk.crv == 'P-256'
+      - intermediate_ca_device_provisioner_jwk.kid | default('') | length > 0
+      - intermediate_ca_device_provisioner_jwk.x | default('') | length > 0
+      - intermediate_ca_device_provisioner_jwk.y | default('') | length > 0
+      - intermediate_ca_device_provisioner_jwk.d | default('') | length > 0
+    fail_msg: >-
+      cert_enrolment_provisioner_jwk must be a private EC P-256 JWK with kid,
+      x, y and d, as produced by step crypto jwk create.
+    quiet: true
+  no_log: true
+
+- name: Derive device provisioner public key
+  ansible.builtin.set_fact:
+    intermediate_ca_device_provisioner_public_key: >-
+      {{
+        intermediate_ca_device_provisioner_jwk
+        | dict2items
+        | rejectattr('key', 'equalto', 'd')
+        | items2dict
+      }}
+
+- name: Create step-ca templates directory
+  become: true
+  become_user: "{{ podman_user }}"
+  become_method: containers.podman.podman_unshare
+  ansible.builtin.file:
+    path: "{{ intermediate_ca_volume_mountpoint }}/templates"
+    state: directory
+    owner: "{{ intermediate_ca_uid }}"
+    group: "{{ intermediate_ca_gid }}"
+    mode: "0755"
+
+- name: Install device certificate template
+  become: true
+  become_user: "{{ podman_user }}"
+  become_method: containers.podman.podman_unshare
+  ansible.builtin.copy:
+    src: device-client.tpl
+    dest: "{{ intermediate_ca_volume_mountpoint }}/templates/device-client.tpl"
+    owner: "{{ intermediate_ca_uid }}"
+    group: "{{ intermediate_ca_gid }}"
+    mode: "0644"
+  register: intermediate_ca_config_file
+  register: intermediate_ca_device_template_file
+
 - name: Install step-ca configuration
   become: true
   become_user: "{{ podman_user }}"

@@ -14,6 +14,19 @@ cert_enrolment_certificate_name: "join"
 cert_enrolment_secret_name: "cert_enrolment_bind_password"
 cert_enrolment_secret_path: "/run/secrets/{{ cert_enrolment_secret_name }}"
 
+# Private key of the step-ca JWK provisioner that signs device enrolment
+# tokens (cert_enrolment_provisioner_jwk in the vault), mounted as a file
+cert_enrolment_provisioner_secret_name: "cert_enrolment_provisioner_jwk"
+cert_enrolment_provisioner_secret_path: "/run/secrets/{{ cert_enrolment_provisioner_secret_name }}"
+
+# Devices fetch their certificates from step-ca directly
+cert_enrolment_ca_url: "https://ca.{{ domain_fqdn }}"
+
+# Wi-Fi profile written by the enrolment scripts. Devices validate the
+# RADIUS server certificate against this name.
+cert_enrolment_wifi_ssid: "{{ wifi_trusted_ssid }}"
+cert_enrolment_radius_server_name: "freeradius.{{ domain_fqdn }}"
+
 # The container image runs as this unprivileged user
 cert_enrolment_uid: 65532
 

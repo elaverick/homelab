@@ -32,6 +32,22 @@
           "maxTLSCertDuration": "{{ intermediate_ca_acme_max_tls_cert_duration }}",
           "defaultTLSCertDuration": "{{ intermediate_ca_acme_default_tls_cert_duration }}"
         }
+      },
+      {
+        "type": "JWK",
+        "name": "{{ device_provisioner_name }}",
+        "key": {{ intermediate_ca_device_provisioner_public_key | to_json }},
+        "claims": {
+          "minTLSCertDuration": "{{ intermediate_ca_device_min_cert_duration }}",
+          "maxTLSCertDuration": "{{ intermediate_ca_device_max_cert_duration }}",
+          "defaultTLSCertDuration": "{{ intermediate_ca_device_default_cert_duration }}",
+          "disableRenewal": false
+        },
+        "options": {
+          "x509": {
+            "templateFile": "{{ intermediate_ca_device_template }}"
+          }
+        }
       }
     ]
   }

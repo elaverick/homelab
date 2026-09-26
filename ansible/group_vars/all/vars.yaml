@@ -78,6 +78,19 @@ freeradius_zone_vlans:
   trusted: 20
   quarantine: 30
 
+# Wi-Fi networks (SSIDs), by role:
+# - trusted: WPA3-Enterprise, EAP-TLS; FreeRADIUS assigns the VLAN
+# - onboarding: open captive-portal network for enrolling new devices
+# - iot: WPA2/WPA3-Personal for devices that cannot do 802.1X
+wifi_trusted_ssid: "Laverick"
+wifi_onboarding_ssid: "Laverick-Setup"
+wifi_iot_ssid: "Laverick-IoT"
+
+# step-ca JWK provisioner for device certificates. step-ca holds its public
+# key; cert-enrolment holds the private key (cert_enrolment_provisioner_jwk
+# in the vault) and signs single-use enrolment tokens with it.
+device_provisioner_name: "cert-enrolment"
+
 # Device identities: certificate Common Name and LDAP deviceId are
 # <name>.{{ device_domain }}. Never published in DNS.
 device_domain: "device.{{ domain_fqdn }}"
