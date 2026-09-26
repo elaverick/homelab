@@ -49,6 +49,8 @@ Containerised services run under rootless Podman and are managed through Quadlet
 
 The Root CA remains offline. An online Intermediate CA issues certificates for services within the homelab.
 
+The target network (VLANs, Wi-Fi, firewall policy and the UniFi controller) is described in [docs/network.md](docs/network.md).
+
 ## Technology
 
 | Component     | Purpose                        |
@@ -125,10 +127,11 @@ The Intermediate CA operates online and uses its own protected private key to is
 
 * [x] LDAP container
 * [x] LDAP configuration
-* [ ] FreeRADIUS
-* [ ] Wi-Fi authentication
-* [ ] Device authentication
-* [ ] Network access control
+* [x] FreeRADIUS (EAP-TLS, tested end to end with `eapol-test.yml`)
+* [x] Device enrolment ([cert-enrolment](https://github.com/elaverick/cert-enrolment))
+* [x] Network design ([docs/network.md](docs/network.md))
+* [ ] Wi-Fi authentication (awaiting access points)
+* [ ] Network access control (awaiting the firewall)
 
 ### Certificate Authority
 
@@ -138,7 +141,7 @@ The Intermediate CA operates online and uses its own protected private key to is
 * [x] ACME provisioner
 * [x] Service certificates
 * [x] LDAPS certificate
-* [ ] Device certificate provisioner
+* [x] Device certificate provisioner
 * [ ] Client/mTLS provisioner
 
 ### Future Network Security

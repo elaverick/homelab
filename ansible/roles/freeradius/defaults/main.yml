@@ -37,11 +37,14 @@ freeradius_client_ca_path: "{{ freeradius_trust_directory }}/{{ freeradius_clien
 freeradius_eap_tls_min_version: "1.3"
 freeradius_eap_tls_max_version: "1.3"
 
-# RADIUS standard ports inside the container.
-# These are deliberately mapped to high, localhost-only host ports.
+# RADIUS is published on the host's LAN address, not loopback, so that
+# FreeRADIUS sees each access point's own source address: every AP has its
+# own client entry and secret, and packets from any other address are
+# dropped. Access is further limited by UFW to freeradius_client_networks.
+freeradius_listen_address: "{{ ansible_default_ipv4.address }}"
 freeradius_ports:
-  - "127.0.0.1:11812:1812/udp"
-  - "127.0.0.1:11813:1813/udp"
+  - "{{ freeradius_listen_address }}:1812:1812/udp"
+  - "{{ freeradius_listen_address }}:1813:1813/udp"
 
 # RADIUS clients (wireless access points). Secrets belong in the vault.
 #

@@ -79,8 +79,7 @@ domain_fqdn: "{{ domain }}.{{ domain_suffix }}"
 # point. A device whose zone is not listed here is rejected, and
 # cert-enrolment offers exactly these zones at registration.
 #
-# VLAN IDs are placeholders until the VLAN plan is agreed with the
-# firewall design.
+# VLAN IDs follow the network design in docs/network.md.
 freeradius_zone_vlans:
   trusted: 20
   quarantine: 30
