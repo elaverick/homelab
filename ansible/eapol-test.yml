@@ -1,0 +1,375 @@
+---
+# End-to-end EAP-TLS test of FreeRADIUS, standing in for an access point.
+#
+#   ansible-playbook -i inventory eapol-test.yml
+#
+# It sits beside site.yml so that group_vars load; its task files and
+# template are in tests/.
+#
+# For each network zone, registers a test device through the
+# cert-enrolment RA, enrols it with a real certificate from step-ca, and
+# authenticates it with eapol_test from a container sharing FreeRADIUS's
+# network namespace. Then checks what must be refused: TLS 1.2, a
+# certificate from another CA, a disabled device and a deleted one.
+#
+# FreeRADIUS listens only on loopback and has no client for it, so a
+# temporary RADIUS client for 127.0.0.1 with a one-off secret is added for
+# the run. Whatever happens, the test devices are deleted (revoking their
+# certificates), clients.conf is restored and FreeRADIUS restarted.
+
+- name: Test EAP-TLS authentication end to end
+  hosts: physical_servers
+  become: true
+  gather_facts: true
+
+  # Names, ports and paths only. clients.conf is saved and restored as it
+  # is, never regenerated from these defaults.
+  vars_files:
+    - roles/freeradius/defaults/main.yml
+    - roles/cert-enrolment/defaults/main.yml
+
+  vars:
+    eapol_image: "localhost/eapol-test"
+    eapol_actor: "eapol-test"
+    eapol_ra_url: "http://127.0.0.1:{{ cert_enrolment_ra_host_port }}"
+    eapol_devices: "{{ freeradius_zone_vlans.keys() | map('regex_replace', '^', 'eapol-') | list }}"
+    eapol_trusted_zone: "{{ freeradius_zone_vlans.keys() | first }}"
+    eapol_results: []
+
+  tasks:
+    # Runs as the same user as the next task, without revealing anything, so
+    # that a problem running podman is shown rather than hidden by no_log.
+    - name: Check the cert-enrolment RA API key secret exists
+      become: true
+      become_user: "{{ podman_user }}"
+      ansible.builtin.command:
+        argv: [podman, secret, exists, "{{ cert_enrolment_api_key_secret_name }}"]
+      changed_when: false
+
+    - name: Read the cert-enrolment RA API key
+      become: true
+      become_user: "{{ podman_user }}"
+      ansible.builtin.command:
+        argv:
+          - podman
+          - secret
+          - inspect
+          - --showsecret
+          - --format
+          - "{% raw %}{{ .SecretData }}{% endraw %}"
+          - "{{ cert_enrolment_api_key_secret_name }}"
+      register: eapol_api_key
+      changed_when: false
+      failed_when: false
+      no_log: true
+
+    # The key itself stays hidden; podman's error message does not contain it.
+    - name: Check the RA API key was read
+      ansible.builtin.fail:
+        msg: "Reading the RA API key failed (exit {{ eapol_api_key.rc }}): {{ eapol_api_key.stderr }}"
+      when: eapol_api_key.rc != 0 or eapol_api_key.stdout | length == 0
+
+    - name: Create a working directory
+      become: true
+      become_user: "{{ podman_user }}"
+      ansible.builtin.tempfile:
+        state: directory
+        prefix: eapol-test.
+      register: eapol_tempdir
+
+    - name: Run the test
+      vars:
+        eapol_dir: "{{ eapol_tempdir.path }}"
+        eapol_headers:
+          Authorization: "Bearer {{ eapol_api_key.stdout }}"
+          X-Actor: "{{ eapol_actor }}"
+      block:
+        - name: Write the RADIUS secret for this run
+          become: true
+          become_user: "{{ podman_user }}"
+          ansible.builtin.copy:
+            content: "{{ lookup('ansible.builtin.password', '/dev/null', length=32, chars=['ascii_letters', 'digits']) }}"
+            dest: "{{ eapol_dir }}/secret"
+            mode: "0600"
+          no_log: true
+
+        - name: Read the RADIUS secret back
+          become: true
+          become_user: "{{ podman_user }}"
+          ansible.builtin.slurp:
+            src: "{{ eapol_dir }}/secret"
+          register: eapol_secret
+          no_log: true
+
+        - name: Write the eapol_test image and runner
+          become: true
+          become_user: "{{ podman_user }}"
+          ansible.builtin.copy:
+            dest: "{{ eapol_dir }}/{{ item.name }}"
+            mode: "0644"
+            content: "{{ item.content }}"
+          loop:
+            - name: Containerfile
+              content: |
+                FROM docker.io/library/debian:trixie-slim
+                RUN apt-get update \
+                 && apt-get install -y --no-install-recommends eapoltest \
+                 && rm -rf /var/lib/apt/lists/*
+            # Prints eapol_test's output, then one summary line with its
+            # exit status and the Tunnel-Private-Group-Id it received, as
+            # text or hex depending on how eapol_test shows it.
+            - name: run.sh
+              content: |
+                out=$(eapol_test -c "/test/$1" -a 127.0.0.1 -p 1812 -s "$(cat /test/secret)" -t 15 -r 0 2>&1)
+                rc=$?
+                printf '%s\n' "$out"
+                vlan=$(printf '%s\n' "$out" | awk '/\(Tunnel-Private-Group-Id\)/ { getline; sub(/.*Value: /, ""); gsub(/[ \047]/, ""); print; exit }')
+                echo "RESULT $rc ${vlan:-none}"
+          loop_control:
+            label: "{{ item.name }}"
+
+        - name: Build the eapol_test image
+          become: true
+          become_user: "{{ podman_user }}"
+          ansible.builtin.command:
+            argv: [podman, build, --quiet, --tag, "{{ eapol_image }}", "{{ eapol_dir }}"]
+          changed_when: true
+
+        - name: Find the FreeRADIUS configuration volume
+          become: true
+          become_user: "{{ podman_user }}"
+          containers.podman.podman_volume:
+            name: "{{ freeradius_config_volume }}"
+            state: present
+          register: eapol_freeradius_volume
+
+        - name: Save the current FreeRADIUS clients configuration
+          become: true
+          become_user: "{{ podman_user }}"
+          become_method: containers.podman.podman_unshare
+          ansible.builtin.slurp:
+            src: "{{ eapol_freeradius_volume.volume.Mountpoint }}{{ freeradius_clients_config }}"
+          register: eapol_clients_original
+          no_log: true
+
+        - name: Add a temporary RADIUS client for 127.0.0.1
+          become: true
+          become_user: "{{ podman_user }}"
+          become_method: containers.podman.podman_unshare
+          ansible.builtin.copy:
+            content: |
+              {{ eapol_clients_original.content | b64decode }}
+
+              # Temporary, for eapol-test.yml
+              client eapol-test {
+              	ipaddr = 127.0.0.1
+              	secret = "{{ eapol_secret.content | b64decode }}"
+              	require_message_authenticator = yes
+              	limit_proxy_state = yes
+              }
+            dest: "{{ eapol_freeradius_volume.volume.Mountpoint }}{{ freeradius_clients_config }}"
+            owner: "0"
+            group: "{{ freeradius_gid }}"
+            mode: "0640"
+          no_log: true
+
+        - name: Restart FreeRADIUS with the test client
+          become: true
+          become_user: "{{ podman_user }}"
+          ansible.builtin.systemd_service:
+            name: "{{ freeradius_container_name }}.service"
+            state: restarted
+            scope: user
+
+        - name: Remove test devices left by an earlier run
+          ansible.builtin.uri:
+            url: "{{ eapol_ra_url }}/api/devices/{{ item }}"
+            method: DELETE
+            headers: "{{ eapol_headers }}"
+            status_code: [204, 404]
+          loop: "{{ eapol_devices }}"
+          no_log: true
+
+        - name: Enrol a test device per zone
+          ansible.builtin.include_tasks: tests/eapol-enrol.yml
+          loop: "{{ freeradius_zone_vlans.keys() | list }}"
+          loop_control:
+            loop_var: eapol_zone
+
+        - name: Create a device certificate from another CA
+          become: true
+          become_user: "{{ podman_user }}"
+          ansible.builtin.command:
+            argv:
+              - openssl
+              - req
+              - -x509
+              - -newkey
+              - ec
+              - -pkeyopt
+              - ec_paramgen_curve:P-256
+              - -nodes
+              - -days
+              - "1"
+              - -subj
+              - "/CN=eapol-{{ eapol_trusted_zone }}.{{ device_domain }}"
+              - -addext
+              - extendedKeyUsage=clientAuth
+              - -keyout
+              - "{{ eapol_dir }}/foreign.key"
+              - -out
+              - "{{ eapol_dir }}/foreign.crt"
+          changed_when: true
+
+        # One per zone, then the TLS 1.2 and foreign-CA cases. Name,
+        # certificate and TLS version default from the zone in the template.
+        - name: Write supplicant configurations
+          become: true
+          become_user: "{{ podman_user }}"
+          ansible.builtin.template:
+            src: tests/eapol-supplicant.conf.j2
+            dest: "{{ eapol_dir }}/{{ item.name | default(item.zone) }}.conf"
+            mode: "0644"
+          loop: >-
+            {{
+              freeradius_zone_vlans.keys() | map('community.general.dict_kv', 'zone') | list
+              + [{'name': 'tls12', 'zone': eapol_trusted_zone, 'tls12': true},
+                 {'name': 'foreign', 'zone': eapol_trusted_zone, 'certificate': 'foreign'}]
+            }}
+          loop_control:
+            label: "{{ item.name | default(item.zone) }}"
+
+        - name: Copy the Root CA for the supplicant
+          become: true
+          become_user: "{{ podman_user }}"
+          ansible.builtin.copy:
+            src: "{{ cert_enrolment_host_root_ca }}"
+            remote_src: true
+            dest: "{{ eapol_dir }}/root-ca.crt"
+            mode: "0644"
+
+        # Cases ---------------------------------------------------------------
+
+        - name: Each zone's device is accepted onto its VLAN
+          ansible.builtin.include_tasks: tests/eapol-case.yml
+          loop: "{{ freeradius_zone_vlans | dict2items }}"
+          loop_control:
+            loop_var: eapol_zone_vlan
+          vars:
+            eapol_case: "{{ eapol_zone_vlan.key }} device is accepted on VLAN {{ eapol_zone_vlan.value }}"
+            eapol_config: "{{ eapol_zone_vlan.key }}.conf"
+            eapol_expect_vlan: "{{ eapol_zone_vlan.value }}"
+
+        - name: TLS 1.2 is refused
+          ansible.builtin.include_tasks: tests/eapol-case.yml
+          vars:
+            eapol_case: "TLS 1.2 is refused"
+            eapol_config: "tls12.conf"
+            eapol_expect_vlan: ""
+
+        - name: A certificate from another CA is refused
+          ansible.builtin.include_tasks: tests/eapol-case.yml
+          vars:
+            eapol_case: "a certificate from another CA is refused"
+            eapol_config: "foreign.conf"
+            eapol_expect_vlan: ""
+
+        - name: Disable the trusted test device
+          ansible.builtin.uri:
+            url: "{{ eapol_ra_url }}/api/devices/eapol-{{ eapol_trusted_zone }}/disable"
+            method: POST
+            headers: "{{ eapol_headers }}"
+            status_code: 204
+          no_log: true
+
+        - name: A disabled device is refused
+          ansible.builtin.include_tasks: tests/eapol-case.yml
+          vars:
+            eapol_case: "a disabled device is refused"
+            eapol_config: "{{ eapol_trusted_zone }}.conf"
+            eapol_expect_vlan: ""
+
+        - name: Enable the trusted test device
+          ansible.builtin.uri:
+            url: "{{ eapol_ra_url }}/api/devices/eapol-{{ eapol_trusted_zone }}/enable"
+            method: POST
+            headers: "{{ eapol_headers }}"
+            status_code: 204
+          no_log: true
+
+        - name: A re-enabled device is accepted
+          ansible.builtin.include_tasks: tests/eapol-case.yml
+          vars:
+            eapol_case: "a re-enabled device is accepted"
+            eapol_config: "{{ eapol_trusted_zone }}.conf"
+            eapol_expect_vlan: "{{ freeradius_zone_vlans[eapol_trusted_zone] }}"
+
+        - name: Delete the trusted test device
+          ansible.builtin.uri:
+            url: "{{ eapol_ra_url }}/api/devices/eapol-{{ eapol_trusted_zone }}"
+            method: DELETE
+            headers: "{{ eapol_headers }}"
+            status_code: 204
+          no_log: true
+
+        - name: A deleted device is refused
+          ansible.builtin.include_tasks: tests/eapol-case.yml
+          vars:
+            eapol_case: "a deleted device is refused"
+            eapol_config: "{{ eapol_trusted_zone }}.conf"
+            eapol_expect_vlan: ""
+
+      always:
+        - name: Delete the test devices, revoking their certificates
+          ansible.builtin.uri:
+            url: "{{ eapol_ra_url }}/api/devices/{{ item }}"
+            method: DELETE
+            headers: "{{ eapol_headers }}"
+            status_code: [204, 404]
+          loop: "{{ eapol_devices }}"
+          no_log: true
+
+        - name: Restore the FreeRADIUS clients configuration
+          become: true
+          become_user: "{{ podman_user }}"
+          become_method: containers.podman.podman_unshare
+          ansible.builtin.copy:
+            content: "{{ eapol_clients_original.content | b64decode }}"
+            dest: "{{ eapol_freeradius_volume.volume.Mountpoint }}{{ freeradius_clients_config }}"
+            owner: "0"
+            group: "{{ freeradius_gid }}"
+            mode: "0640"
+          when: eapol_clients_original.content is defined
+          no_log: true
+
+        - name: Restart FreeRADIUS without the test client
+          become: true
+          become_user: "{{ podman_user }}"
+          ansible.builtin.systemd_service:
+            name: "{{ freeradius_container_name }}.service"
+            state: restarted
+            scope: user
+
+        - name: Remove the eapol_test image
+          become: true
+          become_user: "{{ podman_user }}"
+          containers.podman.podman_image:
+            name: "{{ eapol_image }}"
+            state: absent
+
+        - name: Remove the working directory
+          become: true
+          become_user: "{{ podman_user }}"
+          ansible.builtin.file:
+            path: "{{ eapol_tempdir.path }}"
+            state: absent
+
+    - name: Results
+      ansible.builtin.debug:
+        msg: "{{ eapol_results | map(attribute='line') | list }}"
+
+    - name: Every case passed
+      ansible.builtin.assert:
+        that: eapol_results | length > 0 and eapol_results | rejectattr('passed') | list | length == 0
+        fail_msg: "Failed: {{ eapol_results | rejectattr('passed') | map(attribute='case') | list }}"
+        success_msg: "All {{ eapol_results | length }} cases passed."

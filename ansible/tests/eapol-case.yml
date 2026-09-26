@@ -1,0 +1,46 @@
+---
+# Runs one supplicant configuration against FreeRADIUS and records whether
+# the outcome matched: accepted onto eapol_expect_vlan, or refused when
+# eapol_expect_vlan is empty.
+
+- name: "Run: {{ eapol_case }}"
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.command:
+    argv:
+      - podman
+      - run
+      - --rm
+      - --network
+      - "container:{{ freeradius_container_name }}"
+      - --volume
+      - "{{ eapol_dir }}:/test:ro"
+      - "{{ eapol_image }}"
+      - sh
+      - /test/run.sh
+      - "{{ eapol_config }}"
+  register: eapol_run
+  changed_when: false
+
+- name: "Record: {{ eapol_case }}"
+  vars:
+    summary: "{{ (eapol_run.stdout_lines | select('match', '^RESULT ') | list | last | default('RESULT 255 none')).split(' ') }}"
+    accepted: "{{ summary[1] == '0' }}"
+    vlan: "{{ summary[2] }}"
+    # eapol_test may show the VLAN as text, or as hex with a tag byte.
+    vlan_hex: "{{ eapol_expect_vlan | string | list | map('regex_replace', '^', '3') | join }}"
+    vlan_ok: "{{ vlan in [eapol_expect_vlan | string, vlan_hex] or vlan[2:] == vlan_hex }}"
+    passed: "{{ (accepted and vlan_ok) if eapol_expect_vlan | string | length > 0 else not accepted }}"
+  ansible.builtin.set_fact:
+    eapol_results: >-
+      {{ eapol_results + [{
+           'case': eapol_case,
+           'passed': passed,
+           'line': ('PASS' if passed else 'FAIL') ~ ': ' ~ eapol_case
+                   ~ ' (' ~ ('accepted, VLAN ' ~ (eapol_expect_vlan if vlan_ok else vlan) if accepted else 'refused') ~ ')'
+      }] }}
+
+- name: "Show eapol_test output for a failed case: {{ eapol_case }}"
+  ansible.builtin.debug:
+    var: eapol_run.stdout_lines
+  when: not eapol_results[-1].passed

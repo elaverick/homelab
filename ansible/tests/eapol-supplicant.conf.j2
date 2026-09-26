@@ -1,0 +1,15 @@
+network={
+    ssid="eapol-test"
+    key_mgmt=WPA-EAP
+    eap=TLS
+    identity="eapol-{{ item.zone }}.{{ device_domain }}"
+    ca_cert="/test/root-ca.crt"
+    client_cert="/test/{{ item.certificate | default('eapol-' ~ item.zone) }}.crt"
+    private_key="/test/{{ item.certificate | default('eapol-' ~ item.zone) }}.key"
+    domain_match="{{ cert_enrolment_radius_server_name }}"
+{% if item.tls12 | default(false) %}
+    phase1="tls_disable_tlsv1_0=1 tls_disable_tlsv1_1=1 tls_disable_tlsv1_2=0 tls_disable_tlsv1_3=1"
+{% else %}
+    phase1="tls_disable_tlsv1_0=1 tls_disable_tlsv1_1=1 tls_disable_tlsv1_2=1 tls_disable_tlsv1_3=0"
+{% endif %}
+}

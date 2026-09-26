@@ -1,0 +1,64 @@
+---
+# Registers eapol-<zone> through the RA and enrols it as a device would:
+# a key made here, a CSR, and an enrolment code.
+
+- name: Register eapol-{{ eapol_zone }}
+  ansible.builtin.uri:
+    url: "{{ eapol_ra_url }}/api/devices"
+    method: POST
+    headers: "{{ eapol_headers }}"
+    body_format: json
+    body:
+      label: "eapol-{{ eapol_zone }}"
+      description: "eapol_test, deleted after the run"
+      platform: linux
+      zone: "{{ eapol_zone }}"
+    status_code: 201
+  no_log: true
+
+- name: Get an enrolment code for eapol-{{ eapol_zone }}
+  ansible.builtin.uri:
+    url: "{{ eapol_ra_url }}/api/devices/eapol-{{ eapol_zone }}/enrolment-code"
+    method: POST
+    headers: "{{ eapol_headers }}"
+    status_code: 200
+  register: eapol_code
+  no_log: true
+
+- name: Create a key and certificate request for eapol-{{ eapol_zone }}
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.shell: |
+    set -e
+    openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out "eapol-{{ eapol_zone }}.key"
+    openssl req -new -key "eapol-{{ eapol_zone }}.key" -subj "/CN=eapol-{{ eapol_zone }}.{{ device_domain }}" -out "eapol-{{ eapol_zone }}.csr"
+  args:
+    chdir: "{{ eapol_dir }}"
+  changed_when: true
+
+- name: Read the certificate request for eapol-{{ eapol_zone }}
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.slurp:
+    src: "{{ eapol_dir }}/eapol-{{ eapol_zone }}.csr"
+  register: eapol_csr
+
+- name: Enrol eapol-{{ eapol_zone }}
+  ansible.builtin.uri:
+    url: "{{ eapol_ra_url }}/v1/enrol"
+    method: POST
+    body_format: json
+    body:
+      code: "{{ eapol_code.json.code }}"
+      csr: "{{ eapol_csr.content | b64decode }}"
+    status_code: 201
+  register: eapol_enrolled
+  no_log: true
+
+- name: Save the certificate for eapol-{{ eapol_zone }}
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.copy:
+    content: "{{ eapol_enrolled.json.crt }}"
+    dest: "{{ eapol_dir }}/eapol-{{ eapol_zone }}.crt"
+    mode: "0644"
