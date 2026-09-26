@@ -1,0 +1,91 @@
+---
+- name: Pull cert-enrolment container image
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_image:
+    name: "{{ cert_enrolment_image }}"
+    state: present
+    force: true
+  register: cert_enrolment_image_pull
+
+- name: Create cert-enrolment LDAP password secret
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_secret:
+    name: "{{ cert_enrolment_secret_name }}"
+    data: "{{ cert_enrolment_bind_password }}"
+    state: present
+  no_log: true
+  register: cert_enrolment_secret
+
+- name: Create cert-enrolment Quadlet
+  become: true
+  become_user: "{{ podman_user }}"
+  containers.podman.podman_container:
+    name: "{{ cert_enrolment_container_name }}"
+    image: "{{ cert_enrolment_image }}"
+    state: quadlet
+    quadlet_filename: "{{ cert_enrolment_quadlet_filename }}"
+    quadlet_file_mode: "0640"
+    publish:
+      - "127.0.0.1:{{ cert_enrolment_host_port }}:{{ cert_enrolment_container_port }}"
+    add_hosts: "{{ dict([('ldap.' ~ domain_fqdn, 'host-gateway')]) }}"
+    env:
+      CERT_ENROLMENT_LISTEN: "0.0.0.0:{{ cert_enrolment_container_port }}"
+      CERT_ENROLMENT_LDAP_URL: "{{ cert_enrolment_ldap_url }}"
+      CERT_ENROLMENT_LDAP_PEOPLE_DN: "{{ cert_enrolment_people_dn }}"
+      CERT_ENROLMENT_LDAP_ENROLLERS_GROUP_DN: "{{ cert_enrolment_enrollers_group_dn }}"
+      CERT_ENROLMENT_LDAP_BIND_DN: "{{ cert_enrolment_bind_dn }}"
+      CERT_ENROLMENT_LDAP_BIND_PASSWORD_FILE: "{{ cert_enrolment_secret_path }}"
+      CERT_ENROLMENT_LDAP_DEVICES_DN: "{{ cert_enrolment_devices_dn }}"
+      CERT_ENROLMENT_DEVICE_DOMAIN: "{{ device_domain }}"
+      CERT_ENROLMENT_DEVICE_ZONES: "{{ cert_enrolment_device_zones | join(',') }}"
+      SSL_CERT_FILE: "{{ cert_enrolment_container_root_ca }}"
+    secrets:
+      - >-
+        {{ cert_enrolment_secret_name }},type=mount,target={{ cert_enrolment_secret_name }},uid={{ cert_enrolment_uid }},gid={{ cert_enrolment_uid }},mode=0400
+    volumes:
+      - "{{ cert_enrolment_host_root_ca }}:{{ cert_enrolment_container_root_ca }}:ro"
+    quadlet_options:
+      - "AutoUpdate=registry"
+      - |
+        [Install]
+        WantedBy=default.target
+  register: cert_enrolment_quadlet
+
+- name: Reload app-runner user systemd manager
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    scope: user
+  when: cert_enrolment_quadlet.changed
+
+- name: Enable and start cert-enrolment
+  become: true
+  become_user: "{{ podman_user }}"
+  ansible.builtin.systemd_service:
+    name: "{{ cert_enrolment_container_name }}.service"
+    enabled: true
+    state: >-
+      {{
+        'restarted'
+        if cert_enrolment_image_pull.changed
+          or cert_enrolment_secret.changed
+          or cert_enrolment_quadlet.changed
+        else 'started'
+      }}
+    scope: user
+
+- name: Wait for cert-enrolment to answer
+  ansible.builtin.uri:
+    url: "http://127.0.0.1:{{ cert_enrolment_host_port }}/healthz"
+    status_code: 200
+  register: cert_enrolment_health
+  until: cert_enrolment_health.status == 200
+  retries: 15
+  delay: 2
+
+- name: Configure cert-enrolment TLS certificate and NGINX proxy
+  ansible.builtin.import_tasks:
+    file: certificate.yml

@@ -12,5 +12,6 @@
     - ldap
     - ldap-config
     - freeradius
+    - cert-enrolment
     - podwatch
     - software-inventory

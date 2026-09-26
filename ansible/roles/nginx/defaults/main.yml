@@ -37,6 +37,12 @@ nginx_https_proxies:
     backend_host: 127.0.0.1
     backend_port: "{{ podwatch_tls_port }}"
 
+  # Terminated by the NGINX TLS proxy configured by the cert-enrolment role
+  - name: cert-enrolment
+    server_name: "join.{{ domain_fqdn }}"
+    backend_host: 127.0.0.1
+    backend_port: "{{ cert_enrolment_tls_port }}"
+
 # TLS-terminating proxy, configured by consumer roles via tls_proxy.yml
 # once their certificate has been issued.
 nginx_tls_proxy_name: ""

@@ -20,5 +20,7 @@ certificates:
   - pihole
   - ldap
   - freeradius
+  # cert-enrolment, served by NGINX as join.<domain>
+  - join
   # Host certificate, served by NGINX for Podwatch
   - "{{ ansible_hostname }}"

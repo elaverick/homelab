@@ -24,3 +24,4 @@ pihole_dns_cname_records:
   - "pihole.{{ domain_fqdn }},{{ ansible_fqdn }}"
   - "ca.{{ domain_fqdn }},{{ ansible_fqdn }}"
   - "ldap.{{ domain_fqdn }},{{ ansible_fqdn }}"
+  - "join.{{ domain_fqdn }},{{ ansible_fqdn }}"

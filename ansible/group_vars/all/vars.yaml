@@ -35,6 +35,9 @@ intermediate_ca_host_port: 9000
 # Podwatch NGINX TLS termination port (loopback only)
 podwatch_tls_port: 8490
 
+# cert-enrolment (join.<domain>) NGINX TLS termination port (loopback only)
+cert_enrolment_tls_port: 8491
+
 # Certificates supplied by the offline Root CA
 source_certs_path: "{{ playbook_dir }}/../certs"
 
@@ -65,6 +68,16 @@ ldap_uri: "ldap://{{ ldap_host }}:{{ external_ldap_port }}"
 # LDAP directory
 
 domain_fqdn: "{{ domain }}.{{ domain_suffix }}"
+# Maps an LDAP deviceZone value to the VLAN FreeRADIUS returns to the access
+# point. A device whose zone is not listed here is rejected, and
+# cert-enrolment offers exactly these zones at registration.
+#
+# VLAN IDs are placeholders until the VLAN plan is agreed with the
+# firewall design.
+freeradius_zone_vlans:
+  trusted: 20
+  quarantine: 30
+
 # Device identities: certificate Common Name and LDAP deviceId are
 # <name>.{{ device_domain }}. Never published in DNS.
 device_domain: "device.{{ domain_fqdn }}"

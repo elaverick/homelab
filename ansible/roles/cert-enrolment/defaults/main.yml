@@ -1,0 +1,32 @@
+---
+cert_enrolment_image: "ghcr.io/elaverick/cert-enrolment:latest"
+cert_enrolment_container_name: "cert-enrolment"
+cert_enrolment_quadlet_filename: "{{ cert_enrolment_container_name }}.container"
+
+# Plain HTTP backend, published on loopback only. NGINX terminates TLS.
+cert_enrolment_host_port: 8095
+cert_enrolment_container_port: 8080
+
+# Certificate and public name: join.<domain>
+cert_enrolment_certificate_name: "join"
+
+# Service account password, mounted into the container as a file
+cert_enrolment_secret_name: "cert_enrolment_bind_password"
+cert_enrolment_secret_path: "/run/secrets/{{ cert_enrolment_secret_name }}"
+
+# The container image runs as this unprivileged user
+cert_enrolment_uid: 65532
+
+# The Root CA installed on the host by base_host is the only CA the
+# service trusts for LDAPS.
+cert_enrolment_host_root_ca: "/usr/local/share/ca-certificates/{{ root_certificate }}"
+cert_enrolment_container_root_ca: "/etc/cert-enrolment/root-ca.crt"
+
+cert_enrolment_ldap_url: "ldaps://ldap.{{ domain_fqdn }}:{{ external_ldaps_port }}"
+cert_enrolment_people_dn: "ou=People,{{ ldap_base_dn }}"
+cert_enrolment_enrollers_group_dn: "cn=device-enrollers,ou=Groups,{{ ldap_base_dn }}"
+cert_enrolment_devices_dn: "ou=Devices,{{ ldap_base_dn }}"
+
+# Offered at registration, first is the default. Taken from the FreeRADIUS
+# zone map so that every zone a device can be given has a VLAN.
+cert_enrolment_device_zones: "{{ freeradius_zone_vlans.keys() | list }}"

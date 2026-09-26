@@ -59,13 +59,7 @@ freeradius_client_networks:
 # Device directory lookup
 freeradius_device_base_dn: "ou=Devices,{{ ldap_base_dn }}"
 
-# Maps an LDAP deviceZone value to the VLAN returned to the access point.
-# A device whose zone is not listed here is rejected.
-#
-# VLAN IDs are placeholders until the VLAN plan is agreed with the
-# firewall design.
-freeradius_zone_vlans:
-  trusted: 20
-  quarantine: 30
+# The deviceZone to VLAN map, freeradius_zone_vlans, is in group_vars
+# because cert-enrolment offers the same zones at registration.
 
 freeradius_quadlet_filename: "freeradius.container"
