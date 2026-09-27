@@ -1,6 +1,6 @@
 {% for certificate_name in certificates %}
 server {
-    listen 80;
+    listen {{ nginx_certificate_listen_addresses[certificate_name] ~ ':' if certificate_name in nginx_certificate_listen_addresses else '' }}80;
     server_name {{ certificate_name }}.{{ domain_fqdn }};
 
     location /.well-known/acme-challenge/ {

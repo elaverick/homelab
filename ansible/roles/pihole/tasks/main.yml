@@ -40,6 +40,7 @@
       TZ: "{{ pihole_timezone }}"
       FTLCONF_dns_listeningMode: "{{ pihole_dns_listening_mode }}"
       FTLCONF_dns_cnameRecords: "{{ pihole_dns_cname_records | join(';') }}"
+      FTLCONF_dns_hosts: "{{ pihole_dns_host_records | join(';') }}"
       FTLCONF_webserver_domain: "{{ pihole_web_domain }}"
       FTLCONF_webserver_port: "443s"
       FTLCONF_webserver_tls_cert: "{{ pihole_tls_cert }}"

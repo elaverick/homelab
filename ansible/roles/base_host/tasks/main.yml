@@ -107,6 +107,70 @@
     mode: "0644"
   notify: Reload systemd
 
+# The enrolment address is claimed statically, so check first that it
+# belongs on this host's network and that no other device answers for it:
+# a DHCP lease on another device, or another server that already holds it.
+# See "The enrolment address" in docs/network.md.
+- name: Check whether this host already has the enrolment address
+  ansible.builtin.command:
+    argv: [ip, -4, -o, address, show, to, "{{ enrolment_ipv4_address }}/32"]
+  register: base_host_enrolment_address_local
+  changed_when: false
+
+- name: Check the enrolment address is on this host's network
+  ansible.builtin.command:
+    argv: [ip, -4, route, get, "{{ enrolment_ipv4_address }}"]
+  register: base_host_enrolment_address_route
+  changed_when: false
+  failed_when: >-
+    ' via ' in base_host_enrolment_address_route.stdout
+    or ('dev ' ~ ansible_default_ipv4.interface ~ ' ') not in base_host_enrolment_address_route.stdout
+  when: base_host_enrolment_address_local.stdout | length == 0
+
+- name: Check no other device uses the enrolment address
+  ansible.builtin.command:
+    argv:
+      - arping
+      - -D
+      - -q
+      - -c
+      - "3"
+      - -w
+      - "4"
+      - -I
+      - "{{ ansible_default_ipv4.interface }}"
+      - "{{ enrolment_ipv4_address }}"
+  register: base_host_enrolment_address_dad
+  changed_when: false
+  failed_when: false
+  when: base_host_enrolment_address_local.stdout | length == 0
+
+- name: Stop if another device uses the enrolment address
+  ansible.builtin.fail:
+    msg: >-
+      Another device answers for {{ enrolment_ipv4_address }}. Reserve it
+      on the DHCP server for an unused MAC address, or choose another
+      enrolment_ipv4_address (see docs/network.md).
+  when:
+    - base_host_enrolment_address_dad is not skipped
+    - base_host_enrolment_address_dad.rc != 0
+
+- name: Install Homelab enrolment address service
+  ansible.builtin.template:
+    src: homelab-enrolment-address.service.j2
+    dest: /etc/systemd/system/homelab-enrolment-address.service
+    owner: root
+    group: root
+    mode: "0644"
+  register: base_host_enrolment_address_service
+
+- name: Enable and start Homelab enrolment address
+  ansible.builtin.systemd_service:
+    name: homelab-enrolment-address.service
+    enabled: true
+    daemon_reload: "{{ base_host_enrolment_address_service.changed }}"
+    state: "{{ 'restarted' if base_host_enrolment_address_service.changed else 'started' }}"
+
 - name: Configure kernel hardening
   ansible.builtin.template:
     src: 99-server-hardening.conf.j2

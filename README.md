@@ -51,6 +51,8 @@ The Root CA remains offline. An online Intermediate CA issues certificates for s
 
 The target network (VLANs, Wi-Fi, firewall policy and the UniFi controller) is described in [docs/network.md](docs/network.md).
 
+What must be in place before deploying (files kept out of Git, vault variables, DHCP reservations and client name resolution), and how to check a deployment, is in [docs/deployment.md](docs/deployment.md).
+
 ## Technology
 
 | Component     | Purpose                        |
@@ -86,6 +88,10 @@ homelab/
 ├── ca/
 │   └── root/
 │       └── ansible/
+│
+├── docs/
+│   ├── deployment.md
+│   └── network.md
 │
 └── containers/
     └── ldap/

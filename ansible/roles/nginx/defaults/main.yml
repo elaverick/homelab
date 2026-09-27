@@ -19,6 +19,12 @@ nginx_acme_challenge_path: "{{ acme_webroot }}/.well-known/acme-challenge"
 # HTTP proxy definitions
 nginx_http_proxies: []
 
+# Certificate names whose plain-HTTP site (port 80, including ACME
+# challenges) listens only on the given address rather than all of them.
+nginx_certificate_listen_addresses:
+  join: "{{ enrolment_ipv4_address }}"
+  ra: "{{ enrolment_ipv4_address }}"
+
 # Certificate names whose plain-HTTP site (port 80) is served by a loopback
 # backend instead of redirecting to HTTPS. ACME challenges are still
 # answered first.
@@ -44,9 +50,11 @@ nginx_https_proxies:
     backend_host: 127.0.0.1
     backend_port: "{{ podwatch_tls_port }}"
 
-  # Terminated by the NGINX TLS proxy configured by the cert-enrolment role
+  # Terminated by the NGINX TLS proxy configured by the cert-enrolment role.
+  # Served only on the enrolment address, which low-trust networks may reach.
   - name: cert-enrolment
     server_name: "join.{{ domain_fqdn }}"
+    listen_address: "{{ enrolment_ipv4_address }}"
     backend_host: 127.0.0.1
     backend_port: "{{ cert_enrolment_tls_port }}"
 
@@ -54,6 +62,7 @@ nginx_https_proxies:
   # which verifies device client certificates for the RA
   - name: cert-enrolment-ra
     server_name: "ra.{{ domain_fqdn }}"
+    listen_address: "{{ enrolment_ipv4_address }}"
     backend_host: 127.0.0.1
     backend_port: "{{ cert_enrolment_ra_tls_port }}"
 

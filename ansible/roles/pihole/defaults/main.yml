@@ -24,5 +24,8 @@ pihole_dns_cname_records:
   - "pihole.{{ domain_fqdn }},{{ ansible_fqdn }}"
   - "ca.{{ domain_fqdn }},{{ ansible_fqdn }}"
   - "ldap.{{ domain_fqdn }},{{ ansible_fqdn }}"
-  - "join.{{ domain_fqdn }},{{ ansible_fqdn }}"
-  - "ra.{{ domain_fqdn }},{{ ansible_fqdn }}"
+
+# Names with their own address rather than the host's
+pihole_dns_host_records:
+  - "{{ enrolment_ipv4_address }} join.{{ domain_fqdn }}"
+  - "{{ enrolment_ipv4_address }} ra.{{ domain_fqdn }}"

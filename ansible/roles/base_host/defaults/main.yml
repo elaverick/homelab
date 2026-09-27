@@ -17,3 +17,4 @@ base_host_packages:
   - gpg
   - ca-certificates
   - step-cli
+  - iputils-arping

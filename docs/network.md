@@ -28,12 +28,28 @@ every VLAN and the default gateway.
 | 20 | Trusted | 192.168.20.0/24 | Enrolled devices, placed by FreeRADIUS (`deviceZone: trusted`) | DHCP |
 | 30 | Quarantine | 192.168.30.0/24 | Enrolled devices placed by FreeRADIUS (`deviceZone: quarantine`) | DHCP |
 | 40 | IoT | 192.168.40.0/24 | Devices on the IoT Wi-Fi | DHCP |
-| 50 | Servers | 192.168.50.0/24 | Huginn (`.89`), Muninn | Static |
+| 50 | Servers | 192.168.50.0/24 | Huginn (`.89`), the enrolment address (`.90`), Muninn | Static |
 | 60 | Onboarding | 192.168.60.0/24 | Devices being enrolled | DHCP |
 
 The Servers VLAN keeps today's `192.168.50.0/24` so that Huginn is not
 renumbered. The zone to VLAN map FreeRADIUS uses is `freeradius_zone_vlans` in
 `ansible/group_vars/all/vars.yaml`.
+
+### The enrolment address
+
+Huginn has a second address, `192.168.50.90` (`enrolment_ipv4_address`),
+used only by the enrolment services: `join` and `ra` resolve to it, and
+NGINX serves those two names there and nothing else. Huginn's other
+services (`ca`, `pihole`, podwatch, …) are not served on it. The firewall
+can then let the low-trust VLANs reach exactly the enrolment services by
+address, rather than every service behind Huginn's port 443.
+
+The address is a `/32` added by `homelab-enrolment-address.service`, so it
+is independent of Huginn's DHCP lease and outgoing traffic keeps using
+`.89`. Until the Check Point replaces the Asus router, the Asus reserves
+`.90` for an unused MAC address (`02:00:00:00:00:90`) so that it is never
+leased to another device. With Muninn it becomes a floating address shared
+by both servers.
 
 ### DHCP
 
@@ -106,9 +122,9 @@ allowed (stateful); everything else between VLANs is denied and logged.
 | Trusted | Servers | HTTPS 443 (NGINX) |
 | Trusted | IoT | Any (starting connections to IoT devices) |
 | Trusted, admin devices only | Servers, Management | SSH 22, HTTPS 443, LDAPS 636, UniFi controller UI |
-| Quarantine | Servers | HTTPS 443 to Huginn (`join`, `ra`: re-enrolment) |
+| Quarantine | Servers | HTTPS 443 to the enrolment address (`join`, `ra`: re-enrolment) |
 | Quarantine | Internet | Operating system updates only (see below) |
-| Onboarding | Servers | HTTP 80 and HTTPS 443 to Huginn (`join`, `ra`) |
+| Onboarding | Servers | HTTP 80 and HTTPS 443 to the enrolment address (`join`, `ra`) |
 | Onboarding | Internet | Nothing |
 | IoT | Internet | Any |
 | IoT | Any other VLAN | Nothing |
@@ -134,13 +150,15 @@ vendors' published lists:
 These lists change, so they are maintained on the firewall from the vendor
 documents rather than copied here.
 
-### What the Servers rules cannot distinguish
+### Why the enrolment address
 
-Port 443 on Huginn is one NGINX SNI router for every service (`join`, `ra`,
-`ca`, `pihole`, …). The firewall allows the port, not the name, so a
-quarantined or onboarding device can reach any of those names; each service
-still requires its own authentication. Restricting by name, if wanted, is
-done in NGINX by source address.
+Huginn serves many names from one NGINX router on port 443, and a firewall
+rule sees an address and a port, not a name. Were `join` and `ra` on `.89`,
+allowing Quarantine and Onboarding to reach them would also let those
+networks reach every other service on Huginn. On their own address, the
+rules allow only them.
+
+Trusted devices reach both addresses.
 
 ## UniFi controller
 
@@ -158,6 +176,7 @@ Pi-hole record `unifi.laverick.home.arpa`.
 | Service | With Muninn |
 |---|---|
 | RADIUS | Second FreeRADIUS; secondary RADIUS server on every AP |
+| Enrolment address | Floating between Huginn and Muninn (for example with keepalived) |
 | DNS | Second Pi-hole; both handed out by DHCP |
 | LDAP | Replicated |
 | step-ca | Single; while it is down no certificates are issued or renewed, but Wi-Fi authentication continues |
@@ -175,6 +194,7 @@ Pi-hole record `unifi.laverick.home.arpa`.
 5. SSIDs as above; enrol a test device through `Laverick-Setup`.
 6. NGINX: serve plain-HTTP `join` only to the Onboarding subnet.
 7. Remove hosts-file entries on devices that no longer need them.
+8. Remove the Asus reservation for `.90`; record `.90` as a Servers address on the Check Point.
 
 ## Not in scope yet
 

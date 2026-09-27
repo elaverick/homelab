@@ -41,6 +41,13 @@ cert_enrolment_tls_port: 8491
 # cert-enrolment RA (ra.<domain>) NGINX TLS termination port (loopback only)
 cert_enrolment_ra_tls_port: 8492
 
+# Second address on the Servers network, used only by the enrolment
+# services (join, ra), so that the firewall can let low-trust networks reach
+# them and nothing else on this host. Until the Check Point replaces the Asus
+# router, it is reserved there for an unused MAC so DHCP never leases it.
+# See docs/network.md.
+enrolment_ipv4_address: "192.168.50.90"
+
 # cert-enrolment plain-HTTP portal (http://join.<domain>), the onboarding
 # captive portal. Host port, loopback only
 cert_enrolment_onboarding_host_port: 8097

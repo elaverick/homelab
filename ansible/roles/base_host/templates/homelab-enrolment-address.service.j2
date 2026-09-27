@@ -1,0 +1,17 @@
+[Unit]
+Description=Homelab enrolment services address
+After=homelab-network-online.service
+Wants=homelab-network-online.service
+Before=nginx.service
+
+# A /32 on the primary interface: it is not a secondary of the DHCP-assigned
+# /24, so a DHCP renewal never takes it away, and outgoing traffic keeps the
+# primary address.
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/sbin/ip address replace {{ enrolment_ipv4_address }}/32 dev {{ ansible_default_ipv4.interface }}
+ExecStop=/usr/sbin/ip address del {{ enrolment_ipv4_address }}/32 dev {{ ansible_default_ipv4.interface }}
+
+[Install]
+WantedBy=multi-user.target

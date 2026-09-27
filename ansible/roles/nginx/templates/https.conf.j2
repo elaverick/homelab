@@ -1,3 +1,7 @@
+# Proxies without a listen_address are routed on every address the host
+# has. A proxy with one is routed only on that address, and the host's other
+# names are not routed there: NGINX sends a connection to the server that
+# listens on the specific address it arrived on.
 server {
     listen 443;
     proxy_pass $https_backend;
@@ -5,10 +9,24 @@ server {
 }
 
 map $ssl_preread_server_name $https_backend {
-{% for proxy in nginx_https_proxies %}
+{% for proxy in nginx_https_proxies | rejectattr('listen_address', 'defined') %}
     {{ proxy.server_name }} {{ proxy.name }};
 {% endfor %}
 }
+{% for address in nginx_https_proxies | selectattr('listen_address', 'defined') | map(attribute='listen_address') | unique %}
+
+server {
+    listen {{ address }}:443;
+    proxy_pass $https_backend_{{ loop.index }};
+    ssl_preread on;
+}
+
+map $ssl_preread_server_name $https_backend_{{ loop.index }} {
+{% for proxy in nginx_https_proxies | selectattr('listen_address', 'defined') | selectattr('listen_address', 'equalto', address) %}
+    {{ proxy.server_name }} {{ proxy.name }};
+{% endfor %}
+}
+{% endfor %}
 
 {% for proxy in nginx_https_proxies %}
 upstream {{ proxy.name }} {
