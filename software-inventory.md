@@ -1,6 +1,6 @@
 ---
 schema_version: 1
-generated_at: "2026-09-26T18:44:44Z"
+generated_at: "2026-09-27T08:46:49Z"
 
 host:
   operating_system:
@@ -1676,7 +1676,7 @@ host:
 
 containers:
   - name: "podwatch"
-    id: "396131c19e484a95f4003f16b2e76c996c79141dc89285c52614f00868018c28"
+    id: "3a9f31f04af9ca69e5f66b0916a8b75039bbe6fad777cf53f6253c7407c09afe"
     status: "running"
 
     image:
@@ -2046,8 +2046,93 @@ containers:
         version: "1:1.2.13.dfsg-1"
         architecture: "amd64"
         status: "install ok installed"
+  - name: "intermediate-ca"
+    id: "aa2b5e1ab762215148e81defe25bc655ac956f8f83789c494c4bc18d96dd6210"
+    status: "running"
+
+    image:
+      name: "docker.io/smallstep/step-ca:0.30.2"
+      id: "b4dfb147207bec7553b84b620e5d383589e8e9fb02a25130e7a4b27592a2d01e"
+      digest: "docker.io/smallstep/step-ca@sha256:a2b17872915c193259b75a5474c398326f41bd199f0842093e52cf4182bc8270"
+      version: ""
+      revision: ""
+
+    operating_system:
+      id: "alpine"
+      id_like: ""
+      name: "Alpine Linux v3.23"
+
+    package_manager: "apk"
+
+    packages:
+      - name: "alpine-baselayout-3.7.1"
+        version: "r8"
+      - name: "alpine-baselayout-data-3.7.1"
+        version: "r8"
+      - name: "alpine-keys-2.6"
+        version: "r0"
+      - name: "alpine-release-3.23.3"
+        version: "r0"
+      - name: "apk-tools-3.0.5"
+        version: "r0"
+      - name: "bash-5.3.3"
+        version: "r1"
+      - name: "brotli-libs-1.2.0"
+        version: "r0"
+      - name: "busybox-1.37.0"
+        version: "r30"
+      - name: "busybox-binsh-1.37.0"
+        version: "r30"
+      - name: "c-ares-1.34.6"
+        version: "r0"
+      - name: "ca-certificates-bundle-20251003"
+        version: "r0"
+      - name: "curl-8.17.0"
+        version: "r1"
+      - name: "jq-1.8.1"
+        version: "r0"
+      - name: "libapk-3.0.5"
+        version: "r0"
+      - name: "libcrypto3-3.5.5"
+        version: "r0"
+      - name: "libcurl-8.17.0"
+        version: "r1"
+      - name: "libidn2-2.3.8"
+        version: "r0"
+      - name: "libncursesw-6.5_p20251123"
+        version: "r0"
+      - name: "libpsl-0.21.5"
+        version: "r3"
+      - name: "libssl3-3.5.5"
+        version: "r0"
+      - name: "libunistring-1.4.1"
+        version: "r0"
+      - name: "musl-1.2.5"
+        version: "r21"
+      - name: "musl-utils-1.2.5"
+        version: "r21"
+      - name: "ncurses-terminfo-base-6.5_p20251123"
+        version: "r0"
+      - name: "nghttp2-libs-1.68.0"
+        version: "r0"
+      - name: "nghttp3-1.13.1"
+        version: "r0"
+      - name: "oniguruma-6.9.10"
+        version: "r0"
+      - name: "readline-8.3.1"
+        version: "r0"
+      - name: "scanelf-1.3.8"
+        version: "r2"
+      - name: "ssl_client-1.37.0"
+        version: "r30"
+      - name: "tzdata-2026a"
+        version: "r0"
+      - name: "zlib-1.3.2"
+        version: "r0"
+      - name: "zstd-libs-1.5.7"
+        version: "r2"
   - name: "ldap-server"
-    id: "78943c878fc4140706649e187e2a620e5049d63423ede3a3f9ae9f9f2292df76"
+    id: "1a16c848233104a0903985204200f180d9bff82a64e49c48d3f5380d802f45f5"
     status: "running"
 
     image:
@@ -2621,93 +2706,8 @@ containers:
         version: "1:1.2.13.dfsg-1"
         architecture: "amd64"
         status: "install ok installed"
-  - name: "intermediate-ca"
-    id: "71c45747736b84b911dc757f7652ab395b047ae271dd5a1f9bb9cff5bb439756"
-    status: "running"
-
-    image:
-      name: "docker.io/smallstep/step-ca:0.30.2"
-      id: "b4dfb147207bec7553b84b620e5d383589e8e9fb02a25130e7a4b27592a2d01e"
-      digest: "docker.io/smallstep/step-ca@sha256:a2b17872915c193259b75a5474c398326f41bd199f0842093e52cf4182bc8270"
-      version: ""
-      revision: ""
-
-    operating_system:
-      id: "alpine"
-      id_like: ""
-      name: "Alpine Linux v3.23"
-
-    package_manager: "apk"
-
-    packages:
-      - name: "alpine-baselayout-3.7.1"
-        version: "r8"
-      - name: "alpine-baselayout-data-3.7.1"
-        version: "r8"
-      - name: "alpine-keys-2.6"
-        version: "r0"
-      - name: "alpine-release-3.23.3"
-        version: "r0"
-      - name: "apk-tools-3.0.5"
-        version: "r0"
-      - name: "bash-5.3.3"
-        version: "r1"
-      - name: "brotli-libs-1.2.0"
-        version: "r0"
-      - name: "busybox-1.37.0"
-        version: "r30"
-      - name: "busybox-binsh-1.37.0"
-        version: "r30"
-      - name: "c-ares-1.34.6"
-        version: "r0"
-      - name: "ca-certificates-bundle-20251003"
-        version: "r0"
-      - name: "curl-8.17.0"
-        version: "r1"
-      - name: "jq-1.8.1"
-        version: "r0"
-      - name: "libapk-3.0.5"
-        version: "r0"
-      - name: "libcrypto3-3.5.5"
-        version: "r0"
-      - name: "libcurl-8.17.0"
-        version: "r1"
-      - name: "libidn2-2.3.8"
-        version: "r0"
-      - name: "libncursesw-6.5_p20251123"
-        version: "r0"
-      - name: "libpsl-0.21.5"
-        version: "r3"
-      - name: "libssl3-3.5.5"
-        version: "r0"
-      - name: "libunistring-1.4.1"
-        version: "r0"
-      - name: "musl-1.2.5"
-        version: "r21"
-      - name: "musl-utils-1.2.5"
-        version: "r21"
-      - name: "ncurses-terminfo-base-6.5_p20251123"
-        version: "r0"
-      - name: "nghttp2-libs-1.68.0"
-        version: "r0"
-      - name: "nghttp3-1.13.1"
-        version: "r0"
-      - name: "oniguruma-6.9.10"
-        version: "r0"
-      - name: "readline-8.3.1"
-        version: "r0"
-      - name: "scanelf-1.3.8"
-        version: "r2"
-      - name: "ssl_client-1.37.0"
-        version: "r30"
-      - name: "tzdata-2026a"
-        version: "r0"
-      - name: "zlib-1.3.2"
-        version: "r0"
-      - name: "zstd-libs-1.5.7"
-        version: "r2"
   - name: "pihole"
-    id: "5ea04cd675b085801b711ebf78f603ff86abc27b6d84ac1c3647fef1ede81ffd"
+    id: "2b5c8fe73a0e3abae582b67eb0529840367e20a473e4e677329db89ce49493f1"
     status: "running"
 
     image:
@@ -2912,7 +2912,7 @@ containers:
       - name: "zstd-libs-1.5.7"
         version: "r2"
   - name: "freeradius"
-    id: "dbd7175b983fd9b748a10af84242be1091b78bf7192b3b36b7efedc0440d5d94"
+    id: "75654d69dd6a139d4014e5e84c685e09c07e072560a9612a3dd6240bc65fadfa"
     status: "running"
 
     image:
@@ -3719,15 +3719,15 @@ containers:
         architecture: "amd64"
         status: "install ok installed"
   - name: "cert-enrolment-ra"
-    id: "756d7331ea62f456a7688ea106373af111c2263c8aaa8f84d756123184230fbe"
+    id: "5417d5e967f9e69bba8540f7460c7cab2b9567d35b68c20b06ba66161f0e99b2"
     status: "running"
 
     image:
       name: "ghcr.io/elaverick/cert-enrolment:latest"
-      id: "fedfe92e2798b7c358d0c86c3be981b1419c1098f47289b9948f71344f60f6e0"
-      digest: "ghcr.io/elaverick/cert-enrolment@sha256:75717b62077b9e89d2409b30093f9fe62f05d745c48af8cd055f4855b6df1f1d"
+      id: "b87f7afe3b715c5b62b6c9892578ac4b34d51800770a9a8a10f7d9732c4ba076"
+      digest: "ghcr.io/elaverick/cert-enrolment@sha256:9da5718556b9119e1772f5370624097cedc2d570cbe595dc9d20f701d3618b11"
       version: "latest"
-      revision: "ec1eb35225c5bb227004ee01082538c2b48767d0"
+      revision: "d36a485e5875b85f740c5cadbd96cd7bbd75d499"
 
     operating_system:
       id: "debian"
@@ -4090,15 +4090,15 @@ containers:
         architecture: "amd64"
         status: "install ok installed"
   - name: "cert-enrolment"
-    id: "a180838fb7db206f5a41d917f823319ae980a17933921e3e4ced928b8030ecce"
+    id: "b64fd69caca9713f6a683579ab240a9cb0aab10c411b3bd1dce877e5ea2826c1"
     status: "running"
 
     image:
       name: "ghcr.io/elaverick/cert-enrolment:latest"
-      id: "fedfe92e2798b7c358d0c86c3be981b1419c1098f47289b9948f71344f60f6e0"
-      digest: "ghcr.io/elaverick/cert-enrolment@sha256:75717b62077b9e89d2409b30093f9fe62f05d745c48af8cd055f4855b6df1f1d"
+      id: "b87f7afe3b715c5b62b6c9892578ac4b34d51800770a9a8a10f7d9732c4ba076"
+      digest: "ghcr.io/elaverick/cert-enrolment@sha256:9da5718556b9119e1772f5370624097cedc2d570cbe595dc9d20f701d3618b11"
       version: "latest"
-      revision: "ec1eb35225c5bb227004ee01082538c2b48767d0"
+      revision: "d36a485e5875b85f740c5cadbd96cd7bbd75d499"
 
     operating_system:
       id: "debian"
@@ -5028,6 +5028,73 @@ containers:
 
 
 
+### intermediate-ca
+
+**Status:** running
+
+#### Image
+
+| Property | Value |
+|---|---|
+| Name | docker.io/smallstep/step-ca:0.30.2 |
+| ID | b4dfb147207bec7553b84b620e5d383589e8e9fb02a25130e7a4b27592a2d01e |
+| Digest | docker.io/smallstep/step-ca@sha256:a2b17872915c193259b75a5474c398326f41bd199f0842093e52cf4182bc8270 |
+| Version |  |
+| Revision |  |
+
+#### Operating System
+
+| Property | Value |
+|---|---|
+| ID | alpine |
+| ID Like |  |
+| Name | Alpine Linux v3.23 |
+
+#### Package Manager
+
+`apk`
+
+#### Installed Packages
+
+
+| Package | Version | Architecture | Status |
+|---|---|---|---|
+| alpine-baselayout-3.7.1 | r8 |  |  |
+| alpine-baselayout-data-3.7.1 | r8 |  |  |
+| alpine-keys-2.6 | r0 |  |  |
+| alpine-release-3.23.3 | r0 |  |  |
+| apk-tools-3.0.5 | r0 |  |  |
+| bash-5.3.3 | r1 |  |  |
+| brotli-libs-1.2.0 | r0 |  |  |
+| busybox-1.37.0 | r30 |  |  |
+| busybox-binsh-1.37.0 | r30 |  |  |
+| c-ares-1.34.6 | r0 |  |  |
+| ca-certificates-bundle-20251003 | r0 |  |  |
+| curl-8.17.0 | r1 |  |  |
+| jq-1.8.1 | r0 |  |  |
+| libapk-3.0.5 | r0 |  |  |
+| libcrypto3-3.5.5 | r0 |  |  |
+| libcurl-8.17.0 | r1 |  |  |
+| libidn2-2.3.8 | r0 |  |  |
+| libncursesw-6.5_p20251123 | r0 |  |  |
+| libpsl-0.21.5 | r3 |  |  |
+| libssl3-3.5.5 | r0 |  |  |
+| libunistring-1.4.1 | r0 |  |  |
+| musl-1.2.5 | r21 |  |  |
+| musl-utils-1.2.5 | r21 |  |  |
+| ncurses-terminfo-base-6.5_p20251123 | r0 |  |  |
+| nghttp2-libs-1.68.0 | r0 |  |  |
+| nghttp3-1.13.1 | r0 |  |  |
+| oniguruma-6.9.10 | r0 |  |  |
+| readline-8.3.1 | r0 |  |  |
+| scanelf-1.3.8 | r2 |  |  |
+| ssl_client-1.37.0 | r30 |  |  |
+| tzdata-2026a | r0 |  |  |
+| zlib-1.3.2 | r0 |  |  |
+| zstd-libs-1.5.7 | r2 |  |  |
+
+
+
 ### ldap-server
 
 **Status:** running
@@ -5198,73 +5265,6 @@ containers:
 | util-linux | 2.38.1-5+deb12u3 | amd64 | install ok installed |
 | util-linux-extra | 2.38.1-5+deb12u3 | amd64 | install ok installed |
 | zlib1g | 1:1.2.13.dfsg-1 | amd64 | install ok installed |
-
-
-
-### intermediate-ca
-
-**Status:** running
-
-#### Image
-
-| Property | Value |
-|---|---|
-| Name | docker.io/smallstep/step-ca:0.30.2 |
-| ID | b4dfb147207bec7553b84b620e5d383589e8e9fb02a25130e7a4b27592a2d01e |
-| Digest | docker.io/smallstep/step-ca@sha256:a2b17872915c193259b75a5474c398326f41bd199f0842093e52cf4182bc8270 |
-| Version |  |
-| Revision |  |
-
-#### Operating System
-
-| Property | Value |
-|---|---|
-| ID | alpine |
-| ID Like |  |
-| Name | Alpine Linux v3.23 |
-
-#### Package Manager
-
-`apk`
-
-#### Installed Packages
-
-
-| Package | Version | Architecture | Status |
-|---|---|---|---|
-| alpine-baselayout-3.7.1 | r8 |  |  |
-| alpine-baselayout-data-3.7.1 | r8 |  |  |
-| alpine-keys-2.6 | r0 |  |  |
-| alpine-release-3.23.3 | r0 |  |  |
-| apk-tools-3.0.5 | r0 |  |  |
-| bash-5.3.3 | r1 |  |  |
-| brotli-libs-1.2.0 | r0 |  |  |
-| busybox-1.37.0 | r30 |  |  |
-| busybox-binsh-1.37.0 | r30 |  |  |
-| c-ares-1.34.6 | r0 |  |  |
-| ca-certificates-bundle-20251003 | r0 |  |  |
-| curl-8.17.0 | r1 |  |  |
-| jq-1.8.1 | r0 |  |  |
-| libapk-3.0.5 | r0 |  |  |
-| libcrypto3-3.5.5 | r0 |  |  |
-| libcurl-8.17.0 | r1 |  |  |
-| libidn2-2.3.8 | r0 |  |  |
-| libncursesw-6.5_p20251123 | r0 |  |  |
-| libpsl-0.21.5 | r3 |  |  |
-| libssl3-3.5.5 | r0 |  |  |
-| libunistring-1.4.1 | r0 |  |  |
-| musl-1.2.5 | r21 |  |  |
-| musl-utils-1.2.5 | r21 |  |  |
-| ncurses-terminfo-base-6.5_p20251123 | r0 |  |  |
-| nghttp2-libs-1.68.0 | r0 |  |  |
-| nghttp3-1.13.1 | r0 |  |  |
-| oniguruma-6.9.10 | r0 |  |  |
-| readline-8.3.1 | r0 |  |  |
-| scanelf-1.3.8 | r2 |  |  |
-| ssl_client-1.37.0 | r30 |  |  |
-| tzdata-2026a | r0 |  |  |
-| zlib-1.3.2 | r0 |  |  |
-| zstd-libs-1.5.7 | r2 |  |  |
 
 
 
@@ -5635,10 +5635,10 @@ containers:
 | Property | Value |
 |---|---|
 | Name | ghcr.io/elaverick/cert-enrolment:latest |
-| ID | fedfe92e2798b7c358d0c86c3be981b1419c1098f47289b9948f71344f60f6e0 |
-| Digest | ghcr.io/elaverick/cert-enrolment@sha256:75717b62077b9e89d2409b30093f9fe62f05d745c48af8cd055f4855b6df1f1d |
+| ID | b87f7afe3b715c5b62b6c9892578ac4b34d51800770a9a8a10f7d9732c4ba076 |
+| Digest | ghcr.io/elaverick/cert-enrolment@sha256:9da5718556b9119e1772f5370624097cedc2d570cbe595dc9d20f701d3618b11 |
 | Version | latest |
-| Revision | ec1eb35225c5bb227004ee01082538c2b48767d0 |
+| Revision | d36a485e5875b85f740c5cadbd96cd7bbd75d499 |
 
 #### Operating System
 
@@ -5757,10 +5757,10 @@ containers:
 | Property | Value |
 |---|---|
 | Name | ghcr.io/elaverick/cert-enrolment:latest |
-| ID | fedfe92e2798b7c358d0c86c3be981b1419c1098f47289b9948f71344f60f6e0 |
-| Digest | ghcr.io/elaverick/cert-enrolment@sha256:75717b62077b9e89d2409b30093f9fe62f05d745c48af8cd055f4855b6df1f1d |
+| ID | b87f7afe3b715c5b62b6c9892578ac4b34d51800770a9a8a10f7d9732c4ba076 |
+| Digest | ghcr.io/elaverick/cert-enrolment@sha256:9da5718556b9119e1772f5370624097cedc2d570cbe595dc9d20f701d3618b11 |
 | Version | latest |
-| Revision | ec1eb35225c5bb227004ee01082538c2b48767d0 |
+| Revision | d36a485e5875b85f740c5cadbd96cd7bbd75d499 |
 
 #### Operating System
 
