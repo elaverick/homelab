@@ -49,7 +49,7 @@ Containerised services run under rootless Podman and are managed through Quadlet
 
 The Root CA remains offline. An online Intermediate CA issues certificates for services within the homelab.
 
-The target network (VLANs, Wi-Fi, firewall policy and the UniFi controller) is described in [docs/network.md](docs/network.md).
+The target network (VLANs, Wi-Fi, firewall policy and the access points) is described in [docs/network.md](docs/network.md).
 
 What must be in place before deploying (files kept out of Git, vault variables, DHCP reservations and client name resolution), and how to check a deployment, is in [docs/deployment.md](docs/deployment.md).
 

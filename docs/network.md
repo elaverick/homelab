@@ -1,7 +1,7 @@
 # Network design
 
-The target network once the Check Point firewall and the UniFi access points
-are in place. The Asus router it replaces does not appear in the final design.
+The target network once the Check Point firewall and the access points (Cudy
+AP3000 running OpenWrt) are in place. The Asus router it replaces does not appear in the final design.
 
 Everything here is agreed design; the configuration in `ansible/` implements
 the server side (FreeRADIUS, Pi-hole, NGINX, cert-enrolment), and the firewall
@@ -63,7 +63,7 @@ The Check Point serves DHCP on each VLAN that uses it, handing out:
 
 Pi-hole answers for every VLAN. The firewall allows DNS only to Pi-hole, so
 devices cannot bypass it with their own resolvers; Pi-hole alone forwards to
-the internet. Local names (`join`, `ra`, `ca`, `unifi`, …) are Pi-hole records.
+the internet. Local names (`join`, `ra`, `ca`, …) are Pi-hole records.
 
 ## Wi-Fi
 
@@ -84,8 +84,9 @@ the internet. Local names (`join`, `ra`, `ca`, `unifi`, …) are Pi-hole records
 * `freeradius_client_networks`, which UFW admits to RADIUS, becomes the
   Management subnet `192.168.10.0/24`.
 * FreeRADIUS returns `Tunnel-Type = VLAN`, `Tunnel-Medium-Type = IEEE-802`
-  and `Tunnel-Private-Group-Id = <VLAN>`; the SSID needs RADIUS-assigned VLANs
-  enabled.
+  and `Tunnel-Private-Group-Id = <VLAN>`; `hostapd` on each AP places the
+  client in that VLAN (OpenWrt's `dynamic_vlan`), and a client given no VLAN
+  is refused.
 
 ### Onboarding network
 
@@ -96,15 +97,27 @@ OWE encrypts the radio link, which keeps passwords from being captured
 passively. The accepted risk, a fake onboarding network, is described in the
 cert-enrolment README.
 
-Pre-authorisation access on the AP: DNS, `join` and `ra`. The portal never
-authorises a client, so nothing reaches the internet.
+Nothing on the onboarding network is ever authorised to reach the internet,
+so the portal only has to be found, never to let anyone through. Two ways of
+sending devices to it, to be settled when the AP role is prototyped:
+
+* **DNS (preferred).** DHCP on the Onboarding VLAN hands out a small resolver
+  on the enrolment address that answers every name with that address. A
+  device's captive-portal check (for example `http://captive.apple.com/`)
+  then reaches NGINX on `.90` port 80, where any name other than `join` and
+  `ra` is already answered by the portal. Nothing runs on the access points.
+* **openNDS on each AP.** OpenWrt's usual captive portal, with the enrolment
+  portal as its external page and DNS, `join` and `ra` allowed before
+  authorisation.
 
 ### IoT network
 
 The IoT devices (Blink doorbell, Amazon Alexa devices, Nest Protect, Nest
 thermostat) are all controlled through their vendors' clouds, so they need
-DNS and the internet and nothing local. One shared password; per-device
-passwords (UniFi PPSK) can be added later without redesign. Casting that
+DNS and the internet and nothing local. One shared password, with client
+isolation on (OpenWrt's `isolate`); per-device passwords, each able to carry
+its own VLAN (`hostapd`'s per-station keys), can be added later without
+redesign. Casting that
 depends on local discovery (mDNS) from Trusted to IoT will not work across
 VLANs; cloud-based control, including Spotify Connect, does.
 
@@ -121,17 +134,16 @@ allowed (stateful); everything else between VLANs is denied and logged.
 | Trusted | Internet | Any |
 | Trusted | Servers | HTTPS 443 (NGINX) |
 | Trusted | IoT | Any (starting connections to IoT devices) |
-| Trusted, admin devices only | Servers, Management | SSH 22, HTTPS 443, LDAPS 636, UniFi controller UI |
+| Trusted, admin devices only | Servers, Management | SSH 22 (including Ansible configuring the access points), HTTPS 443, LDAPS 636 |
 | Quarantine | Servers | HTTPS 443 to the enrolment address (`join`, `ra`: re-enrolment) |
 | Quarantine | Internet | Operating system updates only (see below) |
-| Onboarding | Servers | HTTP 80 and HTTPS 443 to the enrolment address (`join`, `ra`) |
+| Onboarding | Servers | HTTP 80 and HTTPS 443 to the enrolment address (`join`, `ra`); DNS 53 to it instead of Pi-hole if the DNS captive portal is chosen |
 | Onboarding | Internet | Nothing |
 | IoT | Internet | Any |
 | IoT | Any other VLAN | Nothing |
-| Management (APs) | Servers | RADIUS UDP 1812, 1813 to Huginn and Muninn; UniFi inform TCP 8080 and STUN UDP 3478 to the controller |
-| Management | Internet | Firmware downloads |
+| Management (APs) | Servers | RADIUS UDP 1812, 1813 to Huginn and Muninn |
+| Management | Internet | OpenWrt firmware and package downloads |
 | Servers | Internet | Any (updates, container images, Pi-hole upstream DNS) |
-| Servers | Management | SSH 22 (UniFi controller adopting APs) |
 
 ### Quarantine: operating system updates only
 
@@ -160,16 +172,24 @@ rules allow only them.
 
 Trusted devices reach both addresses.
 
-## UniFi controller
+## Access points
 
-UniFi Network Server runs as a container on Huginn (Podman and Quadlet, like
-the other services), with backups that can be restored on Muninn; it does not
-cluster. Access points keep serving Wi-Fi, including EAP-TLS, while the
-controller is down; whether the captive portal also needs it is to be
-confirmed when the APs arrive.
+Cudy AP3000 (v1) running OpenWrt, with no controller:
 
-Access points on Management find the controller on Servers through the
-Pi-hole record `unifi.laverick.home.arpa`.
+* **Hardware.** MediaTek MT7981, Wi-Fi 6 (2×2 on 2.4 and 5 GHz), one
+  2.5 GbE port, powered by 802.3at PoE+, ceiling or wall mounted. Units
+  shipped from early 2026 have a different network chip and need OpenWrt
+  24.10.6 or later.
+* **Network.** The single port is a trunk carrying VLANs 10 (the AP's own
+  address, static on Management), 20, 30, 40 and 60.
+* **Configuration.** Each AP is configured by Ansible over SSH (a role to be
+  written), so the Wi-Fi settings live in this repository like everything
+  else. Each AP has its own RADIUS secret.
+* **Operation.** APs work independently: there is no controller to fail or
+  to keep up to date. OpenWrt is upgraded with `sysupgrade`. Its failsafe
+  mode on this model works only over IPv6.
+* **Roaming.** With several APs, fast roaming (802.11r) avoids a full EAP-TLS
+  exchange on every move; to be tested with the AP role.
 
 ## High availability (Muninn)
 
@@ -180,14 +200,14 @@ Pi-hole record `unifi.laverick.home.arpa`.
 | DNS | Second Pi-hole; both handed out by DHCP |
 | LDAP | Replicated |
 | step-ca | Single; while it is down no certificates are issued or renewed, but Wi-Fi authentication continues |
-| UniFi controller | Backup restored on Muninn when needed |
 
 ## When the hardware arrives
 
 1. Firewall: VLAN interfaces, DHCP scopes, the policy above; move Huginn's
    gateway from the Asus to the Check Point.
-2. Pi-hole: records for `unifi`, and every VLAN allowed to query.
-3. UniFi controller on Huginn; adopt the APs on Management.
+2. Pi-hole: every VLAN allowed to query; the onboarding resolver, if the
+   DNS captive portal is chosen.
+3. Access points: install OpenWrt on each AP3000 and apply the AP role.
 4. FreeRADIUS: an entry per AP in `freeradius_clients`, and
    `freeradius_client_networks` set to `192.168.10.0/24`. Run
    `eapol-test.yml` again.
@@ -199,6 +219,6 @@ Pi-hole record `unifi.laverick.home.arpa`.
 ## Not in scope yet
 
 * A guest network (may be revisited).
-* Per-device IoT passwords (UniFi PPSK).
+* Per-device IoT passwords (`hostapd` per-station keys).
 * Posture checks and automatic quarantine.
 * iOS enrolment (with NanoMDM).
