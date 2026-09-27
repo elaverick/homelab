@@ -51,7 +51,7 @@ The Root CA remains offline. An online Intermediate CA issues certificates for s
 
 The target network (VLANs, Wi-Fi, firewall policy and the access points) is described in [docs/network.md](docs/network.md).
 
-What must be in place before deploying (files kept out of Git, vault variables, DHCP reservations and client name resolution), and how to check a deployment, is in [docs/deployment.md](docs/deployment.md).
+What must be in place before deploying (files kept out of Git, vault variables, DHCP reservations and client name resolution), and how to check a deployment, is in [docs/deployment.md](docs/deployment.md). Backups, and how to restore them, are in [docs/backup.md](docs/backup.md).
 
 ## Technology
 
@@ -90,6 +90,7 @@ homelab/
 │       └── ansible/
 │
 ├── docs/
+│   ├── backup.md
 │   ├── deployment.md
 │   └── network.md
 │
@@ -128,6 +129,7 @@ The Intermediate CA operates online and uses its own protected private key to is
 * [x] NGINX
 * [x] Pi-hole
 * [x] Software inventory
+* [x] Backups (restic, to an offline USB disk, each tested by restoring it)
 
 ### Identity and Network Services
 

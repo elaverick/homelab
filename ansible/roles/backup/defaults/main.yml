@@ -1,0 +1,26 @@
+---
+# Offline backups of the state the playbook cannot rebuild: the LDAP
+# directory, the step-ca database and Pi-hole's settings. They are encrypted
+# with restic onto a USB disk that is plugged in only while `homelab-backup`
+# runs. See docs/backup.md.
+#
+# The backup program uses container, volume and image names from the ldap,
+# pihole and intermediate-ca roles, which run before this one in site.yml.
+
+# The disk is found by its filesystem label, so any disk prepared with this
+# label works, and several can be rotated. It is mounted only for the backup.
+backup_disk_label: "homelab-backup"
+backup_mount_point: "/srv/backup"
+
+# restic repository on the disk. Its password is backup_password, in
+# the vault; without it the backups cannot be read.
+backup_repository: "{{ backup_mount_point }}/restic"
+backup_config_dir: "/etc/homelab-backup"
+backup_password_file: "{{ backup_config_dir }}/restic-password"
+
+# Exports are gathered here before restic stores them, so every snapshot has
+# the same paths.
+backup_staging_dir: "/var/lib/homelab-backup/staging"
+
+# Backups kept on each disk; about a year when run monthly.
+backup_keep_last: 12

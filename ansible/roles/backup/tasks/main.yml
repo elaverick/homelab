@@ -1,0 +1,43 @@
+---
+# Installs the offline backup program. The disk is not needed here: it is
+# plugged in only while `homelab-backup` runs (see docs/backup.md).
+
+- name: Check the backup password is set
+  ansible.builtin.assert:
+    that:
+      - backup_password is defined
+      - backup_password | length >= 16
+    fail_msg: >-
+      Set backup_password (at least 16 characters) in the vault.
+      See docs/deployment.md.
+    quiet: true
+
+- name: Install restic
+  ansible.builtin.apt:
+    name: restic
+    state: present
+
+- name: Create the backup configuration directory
+  ansible.builtin.file:
+    path: "{{ backup_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Install the restic repository password
+  ansible.builtin.copy:
+    content: "{{ backup_password }}"
+    dest: "{{ backup_password_file }}"
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+
+- name: Install the backup program
+  ansible.builtin.template:
+    src: homelab-backup.sh.j2
+    dest: /usr/local/sbin/homelab-backup
+    owner: root
+    group: root
+    mode: "0700"

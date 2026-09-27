@@ -41,6 +41,7 @@ machine:
 | `cert_enrolment_provisioner_jwk` | Private key of the step-ca provisioner the RA signs tokens with (an EC P-256 JWK) |
 | `pihole_webserver_api_password` | Pi-hole web interface |
 | `intermediateCA_key_passphrase` | Passphrase of the Intermediate CA key |
+| `backup_password` | Encrypts the backups; without it they cannot be read (at least 16 characters) |
 
 RADIUS secrets for access points will be added here too, one per AP (see
 `freeradius_clients` in the freeradius role).

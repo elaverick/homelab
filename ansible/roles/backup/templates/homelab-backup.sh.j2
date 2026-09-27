@@ -1,0 +1,216 @@
+#!/bin/bash
+# Offline backup of the state the playbook cannot rebuild, to the USB disk
+# labelled {{ backup_disk_label }}. Plug the disk in, run this, and unplug it
+# when told. Managed by Ansible (backup role); see docs/backup.md.
+#
+#   homelab-backup             back up, then test that the backup restores
+#   homelab-backup test        test the latest backup restores
+#   homelab-backup snapshots   list the backups on the disk
+set -euo pipefail
+
+action="${1:-backup}"
+case "$action" in
+    backup|test|snapshots) ;;
+    *) echo "usage: homelab-backup [backup|test|snapshots]" >&2; exit 2 ;;
+esac
+if [ "$(id -u)" -ne 0 ]; then
+    echo "Run homelab-backup as root (sudo homelab-backup)." >&2
+    exit 1
+fi
+
+export RESTIC_REPOSITORY='{{ backup_repository }}'
+export RESTIC_PASSWORD_FILE='{{ backup_password_file }}'
+mount_point='{{ backup_mount_point }}'
+staging='{{ backup_staging_dir }}'
+podman_user='{{ podman_user }}'
+podman_uid=$(id -u "$podman_user")
+ca_container='homelab-restore-test-ca'
+ca_volume='homelab-restore-test-ca'
+
+# Podman runs rootless as the service user.
+as_app() { runuser -u "$podman_user" -- env XDG_RUNTIME_DIR="/run/user/$podman_uid" "$@"; }
+
+# Everything that must be undone on the way out, whatever happens: the
+# Intermediate CA restarted, test containers removed, the disk unmounted.
+ca_stopped=no
+ca_export_dir=
+test_dir=
+mounted_here=no
+finish() {
+    status=$?
+    if [ "$ca_stopped" = yes ]; then
+        as_app systemctl --user start '{{ intermediate_ca_container_name }}.service' || true
+    fi
+    as_app podman rm -f "$ca_container" >/dev/null 2>&1 || true
+    as_app podman volume rm -f "$ca_volume" >/dev/null 2>&1 || true
+    [ -n "$ca_export_dir" ] && rm -rf "$ca_export_dir"
+    [ -n "$test_dir" ] && rm -rf "$test_dir"
+    rm -rf "$staging"
+    if [ "$mounted_here" = yes ]; then
+        sync
+        if umount "$mount_point"; then
+            echo "The backup disk is unmounted and safe to unplug."
+        else
+            echo "The backup disk could not be unmounted; do not unplug it yet." >&2
+        fi
+    fi
+    if [ "$status" -ne 0 ]; then
+        echo "homelab-backup $action FAILED" >&2
+    fi
+}
+trap finish EXIT
+
+mount_disk() {
+    if mountpoint -q "$mount_point"; then
+        return
+    fi
+    local device
+    if ! device=$(blkid -L '{{ backup_disk_label }}'); then
+        echo "No disk labelled {{ backup_disk_label }} is plugged in (see docs/backup.md)." >&2
+        exit 1
+    fi
+    install -d -m 0700 "$mount_point"
+    mount -o noatime "$device" "$mount_point"
+    mounted_here=yes
+    chmod 0700 "$mount_point"
+    echo "Mounted the backup disk ($device)"
+}
+
+backup() {
+    if [ ! -f "$RESTIC_REPOSITORY/config" ]; then
+        echo "Creating the backup repository on this disk"
+        restic init
+    fi
+
+    rm -rf "$staging"
+    install -d -m 0700 "$staging"
+
+    # LDAP: slapcat reads the MDB databases consistently while slapd runs.
+    echo "Exporting LDAP"
+    as_app podman exec '{{ ldap_container_name }}' slapcat -n 0 > "$staging/ldap-config.ldif"
+    as_app podman exec '{{ ldap_container_name }}' slapcat -n 1 > "$staging/ldap-data.ldif"
+
+    # Pi-hole: Teleporter writes an archive to the working directory and
+    # prints its name last. (Given a file name instead, it would import it.)
+    echo "Exporting Pi-hole"
+    local archive
+    archive=$(as_app podman exec -w /tmp '{{ pihole_container_name }}' pihole-FTL --teleporter | tail -n 1)
+    case "$archive" in
+        *.zip) ;;
+        *) echo "Pi-hole Teleporter did not report an archive: $archive" >&2; exit 1 ;;
+    esac
+    as_app podman exec '{{ pihole_container_name }}' cat "/tmp/$archive" > "$staging/pihole-teleporter.zip"
+    as_app podman exec '{{ pihole_container_name }}' rm -f "/tmp/$archive"
+
+    # step-ca: its database cannot be copied while open, so the CA stops for
+    # the export; finish() starts it again if anything fails. Podman writes
+    # the export itself, as the service user, so it goes to a directory that
+    # user owns before moving into the staging area.
+    echo "Exporting the Intermediate CA"
+    ca_export_dir=$(mktemp -d /var/tmp/homelab-backup-ca.XXXXXX)
+    chown "$podman_user:" "$ca_export_dir"
+    ca_stopped=yes
+    as_app systemctl --user stop '{{ intermediate_ca_container_name }}.service'
+    as_app podman volume export --output "$ca_export_dir/intermediate-ca-data.tar" '{{ intermediate_ca_data_volume }}'
+    as_app systemctl --user start '{{ intermediate_ca_container_name }}.service'
+    ca_stopped=no
+    mv "$ca_export_dir/intermediate-ca-data.tar" "$staging/intermediate-ca-data.tar"
+
+    local export
+    for export in ldap-config.ldif ldap-data.ldif pihole-teleporter.zip intermediate-ca-data.tar; do
+        if [ ! -s "$staging/$export" ]; then
+            echo "The export $export is empty; nothing was backed up." >&2
+            exit 1
+        fi
+    done
+
+    echo "Storing the backup"
+    restic backup --tag homelab "$staging"
+    restic forget --tag homelab --keep-last {{ backup_keep_last }} --prune
+    restic check
+    rm -rf "$staging"
+}
+
+# Restores the latest backup into throwaway containers and checks it is
+# usable. Nothing in service is touched.
+restore_test() {
+    test_dir=$(mktemp -d /var/tmp/homelab-restore-test.XXXXXX)
+    echo "Restoring the latest backup to test it"
+    restic restore latest --tag homelab --target "$test_dir"
+    local restored="$test_dir$staging"
+    chown -R "$podman_user:" "$test_dir"
+
+    # LDAP: load both exports into an empty directory and compare the
+    # number of entries with the backup.
+    local expected loaded
+    expected=$(grep -c '^dn:' "$restored/ldap-data.ldif")
+    loaded=$(as_app podman run --rm --entrypoint sh \
+        --volume "$restored:/restore:ro" \
+        '{{ ldap_image }}' -c '
+            set -e
+            slapadd -q -n 0 -F /etc/ldap/slapd.d -l /restore/ldap-config.ldif
+            slapadd -q -n 1 -F /etc/ldap/slapd.d -l /restore/ldap-data.ldif
+            slapcat -n 1 -F /etc/ldap/slapd.d | grep -c "^dn:"
+        ')
+    if [ "$expected" -eq 0 ] || [ "$loaded" != "$expected" ]; then
+        echo "LDAP: $loaded of $expected entries loaded" >&2
+        exit 1
+    fi
+    echo "  LDAP: all $loaded entries load"
+
+    # Intermediate CA: start step-ca from the restored volume with the
+    # existing key password, and ask it for its health.
+    as_app podman volume create "$ca_volume" >/dev/null
+    as_app podman volume import "$ca_volume" "$restored/intermediate-ca-data.tar"
+    as_app podman run -d --name "$ca_container" \
+        --add-host '{{ intermediate_ca_dns_name }}:127.0.0.1' \
+        --volume "$ca_volume:{{ intermediate_ca_home }}" \
+        --secret "intermediate_ca_password,type=mount,target={{ intermediate_ca_secrets_dir }}/password" \
+        '{{ intermediate_ca_image }}' >/dev/null
+    local healthy=no
+    for _ in $(seq 1 30); do
+        if as_app podman exec "$ca_container" step ca health \
+            --ca-url 'https://{{ intermediate_ca_dns_name }}:{{ intermediate_ca_container_port }}' \
+            --root '{{ intermediate_ca_certs_dir }}/root_ca.crt' >/dev/null 2>&1; then
+            healthy=yes
+            break
+        fi
+        sleep 2
+    done
+    if [ "$healthy" != yes ]; then
+        echo "Intermediate CA: the restored CA did not become healthy" >&2
+        as_app podman logs --tail 20 "$ca_container" >&2 || true
+        exit 1
+    fi
+    echo "  Intermediate CA: starts and is healthy"
+
+    # Pi-hole: the archive is intact and holds the configuration and lists.
+    python3 - "$restored/pihole-teleporter.zip" <<'PYTHON'
+import sys, zipfile
+archive = zipfile.ZipFile(sys.argv[1])
+bad = archive.testzip()
+if bad:
+    sys.exit(f"Pi-hole: {bad} is corrupt in the archive")
+missing = {"etc/pihole/pihole.toml", "etc/pihole/gravity.db"} - set(archive.namelist())
+if missing:
+    sys.exit(f"Pi-hole: the archive lacks {', '.join(sorted(missing))}")
+print("  Pi-hole: the archive is intact")
+PYTHON
+    echo "Restore test passed"
+}
+
+mount_disk
+case "$action" in
+    backup)
+        backup
+        restore_test
+        restic snapshots --tag homelab --latest 1
+        echo "Backup complete"
+        ;;
+    test)
+        restore_test
+        ;;
+    snapshots)
+        restic snapshots --tag homelab
+        ;;
+esac
