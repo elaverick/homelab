@@ -179,7 +179,9 @@ if [[ "${DEPLOYMENT_REQUIRED}" == true ]]; then
 
         echo "Restarting {{ certificate_deployment_target }}..."
 
-        systemctl --machine={{ podman_user }}@.host --user restart "{{ certificate_deployment_target }}.service"
+        # become does not set XDG_RUNTIME_DIR; the systemd timer does.
+        XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}" \
+            systemctl --user restart "{{ certificate_deployment_target }}.service"
 
     fi
 
